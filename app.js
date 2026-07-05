@@ -21,8 +21,8 @@ const songs = [
     {
         id: "song-2",
         title: "God Mode",
-        artist: "God Mode",
-        album: "Digital Ascension",
+        artist: "sai abhyankar",
+        album: "karuppu",
         url: "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783244817/God_Mode_gm64ej.mp3",
         localUrl: "songs/God Mode.mp3",
         cover: "assets/god_mode.png",
@@ -33,14 +33,26 @@ const songs = [
     {
         id: "song-3",
         title: "Cook Cook",
-        artist: "Cook Cook",
-        album: "Kitchen Anthems",
+        artist: "santhosh narayanan",
+        album: "cook cook",
         url: "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783244815/Cook_Cook_mi8dq3.mp3",
         localUrl: "songs/Cook Cook.mp3",
         cover: "assets/cook_cook.png",
         duration: "1:54",
         durationSec: 114,
         artistBio: "Cook Cook delivers high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
+    },
+    {
+        id: "song-4",
+        title: "HEAVENLY_JUMPSTYLE",
+        artist: "INNXCENCE",
+        album: "phonk",
+        url: "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250135/HEAVENLY_JUMPSTYLE_q1zcbp.mp3",
+        localurl: "songs/HEAVENLY_JUMPSTYLE",
+        cover: "assets/HEAVENLY_JUMPSTYLE.png",
+        duration: "1:54",
+        durationsec: 114,
+        artistBio: "high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
     }
 ];
 
