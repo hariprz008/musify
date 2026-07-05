@@ -53,6 +53,18 @@ const songs = [
         duration: "1:54",
         durationsec: 114,
         artistBio: "high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
+    },
+    {
+        id: "song-5",
+        title: "Nallaru Po",
+        artist: "sai abhyankar",
+        album: "DUDE",
+        url: "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250145/Nallaru_Po_-_From_Dude_swkipw.mp3",
+        localurl: "songs/Nallaru Po",
+        cover: "assets/Nallaru Po.png",
+        duration: "3:54",
+        durationsec: "234",
+        aristBio: "high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
     }
 ];
 
