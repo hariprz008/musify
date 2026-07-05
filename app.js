@@ -129,13 +129,13 @@ const defaultPlaylists = {
     "playlist-1": {
         name: "slient night",
         desc: "Lo-Fi tunes for a relaxed mood and late night coding.",
-        art: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=300&q=80",
+        art: "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?auto=format&fit=crop&w=300&q=80",
         songs: ["song-1", "song-3"]
     },
     "playlist-2": {
         name: "bass boost",
         desc: "Upbeat instrumentals to keep your concentration sharp.",
-        art: "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?auto=format&fit=crop&w=300&q=80",
+        art: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=300&q=80",
         songs: ["song-2", "song-1"]
     }
 };
