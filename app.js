@@ -137,12 +137,6 @@ const defaultPlaylists = {
         desc: "Upbeat instrumentals to keep your concentration sharp.",
         art: "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?auto=format&fit=crop&w=300&q=80",
         songs: ["song-2", "song-1"]
-    },
-    "playlist-3": {
-        name: "Gaming Session",
-        desc: "Fast-paced synth beats and cybernetic melodies.",
-        art: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=300&q=80",
-        songs: ["song-2", "song-3"]
     }
 };
 
