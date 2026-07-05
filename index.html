@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mucify - Premium Web Player</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="styles.css?v=6.0">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i data-lucide="music-4" class="logo-icon"></i>
+                <span class="logo-text">Mucify</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" data-view="home">
+                    <i data-lucide="home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-item" data-view="search">
+                    <i data-lucide="search"></i>
+                    <span>Search</span>
+                </button>
+                <button class="nav-item" data-view="library">
+                    <i data-lucide="library"></i>
+                    <span>Your Library</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-divider"></div>
+
+            <div class="library-actions">
+                <button class="action-btn" id="create-playlist-btn">
+                    <div class="action-icon-wrapper plus">
+                        <i data-lucide="plus" class="small-icon"></i>
+                    </div>
+                    <span>Create Playlist</span>
+                </button>
+                <button class="action-btn" data-view="liked">
+                    <div class="action-icon-wrapper heart">
+                        <i data-lucide="heart" class="small-icon"></i>
+                    </div>
+                    <span>Liked Songs</span>
+                </button>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- Dynamic Playlists List in Sidebar -->
+            <div class="playlists-list" id="sidebar-playlists">
+                <button class="playlist-nav-item" data-playlist-id="playlist-1">Chill Vibes</button>
+                <button class="playlist-nav-item" data-playlist-id="playlist-2">Focus Flow</button>
+                <button class="playlist-nav-item" data-playlist-id="playlist-3">Gaming Session</button>
+            </div>
+        </aside>
+
+        <!-- Main Window Container -->
+        <main class="main-content">
+            <!-- Header (Sticky navigation, profile, search bar) -->
+            <header class="main-header">
+                <div class="header-left">
+                    <div class="nav-arrows">
+                        <button class="arrow-btn" id="nav-back"><i data-lucide="chevron-left"></i></button>
+                        <button class="arrow-btn" id="nav-forward"><i data-lucide="chevron-right"></i></button>
+                    </div>
+                    <!-- Search Input (Only shown on search page) -->
+                    <div class="search-bar-container" id="header-search-bar" style="display: none;">
+                        <i data-lucide="search" class="search-input-icon"></i>
+                        <input type="text" id="search-input" placeholder="What do you want to listen to?" autocomplete="off">
+                        <button id="clear-search-btn" style="display: none;"><i data-lucide="x" class="small-icon"></i></button>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <div class="profile-menu">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80" alt="Profile" class="profile-pic">
+                        <span class="username">Antigravity User</span>
+                        <i data-lucide="chevron-down" class="profile-arrow"></i>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="profile-dropdown" id="profile-dropdown-menu">
+                            <a href="#"><i data-lucide="user" class="dropdown-icon"></i> Account</a>
+                            <a href="#"><i data-lucide="settings" class="dropdown-icon"></i> Settings</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" id="logout-btn"><i data-lucide="log-out" class="dropdown-icon"></i> Log out</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Views -->
+            <div class="scroll-container" id="scroll-container">
+                
+                <!-- 1. Home View -->
+                <section id="home-view" class="content-view">
+                    <div class="view-header-bg" id="home-bg-gradient"></div>
+                    <div class="view-content-wrapper">
+                        <h1 id="greeting-title">Good afternoon</h1>
+                        
+                        <!-- Quick Grid (Recently played 6 items) -->
+                        <div class="quick-grid">
+                            <div class="quick-card" data-song-index="0">
+                                <img src="assets/aura.png" alt="Aura 10-10">
+                                <div class="quick-card-info">
+                                    <span>Aura 10-10</span>
+                                </div>
+                                <button class="play-card-btn"><i data-lucide="play" class="play-card-icon"></i></button>
+                            </div>
+                            <div class="quick-card" data-song-index="1">
+                                <img src="assets/god_mode.png" alt="God Mode">
+                                <div class="quick-card-info">
+                                    <span>God Mode</span>
+                                </div>
+                                <button class="play-card-btn"><i data-lucide="play" class="play-card-icon"></i></button>
+                            </div>
+                            <div class="quick-card" data-song-index="2">
+                                <img src="assets/cook_cook.png" alt="Cook Cook">
+                                <div class="quick-card-info">
+                                    <span>Cook Cook</span>
+                                </div>
+                                <button class="play-card-btn"><i data-lucide="play" class="play-card-icon"></i></button>
+                            </div>
+                            <div class="quick-card" data-playlist-id="liked">
+                                <div class="quick-card-liked-art">
+                                    <i data-lucide="heart" fill="#fff" color="#fff"></i>
+                                </div>
+                                <div class="quick-card-info">
+                                    <span>Liked Songs</span>
+                                </div>
+                                <button class="play-card-btn"><i data-lucide="play" class="play-card-icon"></i></button>
+                            </div>
+                            <div class="quick-card" data-playlist-id="playlist-1">
+                                <img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=150&q=80" alt="Chill Vibes">
+                                <div class="quick-card-info">
+                                    <span>Chill Vibes</span>
+                                </div>
+                                <button class="play-card-btn"><i data-lucide="play" class="play-card-icon"></i></button>
+                            </div>
+                            <div class="quick-card" data-playlist-id="playlist-2">
+                                <img src="https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?auto=format&fit=crop&w=150&q=80" alt="Focus Flow">
+                                <div class="quick-card-info">
+                                    <span>Focus Flow</span>
+                                </div>
+                                <button class="play-card-btn"><i data-lucide="play" class="play-card-icon"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Shelf: Recommended tracks -->
+                        <div class="shelf">
+                            <div class="shelf-header">
+                                <h2>Your Top Tracks</h2>
+                            </div>
+                            <div class="card-grid">
+                                <div class="music-card" data-song-index="0">
+                                    <div class="card-art-wrapper">
+                                        <img src="assets/aura.png" alt="Aura 10-10" class="card-img">
+                                        <button class="play-card-btn hover-reveal"><i data-lucide="play" class="play-card-icon"></i></button>
+                                    </div>
+                                    <div class="card-metadata">
+                                        <h3>Aura 10-10</h3>
+                                        <p>Aura</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="music-card" data-song-index="1">
+                                    <div class="card-art-wrapper">
+                                        <img src="assets/god_mode.png" alt="God Mode" class="card-img">
+                                        <button class="play-card-btn hover-reveal"><i data-lucide="play" class="play-card-icon"></i></button>
+                                    </div>
+                                    <div class="card-metadata">
+                                        <h3>God Mode</h3>
+                                        <p>God Mode</p>
+                                    </div>
+                                </div>
+
+                                <div class="music-card" data-song-index="2">
+                                    <div class="card-art-wrapper">
+                                        <img src="assets/cook_cook.png" alt="Cook Cook" class="card-img">
+                                        <button class="play-card-btn hover-reveal"><i data-lucide="play" class="play-card-icon"></i></button>
+                                    </div>
+                                    <div class="card-metadata">
+                                        <h3>Cook Cook</h3>
+                                        <p>Cook Cook</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shelf: Mood Playlists -->
+                        <div class="shelf">
+                            <div class="shelf-header">
+                                <h2>Mood Boosters</h2>
+                            </div>
+                            <div class="card-grid">
+                                <div class="music-card playlist-card" data-playlist-id="playlist-1">
+                                    <div class="card-art-wrapper">
+                                        <img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=300&q=80" alt="Chill Vibes" class="card-img">
+                                        <button class="play-card-btn hover-reveal"><i data-lucide="play" class="play-card-icon"></i></button>
+                                    </div>
+                                    <div class="card-metadata">
+                                        <h3>Chill Vibes</h3>
+                                        <p>Lo-Fi tunes for a relaxed mood</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="music-card playlist-card" data-playlist-id="playlist-2">
+                                    <div class="card-art-wrapper">
+                                        <img src="https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?auto=format&fit=crop&w=300&q=80" alt="Focus Flow" class="card-img">
+                                        <button class="play-card-btn hover-reveal"><i data-lucide="play" class="play-card-icon"></i></button>
+                                    </div>
+                                    <div class="card-metadata">
+                                        <h3>Focus Flow</h3>
+                                        <p>Keep your concentration sharp</p>
+                                    </div>
+                                </div>
+
+                                <div class="music-card playlist-card" data-playlist-id="playlist-3">
+                                    <div class="card-art-wrapper">
+                                        <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=300&q=80" alt="Gaming Session" class="card-img">
+                                        <button class="play-card-btn hover-reveal"><i data-lucide="play" class="play-card-icon"></i></button>
+                                    </div>
+                                    <div class="card-metadata">
+                                        <h3>Gaming Session</h3>
+                                        <p>Upbeat electronic beats</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- 2. Search View -->
+                <section id="search-view" class="content-view" style="display: none;">
+                    <div class="view-content-wrapper">
+                        <!-- Dynamic Search Results -->
+                        <div id="search-results-section" style="display: none; margin-bottom: 2rem;">
+                            <h2 class="search-section-title">Songs matching your search</h2>
+                            <div class="search-results-table-container">
+                                <table class="songs-table" id="search-results-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-index">#</th>
+                                            <th class="col-title">Title</th>
+                                            <th class="col-album">Album</th>
+                                            <th class="col-duration"><i data-lucide="clock" class="table-header-icon"></i></th>
+                                            <th class="col-actions"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="search-results-body">
+                                        <!-- Dynamically populated -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <h2>Browse all</h2>
+                        <div class="genre-grid">
+                            <div class="genre-card" style="background-color: rgb(39, 133, 106);">
+                                <h3>Podcasts</h3>
+                                <img src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=120&h=120" alt="Podcasts">
+                            </div>
+                            <div class="genre-card" style="background-color: rgb(30, 50, 100);">
+                                <h3>Made For You</h3>
+                                <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=120&h=120" alt="Made For You">
+                            </div>
+                            <div class="genre-card" style="background-color: rgb(232, 17, 137);">
+                                <h3>New Releases</h3>
+                                <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=120&h=120" alt="New Releases">
+                            </div>
+                            <div class="genre-card" style="background-color: rgb(225, 51, 0);">
+                                <h3>Hip-Hop</h3>
+                                <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=120&h=120" alt="Hip-Hop">
+                            </div>
+                            <div class="genre-card" style="background-color: rgb(20, 138, 8);">
+                                <h3>Pop</h3>
+                                <img src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=120&h=120" alt="Pop">
+                            </div>
+                            <div class="genre-card" style="background-color: rgb(233, 20, 41);">
+                                <h3>Rock</h3>
+                                <img src="https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?auto=format&fit=crop&w=120&h=120" alt="Rock">
+                            </div>
+                            <div class="genre-card" style="background-color: rgb(119, 119, 119);">
+                                <h3>Latin</h3>
+                                <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=120&h=120" alt="Latin">
+                            </div>
+                            <div class="genre-card" style="background-color: rgb(141, 103, 171);">
+                                <h3>Charts</h3>
+                                <img src="https://images.unsplash.com/photo-1487180142328-0c4e37023af5?auto=format&fit=crop&w=120&h=120" alt="Charts">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Your Library View -->
+                <section id="library-view" class="content-view" style="display: none;">
+                    <div class="view-content-wrapper">
+                        <h2>Your Playlists</h2>
+                        <div class="card-grid" id="library-playlists-grid">
+                            <div class="music-card liked-songs-playlist-card" data-view="liked">
+                                <div class="liked-card-gradient">
+                                    <div class="liked-card-badge">
+                                        <i data-lucide="heart" fill="#fff" color="#fff"></i>
+                                    </div>
+                                    <div class="liked-card-desc">
+                                        <h3>Liked Songs</h3>
+                                        <p id="library-liked-count">0 songs</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Playlists will be dynamically listed here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. Liked Songs View -->
+                <section id="liked-songs-view" class="content-view" style="display: none;">
+                    <div class="view-header-bg liked-view-bg"></div>
+                    <div class="playlist-header-container">
+                        <div class="playlist-art-wrapper liked-songs-art">
+                            <i data-lucide="heart" fill="#fff" color="#fff"></i>
+                        </div>
+                        <div class="playlist-header-details">
+                            <span class="playlist-type">PLAYLIST</span>
+                            <h1>Liked Songs</h1>
+                            <div class="playlist-owner-info">
+                                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80" alt="Owner" class="owner-pic">
+                                <span class="owner-name">Antigravity User</span>
+                                <span class="playlist-stats-bullet">•</span>
+                                <span id="liked-songs-count">0 songs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="playlist-action-bar">
+                        <button class="playlist-play-btn" id="liked-play-btn"><i data-lucide="play" fill="#000" color="#000" class="btn-play-icon"></i></button>
+                    </div>
+
+                    <div class="playlist-songs-list-container">
+                        <table class="songs-table" id="liked-songs-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-index">#</th>
+                                    <th class="col-title">Title</th>
+                                    <th class="col-album">Album</th>
+                                    <th class="col-date">Date Added</th>
+                                    <th class="col-duration"><i data-lucide="clock" class="table-header-icon"></i></th>
+                                    <th class="col-actions"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="liked-songs-list-body">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                        <div class="empty-playlist-msg" id="liked-empty-message">
+                            <i data-lucide="music" class="empty-icon"></i>
+                            <h3>Songs you like will appear here</h3>
+                            <p>Save songs by clicking the heart icon on the music player or track lists.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. General Playlist View (Dynamic for Playlists) -->
+                <section id="playlist-view" class="content-view" style="display: none;">
+                    <div class="view-header-bg" id="playlist-view-bg"></div>
+                    <div class="playlist-header-container">
+                        <div class="playlist-art-wrapper">
+                            <img src="" alt="Playlist Art" id="playlist-header-art">
+                        </div>
+                        <div class="playlist-header-details">
+                            <span class="playlist-type">PLAYLIST</span>
+                            <h1 id="playlist-header-title">Chill Vibes</h1>
+                            <p id="playlist-header-desc">Relaxing sounds</p>
+                            <div class="playlist-owner-info">
+                                <span class="owner-name">Mucify Player</span>
+                                <span class="playlist-stats-bullet">•</span>
+                                <span id="playlist-header-stats">3 songs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="playlist-action-bar">
+                        <button class="playlist-play-btn" id="playlist-play-btn-action"><i data-lucide="play" fill="#000" color="#000" class="btn-play-icon"></i></button>
+                        
+                        <!-- Playlist Actions Options Dropdown -->
+                        <div class="playlist-menu-options" style="display: inline-block; margin-left: 20px; position: relative; vertical-align: middle;">
+                            <button class="action-bar-dots-btn" id="playlist-options-btn" title="Playlist options" style="color: var(--text-muted); padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition-fast);"><i data-lucide="more-horizontal" style="width: 28px; height: 28px;"></i></button>
+                            <div class="options-dropdown" id="playlist-options-dropdown" style="position: absolute; top: 52px; left: 0; background-color: #282828; border-radius: 4px; padding: 4px; display: none; flex-direction: column; z-index: 100; min-width: 160px; box-shadow: 0 16px 24px rgba(0,0,0,0.5); border: 1px solid var(--border-color);">
+                                <button class="dropdown-item" id="pl-opt-rename" style="display: flex; align-items: center; gap: 12px; padding: 12px; font-weight: 500; font-size: 13px; border-radius: 2px; width: 100%; text-align: left; color: var(--text-muted); transition: var(--transition-fast);"><i data-lucide="edit-3" style="width: 16px; height: 16px;"></i> Rename</button>
+                                <button class="dropdown-item" id="pl-opt-delete" style="display: flex; align-items: center; gap: 12px; padding: 12px; font-weight: 500; font-size: 13px; border-radius: 2px; width: 100%; text-align: left; color: #ff5252; transition: var(--transition-fast);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i> Delete Playlist</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="playlist-songs-list-container">
+                        <table class="songs-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-index">#</th>
+                                    <th class="col-title">Title</th>
+                                    <th class="col-album">Album</th>
+                                    <th class="col-date">Date Added</th>
+                                    <th class="col-duration"><i data-lucide="clock" class="table-header-icon"></i></th>
+                                    <th class="col-actions"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="playlist-songs-list-body">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Dynamic Now Playing Sidebar Panel (Right Sidebar) -->
+        <aside class="now-playing-panel" id="now-playing-panel" style="display: none;">
+            <div class="panel-header">
+                <h3>Now Playing</h3>
+                <button class="close-panel-btn" id="close-now-playing"><i data-lucide="x"></i></button>
+            </div>
+            <div class="panel-content">
+                <div class="panel-art-wrapper">
+                    <img src="assets/aura.png" alt="Aura 10-10" id="panel-song-art">
+                </div>
+                <div class="panel-meta">
+                    <h2 id="panel-song-title">Aura 10-10</h2>
+                    <p id="panel-song-artist">Aura</p>
+                </div>
+                <div class="artist-bio-card">
+                    <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=300&q=80" alt="Artist Profile" id="panel-artist-bg">
+                    <div class="artist-bio-content">
+                        <h4>About the Artist</h4>
+                        <p id="panel-artist-bio">Exclusive tracks featuring deep beats and stellar production values, curated for premium listeners.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    <!-- Bottom Player Control Bar -->
+    <footer class="player-bar">
+        <!-- Left: Track Details -->
+        <div class="player-track-info">
+            <div class="current-track-art">
+                <img src="assets/aura.png" alt="Song Cover" id="player-art">
+            </div>
+            <div class="current-track-meta">
+                <div class="track-title-container">
+                    <span class="track-name" id="player-title">Aura 10-10</span>
+                </div>
+                <span class="track-artist" id="player-artist">Aura</span>
+            </div>
+            <button class="track-like-btn" id="player-like-btn">
+                <i data-lucide="heart" class="like-icon"></i>
+            </button>
+        </div>
+
+        <!-- Center: Playback Controls & Progress Bar -->
+        <div class="player-controls-container">
+            <div class="playback-controls">
+                <button class="ctrl-btn" id="btn-shuffle" title="Shuffle"><i data-lucide="shuffle"></i></button>
+                <button class="ctrl-btn" id="btn-prev" title="Previous"><i data-lucide="skip-back"></i></button>
+                <button class="play-pause-btn" id="btn-play-pause" title="Play">
+                    <i data-lucide="play" fill="#000" color="#000" id="play-pause-icon"></i>
+                </button>
+                <button class="ctrl-btn" id="btn-next" title="Next"><i data-lucide="skip-forward"></i></button>
+                <button class="ctrl-btn" id="btn-repeat" title="Repeat"><i data-lucide="repeat"></i></button>
+            </div>
+            
+            <div class="progress-bar-wrapper">
+                <span class="time-stamp" id="time-current">0:00</span>
+                <div class="progress-track" id="progress-track">
+                    <div class="progress-fill" id="progress-fill"></div>
+                    <div class="progress-thumb" id="progress-thumb"></div>
+                </div>
+                <span class="time-stamp" id="time-total">0:00</span>
+            </div>
+        </div>
+
+        <!-- Right: Extra Options / Volume -->
+        <div class="player-extra-controls">
+            <button class="extra-btn" id="btn-now-playing" title="Now Playing View"><i data-lucide="play-square"></i></button>
+            <button class="extra-btn" id="btn-queue" title="Queue"><i data-lucide="list-music"></i></button>
+            <button class="extra-btn" id="btn-mute" title="Mute/Unmute"><i data-lucide="volume-2" id="volume-icon"></i></button>
+            <div class="volume-slider-wrapper">
+                <div class="volume-track" id="volume-track">
+                    <div class="volume-fill" id="volume-fill" style="width: 70%;"></div>
+                    <div class="volume-thumb" id="volume-thumb" style="left: 70%;"></div>
+                </div>
+            </div>
+            <button class="extra-btn" id="btn-fullscreen" title="Fullscreen"><i data-lucide="maximize-2"></i></button>
+        </div>
+    </footer>
+    </div>
+
+    <!-- Custom Modal for Playlist Input (Create / Rename) -->
+    <div id="playlist-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); transition: opacity 0.25s ease;">
+        <div style="background-color: #242424; padding: 24px; border-radius: 8px; width: 400px; max-width: 90%; border: 1px solid #3e3e3e; box-shadow: 0 24px 48px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 16px; transition: transform 0.25s ease;">
+            <h2 id="modal-title" style="font-family: var(--font-secondary); font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px;">Create Playlist</h2>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label for="modal-input" style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Playlist Name</label>
+                <input type="text" id="modal-input" style="width: 100%; height: 40px; border-radius: 4px; background-color: #3e3e3e; border: 1px solid transparent; padding: 8px 12px; color: #fff; outline: none; font-size: 14px;" placeholder="My Playlist" autocomplete="off">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px;">
+                <button id="modal-cancel-btn" style="padding: 10px 20px; font-weight: 600; font-size: 13px; color: #fff; border-radius: 20px; transition: var(--transition-fast); background-color: transparent;">Cancel</button>
+                <button id="modal-save-btn" style="padding: 10px 20px; font-weight: 700; font-size: 13px; color: #000; background-color: var(--primary-green); border-radius: 20px; transition: var(--transition-fast); cursor: pointer;">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Context Menu for Song Actions -->
+    <div id="song-context-menu" style="position: fixed; display: none; background-color: #101010; border-radius: 4px; padding: 4px; z-index: 1000; min-width: 180px; box-shadow: 0 16px 24px rgba(0, 0, 0, 0.5); border: 1px solid #3e3e3e;">
+        <!-- Populated dynamically by JS -->
+    </div>
+
+    <!-- Hidden HTML5 Audio Element -->
+    <audio id="audio-player" preload="auto"></audio>
+
+    <script src="app.js?v=6.0"></script>
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
