@@ -65,6 +65,30 @@ const songs = [
         duration: "3:54",
         durationsec: "234",
         aristBio: "high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
+    },
+    {
+        id: "song-6",
+        title: "Naanga Naalu Peru",
+        artist: "sai abhyankar",
+        album: "karuppu",
+        url: "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250137/Naanga_Naalu_Peru_trlzhu.mp3",
+        localurl: "songs/Naanga Naalu Peru",
+        cover: "assets/Naanga-Naalu-Peru-From-Karuppu-Tamil-2026-20260327132334-500x500.jpg",
+        duration: "3:17",
+        durationsec: "190",
+        artistBio: "high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
+    },
+    {
+        id: "song-7",
+        title: "JMSN_-_Love_Me",
+        artist: "JMSN",
+        album: "love me",
+        url: "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250130/JMSN_-_Love_Me__mp3.pm_eqyel5.mp3",
+        localurl: "songs/JMSN_-_Love_Me",
+        cover: "LOVE-ME-Korean-2025-20250805101550-500x500.jpg",
+        duration: "4:28",
+        durationsec: "256",
+        artistBio: "high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
     }
 ];
 
