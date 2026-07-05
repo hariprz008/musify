@@ -89,6 +89,30 @@ const songs = [
         duration: "4:28",
         durationsec: "256",
         artistBio: "high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
+    },
+    {
+        id: "song-8",
+        title: "i thought i see you face again",
+        artist: "she and him",
+        album: "i thought i see you face again",
+        url: "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250129/I_Thought_I_Saw_Your_Face_Today_spotdown.org_e0cnqn.mp3",
+        localurl: "songs/I Thought I Saw Your Face Today",
+        cover: "https___images.genius.com_02536cfd852046da53621835e510f559.1000x1000x1.jpg",
+        duration: "2:49",
+        durationsec: 149,
+        artistBio: "high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
+    },
+    {
+        id: "song-9",
+        title: "Nenjil-Mamazhai-Thanthu",
+        artist: "Ajaneesh Loknath",
+        album: "Nimir",
+        url: "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250145/Nenjil-Mamazhai-Thanthu-MassTamilan.com_vlbe8t.mp3",
+        localurl: "songs/Nenjil-Mamazhai-Thanthu",
+        cover: "Nimir-Tamil-2018-20180118082105-500x500.jpg",
+        duration: "4:39",
+        durationsec: 263,
+        artistBio: "high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
     }
 ];
 
