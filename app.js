@@ -113,6 +113,18 @@ const songs = [
         duration: "4:39",
         durationsec: 263,
         artistBio: "high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
+    },
+    {
+        id: "le-castle-vania-john-wick",
+        title: "le-castle-vania-john-wick", 
+        artist: "",
+        album: "john wick",
+        url: "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250124/le-castle-vania-john-wick-mode-_john-wick-chapter-2-club-scene-made-with-Voicemod_exymiw.mp3",
+        localurl: "songs/le-castle-vania-john-wick",
+        cover: "",
+        duration: "0:45",
+        durationsec: 45
+        artistBio: "high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
     }
 ];
 
