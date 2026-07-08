@@ -115,7 +115,7 @@ const songs = [
         artistBio: "high-fidelity lo-fi beats infused with culinary ambient soundscapes. Perfect for relaxing, studying, or adding rhythm to your daily culinary activities."
     },
     {
-        id: "le-castle-vania-john-wick",
+        id: "song-10",
         title: "le-castle-vania-john-wick", 
         artist: "",
         album: "john wick",
