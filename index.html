@@ -120,14 +120,16 @@
                         <!-- Quick Grid (Recently played 6 items) -->
                         <div class="quick-grid">
                             <div class="quick-card" data-song-index="0">
-                                <img src="assets/aura.png" alt="Aura 10-10">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7iLO5aPkU5OPzoPXnA8VACRtVtxqg3jnDrcgWMr5cwOibCBQeHBkkkNqaY_sBG-OREjeTxw&s=10"
+                                    alt="Ambikapathy">
                                 <div class="quick-card-info">
                                     <span>Ambikapathy</span>
                                 </div>
                                 <button class="play-card-btn"><i data-lucide="play" class="play-card-icon"></i></button>
                             </div>
                             <div class="quick-card" data-song-index="1">
-                                <img src="assets/god_mode.png" alt="God Mode">
+                                <img src="https://m.media-amazon.com/images/M/MV5BM2M2NjRjNGUtN2IwYy00MThmLTgxZTgtMzNhZDY0MDhhZTM0XkEyXkFqcGc@._V1_.jpg"
+                                    alt="Aura 10-10">
                                 <div class="quick-card-info">
                                     <span>Aura 10-10</span>
                                 </div>
@@ -182,7 +184,7 @@
                                 <div class="music-card" data-song-index="1">
                                     <div class="card-art-wrapper">
                                         <img src="https://m.media-amazon.com/images/M/MV5BM2M2NjRjNGUtN2IwYy00MThmLTgxZTgtMzNhZDY0MDhhZTM0XkEyXkFqcGc@._V1_.jpg"
-                                            alt="God Mode" class="card-img">
+                                            alt="Aura 10-10" class="card-img">
                                         <button class="play-card-btn hover-reveal"><i data-lucide="play"
                                                 class="play-card-icon"></i></button>
                                     </div>
@@ -194,7 +196,7 @@
 
                                 <div class="music-card" data-song-index="4">
                                     <div class="card-art-wrapper">
-                                        <img src="assets/cook_cook.png" alt="Cook Cook" class="card-img">
+                                        <img src="cook_cook.png" alt="Cook Cook" class="card-img">
                                         <button class="play-card-btn hover-reveal"><i data-lucide="play"
                                                 class="play-card-icon"></i></button>
                                     </div>
@@ -223,7 +225,7 @@
                             <div class="shelf-header">
                                 <h2>Mood Boosters</h2>
                             </div>
-                            <div class="card-grid">
+                            <div class="card-grid" id="home-mood-boosters-grid">
                                 <div class="music-card playlist-card" data-playlist-id="playlist-1">
                                     <div class="card-art-wrapper">
                                         <img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=300&q=80"
@@ -268,72 +270,75 @@
                     </div>
                 </section>
 
-                <!-- 2. Search View -->
+                <!-- 2. Search View (Spotify Style) -->
                 <section id="search-view" class="content-view" style="display: none;">
                     <div class="view-content-wrapper">
-                        <!-- Dynamic Search Results -->
-                        <div id="search-results-section" style="display: none; margin-bottom: 2rem;">
-                            <h2 class="search-section-title">Songs matching your search</h2>
-                            <div class="search-results-table-container">
-                                <table class="songs-table" id="search-results-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-index">#</th>
-                                            <th class="col-title">Title</th>
-                                            <th class="col-album">Album</th>
-                                            <th class="col-duration"><i data-lucide="clock"
-                                                    class="table-header-icon"></i></th>
-                                            <th class="col-actions"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="search-results-body">
-                                        <!-- Dynamically populated -->
-                                    </tbody>
-                                </table>
+                        <!-- Dynamic Search Results (Shown when user types a query) -->
+                        <div id="search-results-section" style="display: none; margin-bottom: 2.5rem;">
+                            <!-- Top Result + Songs Side-by-Side Container -->
+                            <div class="search-top-layout">
+                                <!-- Top Result Card -->
+                                <div class="top-result-container">
+                                    <h2 class="search-section-title" style="margin-bottom: 16px;">Top Result</h2>
+                                    <div class="top-result-card" id="top-result-card">
+                                        <!-- Dynamically populated by JS -->
+                                    </div>
+                                </div>
+
+                                <!-- Top Songs Compact List -->
+                                <div class="top-songs-container">
+                                    <h2 class="search-section-title" style="margin-bottom: 16px;">Songs</h2>
+                                    <div class="top-songs-list" id="top-songs-list">
+                                        <!-- Dynamically populated by JS -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Full Matching Tracks Table -->
+                            <div id="all-matching-songs-container" style="margin-top: 32px;">
+                                <h2 class="search-section-title" style="margin-bottom: 16px;" id="search-results-title">
+                                    All Songs</h2>
+                                <div class="search-results-table-container">
+                                    <table class="songs-table" id="search-results-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="col-index">#</th>
+                                                <th class="col-title">Title</th>
+                                                <th class="col-album">Album</th>
+                                                <th class="col-duration"><i data-lucide="clock"
+                                                        class="table-header-icon"></i></th>
+                                                <th class="col-actions"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="search-results-body">
+                                            <!-- Dynamically populated by JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 
-                        <h2>Browse all</h2>
-                        <div class="genre-grid">
-                            <div class="genre-card" style="background-color: rgb(39, 133, 106);">
-                                <h3>Podcasts</h3>
-                                <img src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=120&h=120"
-                                    alt="Podcasts">
+                        <!-- Listening History / Recent Searches Section (Shown when search query is empty) -->
+                        <div id="search-history-section">
+                            <div
+                                style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                                <h2
+                                    style="font-family: var(--font-secondary); font-size: 24px; font-weight: 700; letter-spacing: -0.3px;">
+                                    Recent Searches</h2>
+                                <button id="clear-history-btn"
+                                    style="background: transparent; border: none; color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; display: none;">Clear
+                                    History</button>
                             </div>
-                            <div class="genre-card" style="background-color: rgb(30, 50, 100);">
-                                <h3>Made For You</h3>
-                                <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=120&h=120"
-                                    alt="Made For You">
+                            <div class="card-grid" id="search-history-grid">
+                                <!-- Dynamically populated by JS -->
                             </div>
-                            <div class="genre-card" style="background-color: rgb(232, 17, 137);">
-                                <h3>New Releases</h3>
-                                <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=120&h=120"
-                                    alt="New Releases">
-                            </div>
-                            <div class="genre-card" style="background-color: rgb(225, 51, 0);">
-                                <h3>Hip-Hop</h3>
-                                <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=120&h=120"
-                                    alt="Hip-Hop">
-                            </div>
-                            <div class="genre-card" style="background-color: rgb(20, 138, 8);">
-                                <h3>Pop</h3>
-                                <img src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=120&h=120"
-                                    alt="Pop">
-                            </div>
-                            <div class="genre-card" style="background-color: rgb(233, 20, 41);">
-                                <h3>Rock</h3>
-                                <img src="https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?auto=format&fit=crop&w=120&h=120"
-                                    alt="Rock">
-                            </div>
-                            <div class="genre-card" style="background-color: rgb(119, 119, 119);">
-                                <h3>Latin</h3>
-                                <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=120&h=120"
-                                    alt="Latin">
-                            </div>
-                            <div class="genre-card" style="background-color: rgb(141, 103, 171);">
-                                <h3>Charts</h3>
-                                <img src="https://images.unsplash.com/photo-1487180142328-0c4e37023af5?auto=format&fit=crop&w=120&h=120"
-                                    alt="Charts">
+                            <div id="search-history-empty"
+                                style="display: none; text-align: center; padding: 48px; color: var(--text-muted);">
+                                <i data-lucide="history"
+                                    style="width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.5;"></i>
+                                <p style="font-size: 16px; font-weight: 600;">No recent searches</p>
+                                <p style="font-size: 13px; margin-top: 4px;">Songs you play or search for will appear
+                                    here.</p>
                             </div>
                         </div>
                     </div>
@@ -517,6 +522,61 @@
                                 <!-- Populated dynamically by JS -->
                             </tbody>
                         </table>
+                    </div>
+                </section>
+
+                <!-- 6. Queue View (Spotify Style) -->
+                <section id="queue-view" class="content-view" style="display: none; padding: 32px 40px;">
+                    <div class="queue-header" style="margin-bottom: 28px;">
+                        <h1
+                            style="font-family: var(--font-secondary); font-size: 28px; font-weight: 800; color: #ffffff; margin: 0 0 4px 0; letter-spacing: -0.5px;">
+                            Queue</h1>
+                    </div>
+
+                    <!-- Section 1: Now Playing -->
+                    <div class="queue-section" style="margin-bottom: 36px;">
+                        <h2
+                            style="font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px;">
+                            Now playing</h2>
+                        <div id="queue-now-playing-container">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Next Up -->
+                    <div class="queue-section">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                            <h2 style="font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 0;"
+                                id="queue-next-up-heading">Next up</h2>
+                            <button id="clear-queue-btn"
+                                style="background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--text-primary); font-size: 13px; font-weight: 600; cursor: pointer; padding: 6px 14px; border-radius: 20px; transition: all 0.2s ease;">Clear
+                                queue</button>
+                        </div>
+                        <div class="playlist-songs-list-container">
+                            <table class="songs-table" id="queue-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-index">#</th>
+                                        <th class="col-title">Title</th>
+                                        <th class="col-album">Album</th>
+                                        <th class="col-duration"><i data-lucide="clock" class="table-header-icon"></i>
+                                        </th>
+                                        <th class="col-actions"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="queue-next-up-list-body">
+                                    <!-- Populated dynamically by JS -->
+                                </tbody>
+                            </table>
+                            <div class="empty-playlist-msg" id="queue-empty-message"
+                                style="display: none; text-align: center; padding: 48px 0; color: var(--text-muted);">
+                                <i data-lucide="list-music"
+                                    style="width: 48px; height: 48px; stroke-width: 1.5; margin-bottom: 12px; color: var(--text-muted);"></i>
+                                <h3 style="color: #fff; font-size: 18px; margin-bottom: 6px;">Your queue is empty</h3>
+                                <p style="font-size: 14px;">Add songs to your queue from any track list or playlist.</p>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>
