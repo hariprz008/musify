@@ -13,7 +13,7 @@
         rel="stylesheet">
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="styles.css?v=6.0">
+    <link rel="stylesheet" href="styles.css?v=8.0">
 </head>
 
 <body>
@@ -384,7 +384,7 @@
                             <div class="playlist-owner-info" style="margin-top: 8px;">
                                 <span class="owner-name">Mucify Collection</span>
                                 <span class="playlist-stats-bullet">•</span>
-                                <span id="all-songs-count">21 songs</span>
+                                <span id="all-songs-count">22 songs</span>
                             </div>
                         </div>
                     </div>
@@ -527,10 +527,34 @@
 
                 <!-- 6. Queue View (Spotify Style) -->
                 <section id="queue-view" class="content-view" style="display: none; padding: 32px 40px;">
-                    <div class="queue-header" style="margin-bottom: 28px;">
-                        <h1
-                            style="font-family: var(--font-secondary); font-size: 28px; font-weight: 800; color: #ffffff; margin: 0 0 4px 0; letter-spacing: -0.5px;">
-                            Queue</h1>
+                    <div class="queue-header"
+                        style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px;">
+                        <div>
+                            <h1
+                                style="font-family: var(--font-secondary); font-size: 28px; font-weight: 800; color: #ffffff; margin: 0 0 6px 0; letter-spacing: -0.5px;">
+                                Queue</h1>
+                            <p
+                                style="font-size: 13px; color: var(--text-muted); margin: 0; display: flex; align-items: center; gap: 8px;">
+                                <span>Customize playback order</span>
+                                <span style="opacity: 0.4;">•</span>
+                                <span style="display: inline-flex; align-items: center; gap: 4px;"><i
+                                        data-lucide="grip-vertical" style="width: 13px; height: 13px;"></i> Drag to
+                                    reposition or use position controls</span>
+                            </p>
+                        </div>
+                        <div class="queue-header-actions"
+                            style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button id="queue-add-songs-btn" class="queue-header-btn primary"
+                                title="Add songs to queue">
+                                <i data-lucide="plus" style="width: 15px; height: 15px;"></i> Add Songs
+                            </button>
+                            <button id="queue-shuffle-btn" class="queue-header-btn" title="Shuffle upcoming songs">
+                                <i data-lucide="shuffle" style="width: 15px; height: 15px;"></i> Shuffle Next Up
+                            </button>
+                            <button id="clear-queue-btn" class="queue-header-btn danger" title="Clear upcoming queue">
+                                <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i> Clear Queue
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Section 1: Now Playing -->
@@ -547,22 +571,28 @@
                     <div class="queue-section">
                         <div
                             style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                            <h2 style="font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 0;"
-                                id="queue-next-up-heading">Next up</h2>
-                            <button id="clear-queue-btn"
-                                style="background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--text-primary); font-size: 13px; font-weight: 600; cursor: pointer; padding: 6px 14px; border-radius: 20px; transition: all 0.2s ease;">Clear
-                                queue</button>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <h2 style="font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 0;"
+                                    id="queue-next-up-heading">Next up</h2>
+                                <span id="queue-summary-badge"
+                                    style="font-size: 12px; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 2px 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">0
+                                    songs</span>
+                            </div>
+                            <span style="font-size: 12px; color: var(--text-muted); opacity: 0.7;">Tip: Drag rows to
+                                change order</span>
                         </div>
-                        <div class="playlist-songs-list-container">
+                        <div class="playlist-songs-list-container" style="padding: 0;">
                             <table class="songs-table" id="queue-table">
                                 <thead>
                                     <tr>
+                                        <th class="col-drag" style="width: 32px;" title="Drag handle"></th>
                                         <th class="col-index">#</th>
                                         <th class="col-title">Title</th>
                                         <th class="col-album">Album</th>
                                         <th class="col-duration"><i data-lucide="clock" class="table-header-icon"></i>
                                         </th>
-                                        <th class="col-actions"></th>
+                                        <th class="col-actions" style="width: 180px; text-align: right;">Position &
+                                            Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="queue-next-up-list-body">
@@ -574,7 +604,12 @@
                                 <i data-lucide="list-music"
                                     style="width: 48px; height: 48px; stroke-width: 1.5; margin-bottom: 12px; color: var(--text-muted);"></i>
                                 <h3 style="color: #fff; font-size: 18px; margin-bottom: 6px;">Your queue is empty</h3>
-                                <p style="font-size: 14px;">Add songs to your queue from any track list or playlist.</p>
+                                <p style="font-size: 14px; margin-bottom: 18px;">Add songs to your queue from any track
+                                    list or using the button below.</p>
+                                <button id="queue-empty-add-btn" class="queue-header-btn primary"
+                                    style="margin: 0 auto;">
+                                    <i data-lucide="plus" style="width: 15px; height: 15px;"></i> Browse & Add Songs
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -693,13 +728,50 @@
     </div>
 
     <!-- Floating Context Menu for Song Actions -->
-    <div id="song-context-menu"
-        style="position: fixed; display: none; background-color: #101010; border-radius: 4px; padding: 4px; z-index: 1000; min-width: 180px; box-shadow: 0 16px 24px rgba(0, 0, 0, 0.5); border: 1px solid #3e3e3e;">
+    <div id="song-context-menu" class="context-menu" style="display: none;">
         <!-- Populated dynamically by JS -->
     </div>
 
     <!-- Hidden HTML5 Audio Element -->
     <audio id="audio-player" preload="auto"></audio>
+
+    <!-- Custom Modal for Adding Songs to Queue -->
+    <div id="queue-add-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); transition: opacity 0.25s ease;">
+        <div
+            style="background-color: #1e1e1e; padding: 24px; border-radius: 12px; width: 560px; max-width: 92%; max-height: 84vh; border: 1px solid #333333; box-shadow: 0 24px 48px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <h2
+                        style="font-family: var(--font-secondary); font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 4px 0;">
+                        Add Songs to Queue</h2>
+                    <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Customize your upcoming tracks</p>
+                </div>
+                <button id="queue-add-modal-close"
+                    style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: color 0.2s ease;">
+                    <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+                </button>
+            </div>
+            <div style="position: relative;">
+                <input type="text" id="queue-add-search-input" placeholder="Search title, artist, or album..."
+                    style="width: 100%; height: 42px; border-radius: 8px; background-color: #2b2b2b; border: 1px solid #3e3e3e; padding: 8px 14px 8px 38px; color: #fff; outline: none; font-size: 14px; box-sizing: border-box;">
+                <i data-lucide="search"
+                    style="position: absolute; left: 12px; top: 12px; width: 18px; height: 18px; color: var(--text-muted);"></i>
+            </div>
+            <div id="queue-add-songs-list"
+                style="overflow-y: auto; max-height: 380px; display: flex; flex-direction: column; gap: 6px; padding-right: 4px;">
+                <!-- Populated dynamically by JS -->
+            </div>
+            <div
+                style="display: flex; justify-content: flex-end; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
+                <button id="queue-add-modal-done" class="queue-header-btn primary"
+                    style="padding: 8px 24px;">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Toast Notification -->
+    <div id="mucify-toast" class="mucify-toast" style="display: none;"></div>
 
     <script src="app2.js?v=1.0"></script>
     <script>
