@@ -1087,7 +1087,7 @@ h1 {
 .row-menu-btn {
     color: var(--text-muted);
     opacity: 0;
-    transition: opacity var(--transition-fast), color var(--transition-fast);
+    transition: opacity var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
 }
 
 .songs-table tbody tr:hover .row-action-btn,
@@ -1095,8 +1095,10 @@ h1 {
     opacity: 1 !important;
 }
 
-.row-action-btn:hover {
+.row-action-btn:hover,
+.row-menu-btn:hover {
     color: var(--text-primary);
+    transform: scale(1.1);
 }
 
 .row-action-btn.liked {
@@ -1765,14 +1767,223 @@ h1 {
     cursor: pointer;
 }
 
-/* Premium Dark Solid Dropdowns */
-.options-dropdown,
-#song-context-menu {
-    background-color: #121212 !important;
-    border: 1px solid #333333 !important;
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.8) !important;
-    border-radius: 4px;
-    opacity: 1 !important;
+/* --- Premium Context Menu & Dropdown Styles --- */
+.context-menu,
+#song-context-menu,
+#playlist-context-menu {
+    position: fixed;
+    background: rgba(24, 24, 24, 0.96) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 8px !important;
+    padding: 6px !important;
+    z-index: 2500 !important;
+    min-width: 200px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    animation: contextMenuPop 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: top left;
+}
+
+@keyframes contextMenuPop {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #d1d5db;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.context-menu-item i,
+.context-menu-item svg {
+    width: 15px;
+    height: 15px;
+    color: var(--text-muted);
+    transition: color 0.18s ease, transform 0.18s ease, filter 0.18s ease;
+    flex-shrink: 0;
+}
+
+.context-menu-item span {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.18s ease;
+}
+
+/* Hover State - Dynamic Glowing Spotify Highlight */
+.context-menu-item:hover,
+#song-context-menu .context-menu-item:hover,
+#playlist-context-menu .context-menu-item:hover,
+.context-submenu .context-menu-item:hover {
+    background: linear-gradient(90deg, rgba(30, 215, 96, 0.18) 0%, rgba(255, 255, 255, 0.09) 100%) !important;
+    color: #ffffff !important;
+    box-shadow: inset 3.5px 0 0 var(--primary-green) !important;
+    transform: translateX(4px) !important;
+}
+
+.context-menu-item:hover i,
+.context-menu-item:hover svg,
+#song-context-menu .context-menu-item:hover i,
+#song-context-menu .context-menu-item:hover svg,
+.context-submenu .context-menu-item:hover i,
+.context-submenu .context-menu-item:hover svg {
+    color: var(--primary-green) !important;
+    stroke: var(--primary-green) !important;
+    transform: scale(1.15) !important;
+    filter: drop-shadow(0 0 8px rgba(30, 215, 96, 0.6)) !important;
+}
+
+.context-menu-item:hover span,
+#song-context-menu .context-menu-item:hover span,
+.context-submenu .context-menu-item:hover span {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+/* Danger / Delete Item */
+.context-menu-item.danger {
+    color: #ff6b6b !important;
+}
+
+.context-menu-item.danger i,
+.context-menu-item.danger svg {
+    color: #ff6b6b !important;
+}
+
+.context-menu-item.danger:hover,
+#song-context-menu .context-menu-item.danger:hover,
+#playlist-context-menu .context-menu-item.danger:hover {
+    background: linear-gradient(90deg, rgba(255, 82, 82, 0.22) 0%, rgba(255, 82, 82, 0.08) 100%) !important;
+    color: #ff8585 !important;
+    box-shadow: inset 3.5px 0 0 #ff5252 !important;
+    transform: translateX(4px) !important;
+}
+
+.context-menu-item.danger:hover i,
+.context-menu-item.danger:hover svg,
+#song-context-menu .context-menu-item.danger:hover i,
+#song-context-menu .context-menu-item.danger:hover svg {
+    color: #ff5252 !important;
+    stroke: #ff5252 !important;
+    transform: scale(1.15) !important;
+    filter: drop-shadow(0 0 8px rgba(255, 82, 82, 0.6)) !important;
+}
+
+.context-menu-item.danger:hover span {
+    color: #ff8585 !important;
+}
+
+/* Disabled items */
+.context-menu-item.disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+/* Submenu Styles */
+.context-menu-item.has-submenu {
+    position: relative;
+}
+
+.context-submenu {
+    display: none;
+    position: absolute;
+    left: calc(100% + 2px);
+    top: -4px;
+    background: rgba(24, 24, 24, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 6px;
+    min-width: 180px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 2600;
+}
+
+.context-submenu::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    left: -14px;
+    width: 18px;
+    background: transparent;
+    pointer-events: auto;
+}
+
+.context-menu-item.has-submenu:hover>.context-submenu,
+.context-menu-item.has-submenu:focus-within>.context-submenu {
+    display: flex !important;
+    flex-direction: column !important;
+    animation: contextMenuPop 0.14s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.context-menu-item.has-submenu.align-left .context-submenu {
+    left: auto;
+    right: calc(100% + 2px);
+}
+
+.context-menu-item.has-submenu.align-left .context-submenu::before {
+    left: auto;
+    right: -14px;
+}
+
+/* Options dropdown (playlist dots menu) */
+.options-dropdown {
+    background: rgba(24, 24, 24, 0.96) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.8) !important;
+    border-radius: 8px !important;
+    padding: 6px !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.options-dropdown .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px !important;
+    border-radius: 6px !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    color: #d1d5db !important;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.options-dropdown .dropdown-item:hover {
+    background: linear-gradient(90deg, rgba(30, 215, 96, 0.14) 0%, rgba(255, 255, 255, 0.08) 100%) !important;
+    color: #ffffff !important;
+    box-shadow: inset 3px 0 0 var(--primary-green);
+    transform: translateX(3px);
+}
+
+.options-dropdown .dropdown-item:hover i,
+.options-dropdown .dropdown-item:hover svg {
+    color: var(--primary-green) !important;
+    stroke: var(--primary-green) !important;
+    transform: scale(1.12);
 }
 
 #modal-cancel-btn:hover {
@@ -1929,9 +2140,89 @@ h1 {
 .search-song-right {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
     font-size: 13px;
     color: var(--text-muted);
+}
+
+.search-song-row .row-action-btn,
+.search-song-row .row-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.search-song-row:hover .row-action-btn,
+.search-song-row:hover .row-menu-btn,
+.search-song-row .row-action-btn.liked {
+    opacity: 1 !important;
+}
+
+.search-song-row .row-menu-btn:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.12);
+    transform: scale(1.1);
+}
+
+.search-song-row .row-action-btn:hover {
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+.search-song-row .row-action-btn.liked:hover {
+    color: var(--primary-green) !important;
+}
+
+/* Top Result Card 3-dot Button */
+.top-result-menu-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all var(--transition-fast);
+    z-index: 10;
+}
+
+.top-result-card:hover .top-result-menu-btn {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.top-result-menu-btn:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.18) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    transform: scale(1.12);
+}
+
+@media (hover: none) {
+
+    .search-song-row .row-menu-btn,
+    .search-song-row .row-action-btn,
+    .songs-table tbody tr .row-menu-btn,
+    .songs-table tbody tr .row-action-btn {
+        opacity: 0.85 !important;
+    }
 }
 
 .remove-history-btn {
@@ -1965,9 +2256,54 @@ h1 {
     transform: scale(1);
 }
 
-/* --- Spotify Queue View Styles --- */
+/* --- Spotify Queue View Styles & Customization --- */
 #queue-view {
     animation: fadeIn 0.25s ease forwards;
+}
+
+.queue-header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--text-primary);
+}
+
+.queue-header-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.queue-header-btn:active {
+    transform: translateY(0);
+}
+
+.queue-header-btn.primary {
+    background: var(--primary-green);
+    color: #000000;
+    border-color: var(--primary-green);
+    font-weight: 700;
+}
+
+.queue-header-btn.primary:hover {
+    background: #1ed760;
+    box-shadow: 0 4px 14px rgba(30, 215, 96, 0.35);
+    color: #000000;
+}
+
+.queue-header-btn.danger:hover {
+    border-color: #ff5252;
+    color: #ff5252;
+    background: rgba(255, 82, 82, 0.12);
 }
 
 .queue-track-row.now-playing-row {
@@ -1978,22 +2314,210 @@ h1 {
     background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-#clear-queue-btn:hover {
-    color: #ffffff !important;
-    border-color: #ffffff !important;
-    background: rgba(255, 255, 255, 0.1) !important;
+/* Queue Table Drag and Drop & Row Styling */
+.queue-table-row {
+    user-select: none;
+    -webkit-user-select: none;
+    transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+    position: relative;
 }
 
-.remove-queue-btn {
-    opacity: 0.7;
-    transition: opacity 0.2s ease, color 0.2s ease;
+.queue-table-row.is-dragging {
+    opacity: 0.35 !important;
+    background: rgba(30, 215, 96, 0.06) !important;
+    outline: 1px dashed rgba(30, 215, 96, 0.8) !important;
 }
 
-.remove-queue-btn:hover {
+.queue-table-row.drag-over-top {
+    border-top: 2px solid var(--primary-green) !important;
+    box-shadow: 0 -4px 12px rgba(30, 215, 96, 0.35);
+}
+
+.queue-table-row.drag-over-bottom {
+    border-bottom: 2px solid var(--primary-green) !important;
+    box-shadow: 0 4px 12px rgba(30, 215, 96, 0.35);
+}
+
+.queue-drag-handle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: var(--text-muted);
+    opacity: 0.45;
+    cursor: grab;
+    border-radius: 4px;
+    transition: opacity 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.queue-table-row:hover .queue-drag-handle {
     opacity: 1;
+    color: #ffffff;
+}
+
+.queue-drag-handle:hover {
+    color: var(--primary-green) !important;
+    transform: scale(1.15);
+}
+
+.queue-drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Queue Action & Reorder Buttons */
+.queue-order-btn,
+.queue-table-row .remove-queue-btn,
+.queue-table-row .row-action-btn,
+.queue-table-row .row-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-radius: 4px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.queue-order-btn {
+    opacity: 0.35;
+}
+
+.queue-table-row:hover .queue-order-btn {
+    opacity: 0.85;
+}
+
+.queue-order-btn:hover:not(:disabled) {
+    opacity: 1 !important;
+    color: var(--primary-green) !important;
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(1.14);
+}
+
+.queue-order-btn:disabled {
+    opacity: 0.12 !important;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.queue-table-row .remove-queue-btn {
+    opacity: 0.35;
+}
+
+.queue-table-row:hover .remove-queue-btn {
+    opacity: 0.85;
+}
+
+.queue-table-row .remove-queue-btn:hover {
+    opacity: 1 !important;
     color: #ff5252 !important;
+    background: rgba(255, 82, 82, 0.15);
+    transform: scale(1.14);
 }
 
-.songs-table tbody tr:hover .remove-queue-btn {
+.queue-table-row .row-action-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.queue-table-row .row-menu-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Queue Add Songs Modal Item Styles */
+.queue-modal-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    transition: background-color 0.2s ease;
+}
+
+.queue-modal-item:hover {
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.queue-modal-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
+
+.queue-modal-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+}
+
+.queue-modal-btn.play-next:hover {
+    border-color: var(--primary-green);
+    color: var(--primary-green);
+}
+
+.queue-modal-btn.add-queue:hover {
+    background: var(--primary-green);
+    color: #000000;
+    border-color: var(--primary-green);
+}
+
+.in-queue-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    background: rgba(30, 215, 96, 0.15);
+    color: var(--primary-green);
+    font-weight: 600;
+}
+
+/* Floating Toast Notification */
+.mucify-toast {
+    position: fixed;
+    bottom: 96px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(22, 22, 22, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(14px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mucify-toast.show {
     opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 768px) {
+
+    .queue-order-btn,
+    .queue-table-row .remove-queue-btn {
+        opacity: 0.8 !important;
+    }
 }
