@@ -34,6 +34,10 @@
                     <i data-lucide="search"></i>
                     <span>Search</span>
                 </button>
+                <button class="nav-item" data-view="albums">
+                    <i data-lucide="disc-3"></i>
+                    <span>Albums</span>
+                </button>
                 <button class="nav-item" data-view="library">
                     <i data-lucide="library"></i>
                     <span>Your Library</span>
@@ -410,6 +414,168 @@
                                 <!-- Populated dynamically by JS -->
                             </tbody>
                         </table>
+                    </div>
+                </section>
+
+                <!-- Albums & Music Directors View (Dynamic Slide) -->
+                <section id="albums-view" class="content-view" style="display: none;">
+                    <!-- Ambient Glow / Background Gradient -->
+                    <div class="view-header-bg albums-view-bg"></div>
+
+                    <!-- 1. Albums Overview Sub-View -->
+                    <div id="albums-overview-container">
+                        <!-- Hero Header Banner -->
+                        <div class="playlist-header-container albums-header-container">
+                            <div class="playlist-art-wrapper albums-art-wrapper">
+                                <div class="albums-vinyl-disc">
+                                    <div class="albums-vinyl-center"></div>
+                                </div>
+                                <i data-lucide="disc-3" class="albums-header-disc-icon"></i>
+                            </div>
+                            <div class="playlist-header-details">
+                                <span class="playlist-type">COLLECTIONS & DISCOGRAPHY</span>
+                                <h1 id="albums-page-title">Albums & Music Directors</h1>
+                                <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+                                    Explore and stream songs categorized by Music Directors or Movie Albums with custom
+                                    sorting
+                                </p>
+                                <div class="playlist-owner-info" style="margin-top: 8px;">
+                                    <span class="owner-name">Mucify Discography</span>
+                                    <span class="playlist-stats-bullet">•</span>
+                                    <span id="albums-stats-count">Loading collection...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Control Bar: 2 Options Switch + Sorting & Filtering -->
+                        <div class="albums-control-bar">
+                            <!-- Left: The Two Options Selector (Music Directors vs Movie Name) -->
+                            <div class="albums-options-toggle" role="tablist">
+                                <button class="album-toggle-btn active" id="album-opt-directors" data-mode="directors">
+                                    <i data-lucide="users" class="small-icon"></i>
+                                    <span>By Music Directors</span>
+                                </button>
+                                <button class="album-toggle-btn" id="album-opt-movies" data-mode="movies">
+                                    <i data-lucide="film" class="small-icon"></i>
+                                    <span>By Movie Name</span>
+                                </button>
+                            </div>
+
+                            <!-- Right: Sorting & Filter Controls -->
+                            <div class="albums-sort-filter-group">
+                                <!-- Search Filter Input -->
+                                <div class="albums-filter-search">
+                                    <i data-lucide="search" class="small-icon search-icon"></i>
+                                    <input type="text" id="albums-filter-input"
+                                        placeholder="Filter directors or movies..." autocomplete="off">
+                                    <button id="albums-filter-clear" style="display: none;" title="Clear filter"><i
+                                            data-lucide="x" class="small-icon"></i></button>
+                                </div>
+
+                                <!-- Sorting Selector -->
+                                <div class="albums-sort-wrapper">
+                                    <label for="albums-sort-select" class="sort-label">
+                                        <i data-lucide="arrow-up-down" class="small-icon"></i>
+                                        <span>Sort:</span>
+                                    </label>
+                                    <select id="albums-sort-select" class="albums-sort-dropdown">
+                                        <option value="count-desc" selected>Most Songs</option>
+                                        <option value="name-asc">Name (A → Z)</option>
+                                        <option value="name-desc">Name (Z → A)</option>
+                                        <option value="count-asc">Fewest Songs</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active View Mode Info Bar -->
+                        <div class="albums-status-bar">
+                            <span id="albums-grid-title" class="albums-grid-heading">Music Directors</span>
+                            <span id="albums-items-count" class="albums-badge">0 Items</span>
+                        </div>
+
+                        <!-- Card Grid for Albums / Directors -->
+                        <div class="card-grid albums-grid" id="albums-grid">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+
+                    <!-- 2. Album / Director Drill-Down Detail Sub-View -->
+                    <div id="album-detail-container" style="display: none;">
+                        <!-- Back Navigation Button -->
+                        <div class="album-detail-nav">
+                            <button id="album-detail-back-btn" class="album-back-btn">
+                                <i data-lucide="arrow-left" class="small-icon"></i>
+                                <span>Back to Albums</span>
+                            </button>
+                        </div>
+
+                        <!-- Album Detail Header -->
+                        <div class="playlist-header-container album-detail-header">
+                            <div class="playlist-art-wrapper album-detail-art-wrapper">
+                                <img src="" alt="Album Artwork" id="album-detail-art" class="album-detail-img">
+                            </div>
+                            <div class="playlist-header-details">
+                                <span class="playlist-type" id="album-detail-type">MUSIC DIRECTOR</span>
+                                <h1 id="album-detail-title">A.R. Rahman</h1>
+                                <p id="album-detail-desc"
+                                    style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">4 songs across 4
+                                    movies</p>
+                                <div class="playlist-owner-info" style="margin-top: 8px;">
+                                    <span class="owner-name" id="album-detail-owner">Mucify Discography</span>
+                                    <span class="playlist-stats-bullet">•</span>
+                                    <span id="album-detail-stats">4 songs</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Bar (Play All, Shuffle, In-album Sort) -->
+                        <div class="playlist-action-bar album-detail-actions">
+                            <div class="album-actions-left">
+                                <button class="playlist-play-btn" id="album-detail-play-btn" title="Play All Songs">
+                                    <i data-lucide="play" fill="#000" color="#000" class="btn-play-icon"></i>
+                                </button>
+                                <button class="album-action-secondary-btn" id="album-detail-shuffle-btn"
+                                    title="Shuffle Play">
+                                    <i data-lucide="shuffle" class="small-icon"></i>
+                                    <span>Shuffle</span>
+                                </button>
+                            </div>
+
+                            <div class="album-actions-right">
+                                <label for="album-tracks-sort" class="sort-label">
+                                    <i data-lucide="arrow-up-down" class="small-icon"></i>
+                                    <span>Sort Tracks:</span>
+                                </label>
+                                <select id="album-tracks-sort" class="albums-sort-dropdown">
+                                    <option value="default" selected>Default Order</option>
+                                    <option value="title-asc">Title (A → Z)</option>
+                                    <option value="title-desc">Title (Z → A)</option>
+                                    <option value="duration-desc">Duration (Longest)</option>
+                                    <option value="duration-asc">Duration (Shortest)</option>
+                                    <option value="album-asc">Movie / Album</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Songs List Table -->
+                        <div class="playlist-songs-list-container">
+                            <table class="songs-table" id="album-songs-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-index">#</th>
+                                        <th class="col-title">Title</th>
+                                        <th class="col-album" id="album-table-header-col">Movie / Album</th>
+                                        <th class="col-duration"><i data-lucide="clock" class="table-header-icon"></i>
+                                        </th>
+                                        <th class="col-actions"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="album-songs-list-body">
+                                    <!-- Populated dynamically by JS -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
 
