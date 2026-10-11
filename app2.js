@@ -24,7 +24,7 @@ const songs = [
         "id": "song-2",
         "title": "Aura 10-10",
         "artist": "hiphop tamizha",
-        "album": "Cosmic Glow",
+        "album": "meesaiya murukku 2",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783244820/Aura_10-10_bkjowp.mp3",
         "localUrl": "songs/Aura 10-10.mp3",
         "cover": "https://m.media-amazon.com/images/M/MV5BM2M2NjRjNGUtN2IwYy00MThmLTgxZTgtMzNhZDY0MDhhZTM0XkEyXkFqcGc@._V1_.jpg",
@@ -48,19 +48,19 @@ const songs = [
         "id": "song-4",
         "title": "Beer Song",
         "artist": "Sam cs",
-        "album": "Mucify Library",
+        "album": "Disel",
         "url": "songs/Beer Song.mp3",
         "localUrl": "songs/Beer Song.mp3",
         "cover": "https://cdn.district.in/movies-assets/images/cinema/Diesel--Gallery-6588faa0-edc9-11ef-8cb3-05c6c7d276fb.jpg",
-        "duration": "6:15",
-        "durationSec": 375,
+        "duration": "3:36",
+        "durationSec": 216,
         "artistBio": "Track by Mucify Collection. Curated specially for your Mucify web player experience."
     },
     {
         "id": "song-5",
         "title": "Cook Cook",
         "artist": "santhosh narayanan",
-        "album": "cook cook",
+        "album": "power house",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783244815/Cook_Cook_mi8dq3.mp3",
         "localUrl": "songs/Cook Cook.mp3",
         "cover": "cook_cook.png",
@@ -76,20 +76,20 @@ const songs = [
         "url": "songs/Cupid - Twin Version_spotdown.org.mp3",
         "localUrl": "songs/Cupid - Twin Version_spotdown.org.mp3",
         "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/39/3f/c5/393fc5e1-e89f-b94f-7c24-fed819442a57/196872363197.jpg/300x300bb.webp",
-        "duration": "5:15",
-        "durationSec": 315,
+        "duration": "3:06",
+        "durationSec": 186,
         "artistBio": "Track by FIFTY FIFTY. Curated specially for your Mucify web player experience."
     },
     {
         "id": "song-7",
         "title": "Enadhuyirae",
-        "artist": "Mucify Collection",
-        "album": "Mucify Library",
+        "artist": "Harris Jayaraj",
+        "album": "bheema",
         "url": "songs/Enadhuyirae.mp3",
         "localUrl": "songs/Enadhuyirae.mp3",
         "cover": "https://imgs.search.brave.com/z1MVtpC82VH7aoluSmSEoX4ZekZ29UU9Tc7DBLT8bCA/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL00v/TVY1Qll6YzNaVEl4/TkRZdFlqQTBOaTAw/WmpObExXRXlZamd0/TXpFeFlUSXhZbVZp/Wm1NeFhrRXlYa0Zx/Y0djQC5fVjFfLmpw/Zw",
-        "duration": "9:11",
-        "durationSec": 551,
+        "duration": "6:00",
+        "durationSec": 360,
         "artistBio": "Track by Mucify Collection. Curated specially for your Mucify web player experience."
     },
     {
@@ -112,8 +112,8 @@ const songs = [
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783244817/God_Mode_gm64ej.mp3",
         "localUrl": "songs/God Mode.mp3",
         "cover": "https://m.media-amazon.com/images/M/MV5BNGE3NmY3N2ItYTYyYi00MmNmLThhMDUtYWYxYjgxYjhjZDU5XkEyXkFqcGc@._V1_QL75_UX164_.jpg",
-        "duration": "5:28",
-        "durationSec": 328,
+        "duration": "4:40",
+        "durationSec": 280,
         "artistBio": "God Mode is a cyber-metal and electronic production duo inspired by high-stakes gaming."
     },
     {
@@ -124,20 +124,20 @@ const songs = [
         "url": "songs/HEAVENLY JUMPSTYLE.mp3",
         "localUrl": "songs/HEAVENLY JUMPSTYLE.mp3",
         "cover": "assets/aura.png",
-        "duration": "5:00",
-        "durationSec": 300,
+        "duration": "3:23",
+        "durationSec": 203,
         "artistBio": "Track by INNXCENCE. Curated specially for your Mucify web player experience."
     },
     {
         "id": "song-11",
         "title": "I Thought I Saw Your Face Today",
         "artist": "she and him",
-        "album": "Mucify Library",
+        "album": "she and him",
         "url": "songs/I Thought I Saw Your Face Today_spotdown.org.mp3",
         "localUrl": "songs/I Thought I Saw Your Face Today_spotdown.org.mp3",
         "cover": "https://imgs.search.brave.com/nLljDj1z68NnJQPnIthcsbudE3xdeaAUgs4EgtEZruY/rs:fit:200:200:1:0/g:ce/aHR0cDovL2ltYWdl/cy5nZW5pdXMuY29t/LzAyNTM2Y2ZkODUy/MDQ2ZGE1MzYyMTgz/NWU1MTBmNTU5LjEw/MDB4MTAwMHgxLmpw/Zw",
-        "duration": "5:05",
-        "durationSec": 305,
+        "duration": "3:41",
+        "durationSec": 221,
         "artistBio": "Track by she and him. Curated specially for your Mucify web player experience."
     },
     {
@@ -148,27 +148,27 @@ const songs = [
         "url": "songs/JMSN_-_Love_Me_(mp3.pm).mp3",
         "localUrl": "songs/JMSN_-_Love_Me_(mp3.pm).mp3",
         "cover": "https://imgs.search.brave.com/0mR7-PgVGRcYH5psX2IkTHAeImdrTnPeBiySnbAqL_g/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMuZ2VuaXVzLmNv/bS9mMzA2MzgxNjJl/Njg3OTczOGU3ODhk/Mjg0YzI1OGQ3NS4x/MDAweDEwMDB4MS5q/cGc",
-        "duration": "4:29",
-        "durationSec": 269,
+        "duration": "4:34",
+        "durationSec": 274,
         "artistBio": "Track by JMSN. Curated specially for your Mucify web player experience."
     },
     {
         "id": "song-13",
         "title": "Karuppa Kooda Va",
-        "artist": "Mucify Collection",
-        "album": "Mucify Library",
+        "artist": "sai abhyankar",
+        "album": "karuppu",
         "url": "songs/Karuppa Kooda Va.mp3",
         "localUrl": "songs/Karuppa Kooda Va.mp3",
         "cover": "https://m.media-amazon.com/images/M/MV5BNGE3NmY3N2ItYTYyYi00MmNmLThhMDUtYWYxYjgxYjhjZDU5XkEyXkFqcGc@._V1_QL75_UX164_.jpg",
-        "duration": "8:41",
-        "durationSec": 521,
+        "duration": "4:33",
+        "durationSec": 273,
         "artistBio": "Track by Mucify Collection. Curated specially for your Mucify web player experience."
     },
     {
         "id": "song-14",
         "title": "King-Theme-Ringtone",
-        "artist": "Mucify Collection",
-        "album": "Mucify Library",
+        "artist": "anirudh",
+        "album": "king",
         "url": "songs/King-Theme-Ringtone.mp3",
         "localUrl": "songs/King-Theme-Ringtone.mp3",
         "cover": "https://imgs.search.brave.com/g_QcPztwyKrDtRT9wbOA61IOEabCSy6yR0vsJs1XCkQ/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9pczEt/c3NsLm16c3RhdGlj/LmNvbS9pbWFnZS90/aHVtYi9NdXNpYzIy/MS92NC83Ny9hMi9k/YS83N2EyZGEzNy1m/OTZmLTJkOTUtZTk1/MS1mOWViNWEwZjY4/NjEvODkwMzQzMTE0/ODk2NF9jb3Zlci5q/cGcvMTIwMHg2MzBi/Yi5qcGc",
@@ -179,37 +179,37 @@ const songs = [
     {
         "id": "song-15",
         "title": "Minnale-Nee-Vanthathenadi",
-        "artist": "Harris Jayaraj",
-        "album": "Minnale",
+        "artist": "a r rahman",
+        "album": "may madham",
         "url": "songs/Minnale-Nee-Vanthathenadi.mp3",
         "localUrl": "songs/Minnale-Nee-Vanthathenadi.mp3",
         "cover": "https://imgs.search.brave.com/5Gi-4iLp53k_XFeHVtnBIFn_af-spOKNw_p8jt5zi-w/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL00v/TVY1Qk5tWmpNRGN3/TXpJdE9UQTFPQzAw/TnpVM0xXRTVPVFl0/TURSbE1UTTFNalV4/WXpjMFhrRXlYa0Zx/Y0djQC5fVjFfLmpw/Zw",
-        "duration": "12:16",
-        "durationSec": 736,
-        "artistBio": "Track by Harris Jayaraj. Curated specially for your Mucify web player experience."
+        "duration": "4:16",
+        "durationSec": 256,
+        "artistBio": "Track by a r rahman. Curated specially for your Mucify web player experience."
     },
     {
         "id": "song-16",
         "title": "Mona-Gasolina",
-        "artist": "Mucify Collection",
-        "album": "Mucify Library",
+        "artist": "a.r. rahman",
+        "album": "Linga",
         "url": "songs/Mona-Gasolina.mp3",
         "localUrl": "songs/Mona-Gasolina.mp3",
         "cover": "https://imgs.search.brave.com/ev-THFbsqWG9jd4hVRhJnhiPqz74SIQ3J9K432qqmSY/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvZW4vZS9lMy9M/aW5nYWEuanBnP3V0/bV9zb3VyY2U9ZW4u/d2lraXBlZGlhLm9y/ZyZhbXA7dXRtX2Nh/bXBhaWduPWluZGV4/JmFtcDt1dG1fY29u/dGVudD10aHVtYm5h/aWxfdW5zY2FsZWQ",
-        "duration": "13:15",
-        "durationSec": 795,
+        "duration": "5:17",
+        "durationSec": 317,
         "artistBio": "Track by Mucify Collection. Curated specially for your Mucify web player experience."
     },
     {
         "id": "song-17",
         "title": "Naan Erikkarri",
-        "artist": "Mucify Collection",
-        "album": "Mucify Library",
+        "artist": "ilayaraja",
+        "album": "chinna thaiyee",
         "url": "songs/Naan Erikkarri_spotdown.org.mp3",
         "localUrl": "songs/Naan Erikkarri_spotdown.org.mp3",
         "cover": "https://imgs.search.brave.com/qdTbwvtB7gxgws3tEAIKglo7JkYd6v_UHbjH4083oTQ/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9tYXNz/dGFtaWxhbi5jb20u/c2UvdXBsb2FkX2Zp/bGUvMy8xMi82Mjcv/MjMweDIzMC90aHVt/Yl82ODc4ODhiODI3/ZmZhLndlYnA",
-        "duration": "5:15",
-        "durationSec": 315,
+        "duration": "4:59",
+        "durationSec": 299,
         "artistBio": "Track by Mucify Collection. Curated specially for your Mucify web player experience."
     },
     {
@@ -220,20 +220,20 @@ const songs = [
         "url": "songs/Naanga Naalu Peru.mp3",
         "localUrl": "songs/Naanga Naalu Peru.mp3",
         "cover": "https://www.tamil2lyrics.com/wp-content/uploads/2026/03/Naanga-Naalu-Peru-Song.jpg",
-        "duration": "6:49",
-        "durationSec": 409,
+        "duration": "4:49",
+        "durationSec": 289,
         "artistBio": "Track by sai abhyankar. Curated specially for your Mucify web player experience."
     },
     {
         "id": "song-19",
-        "title": "Nallaru Po - From Dude",
+        "title": "Nallaru Po",
         "artist": "sai abhyankar",
         "album": "DUDE",
         "url": "songs/Nallaru Po - From Dude.mp3",
         "localUrl": "songs/Nallaru Po - From Dude.mp3",
         "cover": "https://imgs.search.brave.com/ImVVqBcWI3YI_Z710n_0SHKqhaHAHSBV9dNZm043T34/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly93d3cu/dGFtaWwybHlyaWNz/LmNvbS93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNS8wOS9OYWxs/YXJ1LVBvLVNvbmcu/anBn",
-        "duration": "9:55",
-        "durationSec": 595,
+        "duration": "3:59",
+        "durationSec": 239,
         "artistBio": "Track by sai abhyankar. Curated specially for your Mucify web player experience."
     },
     {
@@ -244,8 +244,8 @@ const songs = [
         "url": "songs/Nenjil-Mamazhai-Thanthu-MassTamilan.com.mp3",
         "localUrl": "songs/Nenjil-Mamazhai-Thanthu-MassTamilan.com.mp3",
         "cover": "https://imgs.search.brave.com/HUxViwFwuuQu3TQoBlyS-NHU1aNev2fk0kNRaXnvX-s/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvZW4vNi82YS9O/aW1pcl9wb3N0ZXIu/anBnP3V0bV9zb3Vy/Y2U9ZW4ud2lraXBl/ZGlhLm9yZyZ1dG1f/Y2FtcGFpZ249cGFy/c2VyJnV0bV9jb250/ZW50PXRodW1ibmFp/bF91bnNjYWxlZA",
-        "duration": "9:28",
-        "durationSec": 568,
+        "duration": "4:58",
+        "durationSec": 298,
         "artistBio": "Track by Ajaneesh Loknath. Curated specially for your Mucify web player experience."
     },
     {
@@ -268,8 +268,8 @@ const songs = [
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1791636906/Kadhal_Aasai_-_Yuvan_Shankar_Raja_u08rmg.mp3",
         "localUrl": "songs/Kadhal_Aasai.mp3",
         "cover": "https://c.saavncdn.com/451/Anjaan-Tamil-2014-20190822151819-500x500.jpg",
-        "duration": "5:04",
-        "durationSec": 304,
+        "duration": "5:40",
+        "durationSec": 340,
         "artistBio": "Hit melody composed and sung by Yuvan Shankar Raja with Sooraj Santhosh from the blockbuster movie Anjaan."
     },
     {
@@ -279,8 +279,8 @@ const songs = [
         "album": "thool",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1791645465/Aasai_Aasai_-_Shankar_Mahadevan_ezhyuu.mp3",
         "localUrl": "songs/Asai_Aasai.mp3",
-        "duration": "5:15",
-        "durationSec": 315,
+        "duration": "5:28",
+        "durationSec": 328,
         "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSJq59goVltNXnW0S7g-Cr3-f2u09edWLZVcB6JzI5DcnAQQwo1ZiXfhI8-lLbJvTrbvQTw7z-P8Tp4Hw6si1PHDspQHabLnQ7ul3CVW_GIA&s=10",
         "artistBio": "Track by Shankar Mahadevan. Curated specially for your Mucify web player experience."
     },
@@ -313,8 +313,8 @@ const songs = [
         "artist": "Alan menken",
         "album": "Aladdin",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1791646267/Arabian_Nights_2019_-_Will_Smith_ok31gi.mp3",
-        "duration": "5:08",
-        "durationsec": 308,
+        "duration": "2:25",
+        "durationSec": 145,
         "cover": "https://i.ytimg.com/vi/T9GmO_WFhjQ/maxresdefault.jpg",
         "artistBio": "Alan Menken is an American composer, singer, songwriter, and record producer. He is best known for composing the scores for Walt Disney Animation Studios films, including The Little Mermaid, Beauty and the Beast, Aladdin, and Pocahontas."
     },
@@ -325,7 +325,7 @@ const songs = [
         "album": "blue",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1791646499/blue_-_yung_kai_qgttsb.mp3",
         "duration": "3:03",
-        "durationsec": 183,
+        "durationSec": 183,
         "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbUbjhxhDJ_f7AgIj9gR50eSdm4yUxMdEwYgiLU5_Zfg&s=10",
         "artistBio": "yung kai is an American rapper, singer, songwriter, and record producer. He is best known for his hit song 'blue'"
     },
@@ -335,8 +335,8 @@ const songs = [
         "artist": "anirudh",
         "album": "coolie",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1791646943/Chikitu_From__Coolie__Tamil_-_Anirudh_Ravichander_ftblmz.mp3",
-        "duration": "",
-        "durationSec": "",
+        "duration": "3:36",
+        "durationSec": "216",
         "cover": "data:image/jpeg;base64,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",
         "artistBio": ""
     },
@@ -355,7 +355,7 @@ const songs = [
         "id": "song-30",
         "title": "Fein!",
         "artist": "playboi carti",
-        "album": "",
+        "album": "UTOPIA",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1791647575/FE_N_feat._Playboi_Carti_-_Travis_Scott_gieno4.mp3",
         "duration": "2:38",
         "durationSec": "158",
@@ -399,7 +399,7 @@ const songs = [
         "id": "song-34",
         "title": "Idhayam",
         "artist": "a.r.rahman",
-        "album": "idhayathil nee",
+        "album": "kochadayaan",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1791647820/Idhayam_-_A.R._Rahman_vhbqee.mp3",
         "duration": "5:09",
         "durationSec": "309",
@@ -929,6 +929,15 @@ function navigate(viewName, addToHistory = true, playlistId = null) {
         const navAllSongs = document.querySelector('[data-view="all-songs"]');
         if (navAllSongs) navAllSongs.classList.add('active');
         renderAllSongsView();
+    } else if (viewName === 'albums') {
+        const albumsView = document.getElementById('albums-view');
+        if (albumsView) albumsView.style.display = 'block';
+        const navAlbums = document.querySelector('[data-view="albums"]');
+        if (navAlbums) navAlbums.classList.add('active');
+        if (!playlistId) {
+            selectedAlbumGroup = null;
+        }
+        renderAlbumsView();
     } else if (viewName === 'liked' || (viewName === 'playlist' && playlistId === 'liked')) {
         const likedView = document.getElementById('liked-songs-view');
         if (likedView) likedView.style.display = 'block';
@@ -1769,6 +1778,437 @@ function renderAllSongsView() {
             playSongFromContext(0, songs);
         });
     }
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    updateActiveRowHighlight();
+}
+
+// --- Albums & Music Directors Discography View Logic ---
+let albumsMode = 'directors'; // 'directors' | 'movies'
+let albumsSortBy = 'count-desc'; // 'count-desc' | 'name-asc' | 'name-desc' | 'count-asc'
+let albumsSearchQuery = '';
+let selectedAlbumGroup = null;
+let albumTracksSortBy = 'default';
+
+function normalizeMusicDirector(artistStr) {
+    if (!artistStr) return 'Unknown Director';
+    const clean = artistStr.trim().toLowerCase();
+    if (clean.includes('rahman')) return 'A.R. Rahman';
+    if (clean.includes('abhyankar') || clean.includes('abhyankkar')) return 'Sai Abhyankar';
+    if (clean.includes('anirudh')) return 'Anirudh Ravichander';
+    if (clean.includes('ilayaraja') || clean.includes('ilaiyaraaja')) return 'Ilaiyaraaja';
+    if (clean.includes('harris')) return 'Harris Jayaraj';
+    if (clean.includes('yuvan')) return 'Yuvan Shankar Raja';
+    if (clean.includes('santhosh narayanan')) return 'Santhosh Narayanan';
+    if (clean.includes('hiphop') || clean.includes('tamizha')) return 'Hiphop Tamizha';
+    if (clean.includes('imman')) return 'D. Imman';
+    if (clean.includes('sam cs')) return 'Sam C.S.';
+    if (clean.includes('ajaneesh')) return 'Ajaneesh Loknath';
+    if (clean.includes('shankar mahadevan')) return 'Shankar Mahadevan';
+    if (clean.includes('vishal')) return 'Vishal-Shekhar';
+    if (clean.includes('alan menken')) return 'Alan Menken';
+    if (clean.includes('vijay antony')) return 'Vijay Antony';
+    if (clean.includes('thaman')) return 'S. Thaman';
+    if (clean.includes('zimmer')) return 'Hans Zimmer';
+    if (clean.includes('castle vania')) return 'Le Castle Vania';
+    if (clean.includes('fifty fifty')) return 'FIFTY FIFTY';
+    if (clean.includes('rockstar')) return 'Rockstar Games';
+    if (clean.includes('she and him')) return 'She & Him';
+    if (clean.includes('jmsn')) return 'JMSN';
+    if (clean.includes('yung kai')) return 'Yung Kai';
+    if (clean.includes('sabrina')) return 'Sabrina Carpenter';
+    if (clean.includes('carti')) return 'Playboi Carti';
+    if (clean.includes('stranglers')) return 'The Stranglers';
+    return artistStr.trim().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
+function normalizeMovieName(albumStr) {
+    if (!albumStr) return 'Single / Soundtrack';
+    const clean = albumStr.trim().toLowerCase();
+    const mapping = {
+        'karuppu': 'Karuppu',
+        'linga': 'Lingaa',
+        'bheema': 'Bheema',
+        'anjaan': 'Anjaan',
+        'thool': 'Thool',
+        'ra one': 'Ra.One',
+        'coolie': 'Coolie',
+        'kochadayaan': 'Kochadaiyaan',
+        'vedi': 'Vedi',
+        'osthe': 'Osthe',
+        'disel': 'Diesel',
+        'nimir': 'Nimir',
+        'oru kal oru kannadi': 'Oru Kal Oru Kannadi',
+        'meesaiya murukku 2': 'Meesaiya Murukku 2',
+        'ambikapathy': 'Ambikapathy',
+        'chinna thaiyee': 'Chinna Thayee',
+        'may madham': 'May Madham',
+        'power house': 'Power House',
+        'dude': 'DUDE',
+        'aladdin': 'Aladdin',
+        'john wick chapter 2': 'John Wick: Chapter 2',
+        'man of steel': 'Man of Steel',
+        'gta soundtrack': 'GTA Soundtrack',
+        'the beginning: cupid': 'The Beginning: Cupid',
+        'katchi sera': 'Katchi Sera',
+        'blue': 'Blue',
+        'espresso': 'Espresso',
+        'utopia': 'UTOPIA',
+        'golden brown': 'Golden Brown',
+        'phonk': 'Phonk',
+        'she and him': 'Volume One',
+        'love me': 'Love Me',
+        'dc': 'DC',
+        'king': 'King'
+    };
+    return mapping[clean] || albumStr.trim().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
+function getAlbumsGroupedByDirectors() {
+    const directorMap = new Map();
+    songs.forEach(song => {
+        const dirName = normalizeMusicDirector(song.artist);
+        if (!directorMap.has(dirName)) {
+            directorMap.set(dirName, {
+                type: 'director',
+                key: dirName.toLowerCase(),
+                name: dirName,
+                songs: [],
+                movies: new Set(),
+                art: song.cover || 'assets/aura.png'
+            });
+        }
+        const dir = directorMap.get(dirName);
+        dir.songs.push(song);
+        if (song.album) dir.movies.add(normalizeMovieName(song.album));
+        if (!dir.art || dir.art.includes('Song Cover')) dir.art = song.cover;
+    });
+
+    const result = [];
+    directorMap.forEach(dir => {
+        const movList = Array.from(dir.movies);
+        result.push({
+            type: 'director',
+            key: dir.key,
+            name: dir.name,
+            songs: dir.songs,
+            songCount: dir.songs.length,
+            movieCount: movList.length,
+            movies: movList,
+            art: dir.art,
+            subText: `${dir.songs.length} ${dir.songs.length === 1 ? 'song' : 'songs'} • ${movList.length} ${movList.length === 1 ? 'movie' : 'movies'}`
+        });
+    });
+    return result;
+}
+
+function getAlbumsGroupedByMovies() {
+    const movieMap = new Map();
+    songs.forEach(song => {
+        const movName = normalizeMovieName(song.album);
+        if (!movieMap.has(movName)) {
+            movieMap.set(movName, {
+                type: 'movie',
+                key: movName.toLowerCase(),
+                name: movName,
+                songs: [],
+                directors: new Set(),
+                art: song.cover || 'assets/aura.png'
+            });
+        }
+        const mov = movieMap.get(movName);
+        mov.songs.push(song);
+        if (song.artist) mov.directors.add(normalizeMusicDirector(song.artist));
+        if (!mov.art || mov.art.includes('Song Cover')) mov.art = song.cover;
+    });
+
+    const result = [];
+    movieMap.forEach(mov => {
+        const dirList = Array.from(mov.directors);
+        const dirStr = dirList.length > 0 ? dirList.join(', ') : 'Various Artists';
+        result.push({
+            type: 'movie',
+            key: mov.key,
+            name: mov.name,
+            songs: mov.songs,
+            songCount: mov.songs.length,
+            directors: dirList,
+            art: mov.art,
+            subText: `Music: ${dirStr} • ${mov.songs.length} ${mov.songs.length === 1 ? 'song' : 'songs'}`
+        });
+    });
+    return result;
+}
+
+function sortAlbumGroups(groups, sortBy) {
+    const list = [...groups];
+    if (sortBy === 'name-asc') {
+        list.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === 'name-desc') {
+        list.sort((a, b) => b.name.localeCompare(a.name));
+    } else if (sortBy === 'count-desc') {
+        list.sort((a, b) => (b.songCount - a.songCount) || a.name.localeCompare(b.name));
+    } else if (sortBy === 'count-asc') {
+        list.sort((a, b) => (a.songCount - b.songCount) || a.name.localeCompare(b.name));
+    }
+    return list;
+}
+
+function sortAlbumTracks(trackList, sortBy) {
+    const list = [...trackList];
+    if (sortBy === 'title-asc') {
+        list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    } else if (sortBy === 'title-desc') {
+        list.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+    } else if (sortBy === 'duration-desc') {
+        list.sort((a, b) => (b.durationSec || 0) - (a.durationSec || 0));
+    } else if (sortBy === 'duration-asc') {
+        list.sort((a, b) => (a.durationSec || 0) - (b.durationSec || 0));
+    } else if (sortBy === 'album-asc') {
+        list.sort((a, b) => (a.album || '').localeCompare(b.album || ''));
+    }
+    return list;
+}
+
+function renderAlbumsView(resetDetail = false) {
+    if (resetDetail) {
+        selectedAlbumGroup = null;
+    }
+
+    const overviewContainer = document.getElementById('albums-overview-container');
+    const detailContainer = document.getElementById('album-detail-container');
+    const statsCountEl = document.getElementById('albums-stats-count');
+
+    const allDirectors = getAlbumsGroupedByDirectors();
+    const allMovies = getAlbumsGroupedByMovies();
+
+    if (statsCountEl) {
+        statsCountEl.textContent = `${allDirectors.length} Music Directors • ${allMovies.length} Movie Albums • ${songs.length} Songs`;
+    }
+
+    if (selectedAlbumGroup) {
+        if (overviewContainer) overviewContainer.style.display = 'none';
+        if (detailContainer) detailContainer.style.display = 'block';
+        renderAlbumDetailView(selectedAlbumGroup);
+        return;
+    }
+
+    if (detailContainer) detailContainer.style.display = 'none';
+    if (overviewContainer) overviewContainer.style.display = 'block';
+
+    const optDirectors = document.getElementById('album-opt-directors');
+    const optMovies = document.getElementById('album-opt-movies');
+    if (optDirectors) optDirectors.classList.toggle('active', albumsMode === 'directors');
+    if (optMovies) optMovies.classList.toggle('active', albumsMode === 'movies');
+
+    const gridTitle = document.getElementById('albums-grid-title');
+    const itemsCountEl = document.getElementById('albums-items-count');
+
+    let rawGroups = (albumsMode === 'directors') ? allDirectors : allMovies;
+
+    if (gridTitle) {
+        gridTitle.textContent = (albumsMode === 'directors') ? 'Music Directors' : 'Movie Albums';
+    }
+
+    let filteredGroups = rawGroups;
+    if (albumsSearchQuery) {
+        filteredGroups = rawGroups.filter(g => {
+            const matchName = g.name.toLowerCase().includes(albumsSearchQuery);
+            const matchSong = g.songs.some(s => s.title.toLowerCase().includes(albumsSearchQuery) || (s.album && s.album.toLowerCase().includes(albumsSearchQuery)));
+            return matchName || matchSong;
+        });
+    }
+
+    const sortedGroups = sortAlbumGroups(filteredGroups, albumsSortBy);
+
+    if (itemsCountEl) {
+        itemsCountEl.textContent = `${sortedGroups.length} ${albumsMode === 'directors' ? (sortedGroups.length === 1 ? 'Director' : 'Directors') : (sortedGroups.length === 1 ? 'Album' : 'Albums')}`;
+    }
+
+    const grid = document.getElementById('albums-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    if (sortedGroups.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                <i data-lucide="disc" style="width: 48px; height: 48px; stroke-width: 1.5; margin-bottom: 12px; opacity: 0.5;"></i>
+                <h3 style="color: #fff; font-size: 18px; margin-bottom: 6px;">No ${albumsMode === 'directors' ? 'music directors' : 'movie albums'} found</h3>
+                <p style="font-size: 13px; margin-bottom: 16px;">Try adjusting your search query "${escapeHTML(albumsSearchQuery)}"</p>
+                <button id="albums-reset-filter-btn" class="album-back-btn" style="margin: 0 auto;">Reset Filter</button>
+            </div>
+        `;
+        const resetBtn = document.getElementById('albums-reset-filter-btn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                albumsSearchQuery = '';
+                const filterInput = document.getElementById('albums-filter-input');
+                if (filterInput) filterInput.value = '';
+                const clearBtn = document.getElementById('albums-filter-clear');
+                if (clearBtn) clearBtn.style.display = 'none';
+                renderAlbumsView();
+            });
+        }
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        return;
+    }
+
+    sortedGroups.forEach(group => {
+        const card = document.createElement('div');
+        card.className = 'music-card album-item-card';
+        card.setAttribute('data-album-key', group.key);
+
+        const badgeLabel = group.type === 'director' ? 'DIRECTOR' : 'ALBUM';
+
+        card.innerHTML = `
+            <div class="card-art-wrapper ${group.type === 'director' ? 'album-avatar-wrap' : ''}">
+                <span class="album-badge-tag">${badgeLabel}</span>
+                <img src="${escapeHTML(group.art)}" alt="${escapeHTML(group.name)}" class="card-img ${group.type === 'director' ? 'album-avatar-img' : ''}" loading="lazy">
+                <button class="play-card-btn hover-reveal" title="Play ${escapeHTML(group.name)}"><i data-lucide="play" class="play-card-icon"></i></button>
+            </div>
+            <div class="card-metadata">
+                <h3 title="${escapeHTML(group.name)}">${escapeHTML(group.name)}</h3>
+                <p title="${escapeHTML(group.subText)}">${escapeHTML(group.subText)}</p>
+            </div>
+        `;
+
+        card.addEventListener('click', (e) => {
+            const playBtn = e.target.closest('.play-card-btn');
+            if (playBtn) {
+                e.stopPropagation();
+                if (group.songs.length > 0) {
+                    playSongFromContext(0, group.songs);
+                }
+            } else {
+                selectedAlbumGroup = group;
+                albumTracksSortBy = 'default';
+                const trackSortSelect = document.getElementById('album-tracks-sort');
+                if (trackSortSelect) trackSortSelect.value = 'default';
+                renderAlbumsView();
+                if (elScrollContainer) elScrollContainer.scrollTop = 0;
+            }
+        });
+
+        grid.appendChild(card);
+    });
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function renderAlbumDetailView(group) {
+    if (!group) return;
+
+    const detailArt = document.getElementById('album-detail-art');
+    const detailType = document.getElementById('album-detail-type');
+    const detailTitle = document.getElementById('album-detail-title');
+    const detailDesc = document.getElementById('album-detail-desc');
+    const detailStats = document.getElementById('album-detail-stats');
+    const tableHeaderCol = document.getElementById('album-table-header-col');
+    const listBody = document.getElementById('album-songs-list-body');
+
+    if (detailArt) detailArt.src = group.art;
+    if (detailType) {
+        detailType.textContent = (group.type === 'director') ? 'MUSIC DIRECTOR' : 'MOVIE ALBUM';
+    }
+    if (detailTitle) detailTitle.textContent = group.name;
+
+    let totalSec = 0;
+    group.songs.forEach(s => totalSec += (s.durationSec || 0));
+    const totalMin = Math.floor(totalSec / 60);
+    const totalRemainingSec = totalSec % 60;
+    const durStr = totalMin > 0 ? `${totalMin} min ${totalRemainingSec} sec` : `${totalRemainingSec} sec`;
+
+    if (detailDesc) {
+        if (group.type === 'director') {
+            const movStr = group.movies ? group.movies.join(', ') : '';
+            detailDesc.textContent = `${group.songs.length} tracks across ${group.movies ? group.movies.length : 1} movies (${movStr})`;
+        } else {
+            const dirStr = group.directors ? group.directors.join(', ') : '';
+            detailDesc.textContent = `Original soundtrack composed by ${dirStr || 'Music Composer'}`;
+        }
+    }
+
+    if (detailStats) {
+        detailStats.textContent = `${group.songs.length} ${group.songs.length === 1 ? 'song' : 'songs'} • ${durStr}`;
+    }
+
+    if (tableHeaderCol) {
+        tableHeaderCol.textContent = (group.type === 'director') ? 'Movie / Album' : 'Music Director';
+    }
+
+    const sortedTracks = sortAlbumTracks(group.songs, albumTracksSortBy);
+
+    const playAllBtn = document.getElementById('album-detail-play-btn');
+    if (playAllBtn) {
+        const newPlayBtn = playAllBtn.cloneNode(true);
+        playAllBtn.replaceWith(newPlayBtn);
+        newPlayBtn.addEventListener('click', () => {
+            if (sortedTracks.length > 0) {
+                playSongFromContext(0, sortedTracks);
+            }
+        });
+    }
+
+    const shuffleBtn = document.getElementById('album-detail-shuffle-btn');
+    if (shuffleBtn) {
+        const newShuffleBtn = shuffleBtn.cloneNode(true);
+        shuffleBtn.replaceWith(newShuffleBtn);
+        newShuffleBtn.addEventListener('click', () => {
+            if (sortedTracks.length > 0) {
+                const shuffled = [...sortedTracks].sort(() => Math.random() - 0.5);
+                playSongFromContext(0, shuffled);
+            }
+        });
+    }
+
+    if (!listBody) return;
+    listBody.innerHTML = '';
+
+    sortedTracks.forEach((song, idx) => {
+        const row = document.createElement('tr');
+        row.setAttribute('data-song-id', song.id);
+        const isLiked = likedSongIds.includes(song.id);
+        const subColValue = (group.type === 'director') ? normalizeMovieName(song.album) : normalizeMusicDirector(song.artist);
+
+        row.innerHTML = `
+            <td class="col-index">
+                <span class="index-num">${idx + 1}</span>
+                <div class="playing-gif"></div>
+                <button class="table-row-play-btn"><i data-lucide="play" fill="#fff" color="#fff" class="small-icon"></i></button>
+            </td>
+            <td class="col-title">
+                <img src="${song.cover}" alt="${escapeHTML(song.title)}">
+                <div class="title-info">
+                    <span class="song-name-cell">${escapeHTML(song.title)}</span>
+                    <span class="song-artist-cell">${escapeHTML(song.artist)}</span>
+                </div>
+            </td>
+            <td class="col-album">${escapeHTML(subColValue)}</td>
+            <td class="col-duration">${song.duration}</td>
+            <td class="col-actions" style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+                <button class="row-action-btn ${isLiked ? 'liked' : ''}" data-song-id="${song.id}" title="${isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}">
+                    <i data-lucide="heart" ${isLiked ? 'fill="var(--primary-green)" color="var(--primary-green)"' : ''} class="small-icon"></i>
+                </button>
+                <button class="row-menu-btn" data-song-id="${song.id}" title="More options" style="color: var(--text-muted); padding: 4px; transition: var(--transition-fast);"><i data-lucide="more-horizontal" class="small-icon"></i></button>
+            </td>
+        `;
+
+        row.addEventListener('click', (e) => {
+            const likeBtn = e.target.closest('.row-action-btn');
+            const menuBtn = e.target.closest('.row-menu-btn');
+            if (likeBtn) {
+                e.stopPropagation();
+                toggleLikeSong(song.id);
+            } else if (menuBtn) {
+                e.stopPropagation();
+                showSongContextMenu(song.id, e.clientX, e.clientY);
+            } else {
+                playSongFromContext(idx, sortedTracks);
+            }
+        });
+
+        listBody.appendChild(row);
+    });
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
     updateActiveRowHighlight();
@@ -2905,6 +3345,74 @@ function initEventListeners() {
             if (likedCard) {
                 e.stopPropagation();
                 navigate('liked');
+            }
+        });
+    }
+
+    // --- Albums & Music Directors View Controls ---
+    const optDirectors = document.getElementById('album-opt-directors');
+    if (optDirectors) {
+        optDirectors.addEventListener('click', () => {
+            albumsMode = 'directors';
+            selectedAlbumGroup = null;
+            renderAlbumsView();
+        });
+    }
+
+    const optMovies = document.getElementById('album-opt-movies');
+    if (optMovies) {
+        optMovies.addEventListener('click', () => {
+            albumsMode = 'movies';
+            selectedAlbumGroup = null;
+            renderAlbumsView();
+        });
+    }
+
+    const albumSortSelect = document.getElementById('albums-sort-select');
+    if (albumSortSelect) {
+        albumSortSelect.addEventListener('change', (e) => {
+            albumsSortBy = e.target.value;
+            renderAlbumsView();
+        });
+    }
+
+    const albumFilterInput = document.getElementById('albums-filter-input');
+    const albumFilterClear = document.getElementById('albums-filter-clear');
+    if (albumFilterInput) {
+        albumFilterInput.addEventListener('input', (e) => {
+            albumsSearchQuery = e.target.value.trim().toLowerCase();
+            if (albumFilterClear) {
+                albumFilterClear.style.display = albumsSearchQuery ? 'flex' : 'none';
+            }
+            renderAlbumsView();
+        });
+    }
+    if (albumFilterClear) {
+        albumFilterClear.addEventListener('click', () => {
+            if (albumFilterInput) albumFilterInput.value = '';
+            albumsSearchQuery = '';
+            albumFilterClear.style.display = 'none';
+            renderAlbumsView();
+            if (albumFilterInput) albumFilterInput.focus();
+        });
+    }
+
+    const albumBackBtn = document.getElementById('album-detail-back-btn');
+    if (albumBackBtn) {
+        albumBackBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectedAlbumGroup = null;
+            renderAlbumsView();
+            if (elScrollContainer) elScrollContainer.scrollTop = 0;
+        });
+    }
+
+    const albumTracksSort = document.getElementById('album-tracks-sort');
+    if (albumTracksSort) {
+        albumTracksSort.addEventListener('change', (e) => {
+            albumTracksSortBy = e.target.value;
+            if (selectedAlbumGroup) {
+                renderAlbumDetailView(selectedAlbumGroup);
             }
         });
     }
