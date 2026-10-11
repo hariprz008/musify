@@ -2521,3 +2521,402 @@ h1 {
         opacity: 0.8 !important;
     }
 }
+
+/* ==========================================================================
+   ALBUMS & MUSIC DIRECTORS VIEW STYLES
+   ========================================================================== */
+
+.albums-view-bg {
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.42) 0%, rgba(18, 18, 18, 1) 100%);
+}
+
+.albums-header-container {
+    padding-bottom: 24px;
+}
+
+.albums-art-wrapper {
+    background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #121212 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 12px 28px rgba(124, 58, 237, 0.35);
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.albums-vinyl-disc {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #222 30%, #111 60%, #000 100%);
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.05);
+    opacity: 0.7;
+    animation: spinVinyl 24s linear infinite;
+}
+
+.albums-vinyl-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #7c3aed;
+    border: 3px solid #fff;
+}
+
+.albums-header-disc-icon {
+    width: 76px;
+    height: 76px;
+    color: #ffffff;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+}
+
+@keyframes spinVinyl {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Control Bar (Options Toggle & Sort Filter) */
+.albums-control-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 0 40px;
+    margin-bottom: 24px;
+}
+
+.albums-options-toggle {
+    display: inline-flex;
+    background: #181818;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 4px;
+    gap: 4px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.album-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: 24px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-primary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    outline: none;
+}
+
+.album-toggle-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.album-toggle-btn.active {
+    background: var(--primary-green);
+    color: #000000;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(29, 185, 84, 0.35);
+}
+
+.albums-sort-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.albums-filter-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.albums-filter-search input {
+    height: 38px;
+    border-radius: 20px;
+    background: #242424;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 36px 6px 34px;
+    color: #fff;
+    font-size: 13px;
+    font-family: var(--font-primary);
+    outline: none;
+    width: 220px;
+    transition: all var(--transition-fast);
+}
+
+.albums-filter-search input:focus {
+    width: 260px;
+    border-color: var(--primary-green);
+    background: #2b2b2b;
+    box-shadow: 0 0 12px rgba(29, 185, 84, 0.25);
+}
+
+.albums-filter-search .search-icon {
+    position: absolute;
+    left: 11px;
+    color: var(--text-muted);
+    pointer-events: none;
+    width: 15px;
+    height: 15px;
+}
+
+.albums-filter-search button {
+    position: absolute;
+    right: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.albums-filter-search button:hover {
+    color: #fff;
+}
+
+.albums-sort-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #242424;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2px 14px;
+    border-radius: 20px;
+    height: 38px;
+    transition: border-color var(--transition-fast);
+}
+
+.albums-sort-wrapper:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.sort-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    user-select: none;
+}
+
+.albums-sort-dropdown {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-primary);
+    outline: none;
+    cursor: pointer;
+}
+
+.albums-sort-dropdown option {
+    background: #202020;
+    color: #fff;
+    padding: 6px;
+}
+
+/* Status Bar */
+.albums-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    margin-bottom: 16px;
+}
+
+.albums-grid-heading {
+    font-family: var(--font-secondary);
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+}
+
+.albums-badge {
+    font-size: 12px;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 3px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.albums-grid {
+    padding: 0 40px 48px 40px;
+}
+
+.album-item-card {
+    position: relative;
+    cursor: pointer;
+}
+
+.album-badge-tag {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    color: #ffffff;
+    padding: 3px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    z-index: 2;
+}
+
+.album-avatar-wrap {
+    border-radius: 50% !important;
+    overflow: hidden !important;
+}
+
+.album-avatar-img {
+    border-radius: 50% !important;
+}
+
+/* Drill-Down Detail Sub-View */
+.album-detail-nav {
+    padding: 84px 40px 12px 40px;
+    position: relative;
+    z-index: 10;
+}
+
+.album-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.album-back-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateX(-3px);
+}
+
+.album-detail-header {
+    padding-top: 12px !important;
+}
+
+.album-detail-art-wrapper {
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7) !important;
+}
+
+.album-detail-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.album-detail-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px 40px;
+}
+
+.album-actions-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.album-action-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.album-action-secondary-btn:hover {
+    border-color: #ffffff;
+    transform: scale(1.04);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.album-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #242424;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2px 14px;
+    border-radius: 20px;
+    height: 38px;
+}
+
+@media (max-width: 900px) {
+    .albums-control-bar {
+        padding: 0 20px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .albums-options-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .albums-sort-filter-group {
+        justify-content: space-between;
+    }
+
+    .albums-filter-search input {
+        width: 160px;
+    }
+
+    .albums-status-bar,
+    .albums-grid,
+    .album-detail-nav,
+    .album-detail-actions {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
