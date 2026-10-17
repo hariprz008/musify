@@ -46,7 +46,7 @@ const songs = [
         "title": "Beer Song",
         "artist": "Sam cs",
         "album": "Disel",
-        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250270/Beer_Song_g0x7pd.mp3",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250144/Beer_Song_kg8w7w.mp3",
         "cover": "https://cdn.district.in/movies-assets/images/cinema/Diesel--Gallery-6588faa0-edc9-11ef-8cb3-05c6c7d276fb.jpg",
         "duration": "3:36",
         "durationSec": 216,
