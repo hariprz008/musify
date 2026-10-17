@@ -253,7 +253,7 @@ const songs = [
         "title": "le-castle-vania-john-wick",
         "artist": "Le Castle Vania",
         "album": "John Wick Chapter 2",
-        "url": "songs/le-castle-vania-john-wick-mode-(john-wick-chapter-2-club-scene-made-with-Voicemod.mp3",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250124/le-castle-vania-john-wick-mode-_john-wick-chapter-2-club-scene-made-with-Voicemod_exymiw.mp3",
         "localUrl": "songs/le-castle-vania-john-wick-mode-(john-wick-chapter-2-club-scene-made-with-Voicemod.mp3",
         "cover": "https://imgs.search.brave.com/KyZcdRx69aW7txN-LfTBMmF45heZr0ob_c09ESEd4aE/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL00v/TVY1Qk1UVTJOakEx/T0Rnek1GNUJNbDVC/YW5CblhrRnRaVGd3/TVRNMk1USTRNakVA/Ll9WMV8uanBn",
         "duration": "0:45",
