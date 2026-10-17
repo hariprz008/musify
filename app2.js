@@ -13,7 +13,7 @@ const songs = [
         "title": "Ambikapathy",
         "artist": "A.R. Rahman",
         "album": "Ambikapathy",
-        "url": "songs/Ambikapathy_spotdown.org.mp3",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250152/Ambikapathy_spotdown.org_hlavlt.mp3",
         "localUrl": "songs/Ambikapathy_spotdown.org.mp3",
         "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7iLO5aPkU5OPzoPXnA8VACRtVtxqg3jnDrcgWMr5cwOibCBQeHBkkkNqaY_sBG-OREjeTxw&s=10",
         "duration": "4:16",
