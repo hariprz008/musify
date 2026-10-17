@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Mucify - Premium Web Player</title>
     <!-- Google Fonts for premium typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,6 +17,69 @@
 </head>
 
 <body>
+    <!-- Mobile Drawer Sidebar (Sliding panel on mobile & tablet) -->
+    <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop"></div>
+    <aside class="mobile-drawer" id="mobile-drawer">
+        <div class="mobile-drawer-header">
+            <div class="logo">
+                <i data-lucide="music-4" class="logo-icon"></i>
+                <span class="logo-text">Mucify</span>
+            </div>
+            <button class="drawer-close-btn" id="mobile-drawer-close" aria-label="Close menu">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+
+        <div class="mobile-drawer-scroll">
+            <nav class="nav-menu">
+                <button class="nav-item active" data-view="home">
+                    <i data-lucide="home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-item" data-view="search">
+                    <i data-lucide="search"></i>
+                    <span>Search</span>
+                </button>
+                <button class="nav-item" data-view="albums">
+                    <i data-lucide="disc-3"></i>
+                    <span>Albums</span>
+                </button>
+                <button class="nav-item" data-view="library">
+                    <i data-lucide="library"></i>
+                    <span>Your Library</span>
+                </button>
+                <button class="nav-item" data-view="all-songs">
+                    <i data-lucide="disc"></i>
+                    <span>All Songs</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-divider"></div>
+
+            <div class="library-actions">
+                <button class="action-btn" id="mobile-create-playlist-btn">
+                    <div class="action-icon-wrapper plus">
+                        <i data-lucide="plus" class="small-icon"></i>
+                    </div>
+                    <span>Create Playlist</span>
+                </button>
+                <button class="action-btn" data-view="liked">
+                    <div class="action-icon-wrapper heart">
+                        <i data-lucide="heart" class="small-icon"></i>
+                    </div>
+                    <span>Liked Songs</span>
+                </button>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <div class="drawer-playlists-heading">Playlists</div>
+            <div class="playlists-list" id="mobile-drawer-playlists">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </aside>
+
     <div class="app-container">
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
@@ -80,6 +143,9 @@
             <!-- Header (Sticky navigation, profile, search bar) -->
             <header class="main-header">
                 <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu">
+                        <i data-lucide="menu"></i>
+                    </button>
                     <div class="nav-arrows">
                         <button class="arrow-btn" id="nav-back"><i data-lucide="chevron-left"></i></button>
                         <button class="arrow-btn" id="nav-forward"><i data-lucide="chevron-right"></i></button>
@@ -812,7 +878,7 @@
         <!-- Bottom Player Control Bar -->
         <footer class="player-bar">
             <!-- Left: Track Details -->
-            <div class="player-track-info">
+            <div class="player-track-info" id="player-track-info">
                 <div class="current-track-art">
                     <img src="Song Cover" alt="Album artwork for Aura 10-10 by Aura, displayed in the music player"
                         id="player-art">
@@ -865,6 +931,8 @@
                 </div>
                 <button class="extra-btn" id="btn-fullscreen" title="Fullscreen"><i
                         data-lucide="maximize-2"></i></button>
+                <button class="extra-btn mobile-expand-hint-btn" id="mobile-expand-hint-btn"
+                    title="Expand Full Player"><i data-lucide="chevron-up"></i></button>
             </div>
         </footer>
     </div>
@@ -938,6 +1006,113 @@
 
     <!-- Floating Toast Notification -->
     <div id="mucify-toast" class="mucify-toast" style="display: none;"></div>
+
+    <!-- Mobile Bottom Navigation Bar (Fixed for phones & tablet portrait) -->
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+        <button class="mobile-nav-btn active" data-view="home">
+            <i data-lucide="home"></i>
+            <span>Home</span>
+        </button>
+        <button class="mobile-nav-btn" data-view="search">
+            <i data-lucide="search"></i>
+            <span>Search</span>
+        </button>
+        <button class="mobile-nav-btn" data-view="albums">
+            <i data-lucide="disc-3"></i>
+            <span>Albums</span>
+        </button>
+        <button class="mobile-nav-btn" data-view="library">
+            <i data-lucide="library"></i>
+            <span>Library</span>
+        </button>
+        <button class="mobile-nav-btn" data-view="all-songs">
+            <i data-lucide="disc"></i>
+            <span>Songs</span>
+        </button>
+    </nav>
+
+    <!-- Mobile Full-Screen Now Playing Sheet -->
+    <div class="mobile-full-player" id="mobile-full-player">
+        <div class="mobile-player-bg-glow" id="mobile-player-bg-glow"></div>
+        <div class="mobile-player-header">
+            <button class="mobile-player-collapse-btn" id="mobile-player-collapse-btn" aria-label="Collapse player">
+                <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="mobile-player-header-title">
+                <span class="sub-label">PLAYING FROM</span>
+                <span class="main-label" id="mobile-player-context">Mucify Library</span>
+            </div>
+            <button class="mobile-player-more-btn" id="mobile-player-more-btn" aria-label="Song options">
+                <i data-lucide="more-vertical"></i>
+            </button>
+        </div>
+
+        <div class="mobile-player-art-section">
+            <div class="mobile-player-art-wrapper">
+                <img src="Song Cover" alt="Album artwork" id="mobile-player-art">
+            </div>
+        </div>
+
+        <div class="mobile-player-meta-section">
+            <div class="mobile-player-meta">
+                <h2 id="mobile-player-title" class="mobile-player-title">Aura 10-10</h2>
+                <p id="mobile-player-artist" class="mobile-player-artist">Aura</p>
+            </div>
+            <button class="mobile-player-like-btn" id="mobile-player-like-btn" aria-label="Like track">
+                <i data-lucide="heart" class="like-icon"></i>
+            </button>
+        </div>
+
+        <!-- Scrubber Progress Bar -->
+        <div class="mobile-player-progress-section">
+            <div class="progress-track" id="mobile-progress-track">
+                <div class="progress-fill" id="mobile-progress-fill"></div>
+                <div class="progress-thumb" id="mobileProgressThumb"></div>
+            </div>
+            <div class="mobile-player-timestamps">
+                <span id="mobile-time-current">0:00</span>
+                <span id="mobile-time-total">0:00</span>
+            </div>
+        </div>
+
+        <!-- Full Playback Controls -->
+        <div class="mobile-player-controls">
+            <button class="mobile-ctrl-btn" id="mobile-btn-shuffle" title="Shuffle">
+                <i data-lucide="shuffle"></i>
+            </button>
+            <button class="mobile-ctrl-btn" id="mobile-btn-prev" title="Previous">
+                <i data-lucide="skip-back"></i>
+            </button>
+            <button class="mobile-play-pause-btn pause-state" id="mobile-btn-play-pause" title="Play">
+                <i data-lucide="play" id="mobile-play-pause-icon"></i>
+            </button>
+            <button class="mobile-ctrl-btn" id="mobile-btn-next" title="Next">
+                <i data-lucide="skip-forward"></i>
+            </button>
+            <button class="mobile-ctrl-btn" id="mobile-btn-repeat" title="Repeat">
+                <i data-lucide="repeat"></i>
+            </button>
+        </div>
+
+        <!-- Bottom Actions Row -->
+        <div class="mobile-player-bottom-bar">
+            <button class="mobile-bottom-action-btn" id="mobile-btn-queue" title="Queue">
+                <i data-lucide="list-music"></i>
+                <span>Queue</span>
+            </button>
+            <div class="mobile-volume-group">
+                <button class="mobile-bottom-action-btn" id="mobile-btn-mute" title="Mute/Unmute">
+                    <i data-lucide="volume-2" id="mobile-volume-icon"></i>
+                </button>
+                <div class="volume-slider-wrapper mobile-vol-slider">
+                    <div class="volume-track" id="mobile-volume-track">
+                        <div class="volume-fill" id="mobile-volume-fill" style="width: 70%;"></div>
+                        <div class="volume-thumb" id="mobileVolumeThumb" style="left: 70%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="app2.js?v=1.0"></script>
     <script>
