@@ -58,7 +58,7 @@ const songs = [
         "artist": "santhosh narayanan",
         "album": "power house",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783244815/Cook_Cook_mi8dq3.mp3",
-        "cover": "cook_cook.png",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxL3ezC6kiJKFxGYexWBEh10Ax1_hYptsjjbTxdQoVVQ&s=10",
         "duration": "1:54",
         "durationSec": 114,
         "artistBio": "Cook Cook delivers high-fidelity lo-fi beats infused with culinary ambient soundscapes."
