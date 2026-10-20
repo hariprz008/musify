@@ -13,7 +13,7 @@
         rel="stylesheet">
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="styles.css?v=8.0">
+    <link rel="stylesheet" href="styles.css?v=9.0">
 </head>
 
 <body>
@@ -417,7 +417,13 @@
                 <!-- 3. Your Library View -->
                 <section id="library-view" class="content-view" style="display: none;">
                     <div class="view-content-wrapper">
-                        <h2>Your Playlists</h2>
+                        <div class="library-header-row">
+                            <h2>Your Playlists</h2>
+                            <button class="library-create-pl-btn" id="library-create-pl-btn" title="Create Playlist">
+                                <i data-lucide="plus" class="small-icon"></i>
+                                <span>New Playlist</span>
+                            </button>
+                        </div>
                         <div class="card-grid" id="library-playlists-grid">
                             <div class="music-card liked-songs-playlist-card" data-view="liked">
                                 <div class="liked-card-gradient">
@@ -801,17 +807,12 @@
 
                     <!-- Section 2: Next Up -->
                     <div class="queue-section">
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <h2 style="font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 0;"
-                                    id="queue-next-up-heading">Next up</h2>
-                                <span id="queue-summary-badge"
-                                    style="font-size: 12px; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 2px 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">0
-                                    songs</span>
+                        <div class="queue-next-up-header-row">
+                            <div class="queue-next-up-title-group">
+                                <h2 id="queue-next-up-heading">Next up</h2>
+                                <span id="queue-summary-badge">0 songs</span>
                             </div>
-                            <span style="font-size: 12px; color: var(--text-muted); opacity: 0.7;">Tip: Drag rows to
-                                change order</span>
+                            <span class="queue-drag-tip">Tip: Drag rows to change order</span>
                         </div>
                         <div class="playlist-songs-list-container" style="padding: 0;">
                             <table class="songs-table" id="queue-table">
@@ -1114,7 +1115,50 @@
         </div>
     </div>
 
-    <script src="app2.js?v=1.0"></script>
+    <!-- Spotify-Style Mobile Action Sheet (Options Bottom Sheet) -->
+    <div class="mobile-action-sheet-backdrop" id="mobile-action-sheet-backdrop"></div>
+    <div class="mobile-action-sheet" id="mobile-action-sheet" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="sheet-drag-handle-bar" id="mobile-sheet-drag-handle">
+            <div class="sheet-drag-pill"></div>
+        </div>
+        <div class="sheet-header" id="mobile-sheet-header">
+            <img src="" alt="" class="sheet-header-art" id="mobile-sheet-art">
+            <div class="sheet-header-meta">
+                <h3 class="sheet-header-title" id="mobile-sheet-title">Song Title</h3>
+                <p class="sheet-header-subtitle" id="mobile-sheet-subtitle">Artist Name</p>
+            </div>
+            <button class="sheet-header-like-btn" id="mobile-sheet-header-like-btn" aria-label="Like song">
+                <i data-lucide="heart"></i>
+            </button>
+        </div>
+        <div class="sheet-divider"></div>
+
+        <!-- Main Actions List -->
+        <div class="sheet-actions-list" id="mobile-sheet-actions">
+            <!-- Dynamically populated -->
+        </div>
+
+        <!-- Nested Playlist Selector Subpanel inside the Action Sheet -->
+        <div class="sheet-playlists-subpanel" id="mobile-sheet-playlists-panel" style="display: none;">
+            <div class="sheet-subpanel-header">
+                <button class="sheet-subpanel-back-btn" id="mobile-sheet-pl-back">
+                    <i data-lucide="arrow-left"></i>
+                    <span>Add to playlist</span>
+                </button>
+                <button class="sheet-new-pl-btn" id="mobile-sheet-new-pl-btn">
+                    <i data-lucide="plus"></i>
+                    <span>New Playlist</span>
+                </button>
+            </div>
+            <div class="sheet-playlists-list" id="mobile-sheet-playlists-list">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <button class="sheet-cancel-btn" id="mobile-sheet-cancel-btn">Close</button>
+    </div>
+
+    <script src="app2.js?v=2.0"></script>
     <script>
         // Initialize Lucide Icons
         lucide.createIcons();
