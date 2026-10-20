@@ -1070,11 +1070,12 @@ function nextSong() {
 
 function toggleShuffle() {
     isShuffle = !isShuffle;
-    if (elShuffleBtn) {
-        elShuffleBtn.classList.toggle('active', isShuffle);
-        const icon = elShuffleBtn.querySelector('svg, i');
+    [elShuffleBtn, document.getElementById('mobile-btn-shuffle')].forEach(btn => {
+        if (!btn) return;
+        btn.classList.toggle('active', isShuffle);
+        const icon = btn.querySelector('svg, i');
         if (icon) icon.style.color = isShuffle ? 'var(--primary-green)' : '';
-    }
+    });
 
     playbackHistory = [];
     if (isShuffle && currentQueue[currentSongIndex]) {
@@ -1091,33 +1092,35 @@ function toggleRepeat() {
         repeatMode = 'off';
     }
 
-    if (elRepeatBtn) {
-        const isActive = (repeatMode !== 'off');
-        elRepeatBtn.classList.toggle('active', isActive);
-        const icon = elRepeatBtn.querySelector('svg, i');
+    const isActive = (repeatMode !== 'off');
+    const buttons = [elRepeatBtn, document.getElementById('mobile-btn-repeat')];
+
+    buttons.forEach(btn => {
+        if (!btn) return;
+        btn.classList.toggle('active', isActive);
+        const icon = btn.querySelector('svg, i');
         if (icon) icon.style.color = isActive ? 'var(--primary-green)' : '';
 
-        let badge = elRepeatBtn.querySelector('.repeat-one-badge');
+        let badge = btn.querySelector('.repeat-one-badge');
         if (repeatMode === 'one') {
             if (!badge) {
                 badge = document.createElement('span');
                 badge.className = 'repeat-one-badge';
                 badge.textContent = '1';
-                badge.style.cssText = 'position: absolute; top: -2px; right: -2px; font-size: 9px; font-weight: 800; background: var(--primary-green); color: #000; border-radius: 50%; width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; line-height: 1; pointer-events: none;';
-                elRepeatBtn.style.position = 'relative';
-                elRepeatBtn.appendChild(badge);
+                btn.style.position = 'relative';
+                btn.appendChild(badge);
             }
             badge.style.display = 'flex';
-            elRepeatBtn.setAttribute('title', 'Repeat One Track');
+            btn.setAttribute('title', 'Repeat One Track');
         } else {
             if (badge) badge.style.display = 'none';
             if (repeatMode === 'all') {
-                elRepeatBtn.setAttribute('title', 'Repeat All Tracks');
+                btn.setAttribute('title', 'Repeat All Tracks');
             } else {
-                elRepeatBtn.setAttribute('title', 'Enable Repeat');
+                btn.setAttribute('title', 'Enable Repeat');
             }
         }
-    }
+    });
 }
 
 // --- 8. Liking & Favorites ---
@@ -1464,6 +1467,11 @@ function showPlaylistContextMenu(playlistId, x, y) {
     const pl = playlists[playlistId];
     if (!pl) return;
 
+    if (window.innerWidth <= 820) {
+        openMobileActionSheetForPlaylist(playlistId);
+        return;
+    }
+
     let menu = document.getElementById('playlist-context-menu');
     if (!menu) {
         menu = document.createElement('div');
@@ -1576,9 +1584,10 @@ function renderLibraryView() {
         card.setAttribute('data-playlist-id', key);
 
         card.innerHTML = `
-            <div class="card-art-wrapper">
+            <div class="card-art-wrapper" style="position: relative;">
                 <img src="${pl.art}" alt="${escapeHTML(pl.name)}" class="card-img">
-                <button class="play-card-btn hover-reveal"><i data-lucide="play" class="play-card-icon"></i></button>
+                <button class="play-card-btn hover-reveal" title="Play playlist"><i data-lucide="play" class="play-card-icon"></i></button>
+                <button class="playlist-card-more-btn" title="Playlist options" aria-label="Playlist options"><i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i></button>
             </div>
             <div class="card-metadata">
                 <h3>${escapeHTML(pl.name)}</h3>
@@ -1587,8 +1596,16 @@ function renderLibraryView() {
         `;
 
         card.addEventListener('click', (e) => {
+            const moreBtn = e.target.closest('.playlist-card-more-btn');
             const playBtn = e.target.closest('.play-card-btn');
-            if (playBtn) {
+            if (moreBtn) {
+                e.stopPropagation();
+                if (window.innerWidth <= 820) {
+                    openMobileActionSheetForPlaylist(key);
+                } else {
+                    showPlaylistContextMenu(key, e.clientX, e.clientY);
+                }
+            } else if (playBtn) {
                 e.stopPropagation();
                 playPlaylist(key);
             } else {
@@ -1598,7 +1615,11 @@ function renderLibraryView() {
 
         card.addEventListener('contextmenu', (e) => {
             e.preventDefault();
-            showPlaylistContextMenu(key, e.clientX, e.clientY);
+            if (window.innerWidth <= 820) {
+                openMobileActionSheetForPlaylist(key);
+            } else {
+                showPlaylistContextMenu(key, e.clientX, e.clientY);
+            }
         });
 
         grid.appendChild(card);
@@ -1711,10 +1732,13 @@ function showToast(message) {
 function formatTotalDuration(songList) {
     if (!songList || songList.length === 0) return '0 min';
     const totalSec = songList.reduce((acc, s) => {
-        if (s.durationSec) return acc + s.durationSec;
+        const secVal = Number(s.durationSec || s.durationsec);
+        if (!isNaN(secVal) && secVal > 0) return acc + secVal;
         if (s.duration) {
             const parts = s.duration.split(':').map(Number);
-            if (parts.length === 2) return acc + parts[0] * 60 + parts[1];
+            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+                return acc + parts[0] * 60 + parts[1];
+            }
         }
         return acc + 180;
     }, 0);
@@ -1879,7 +1903,7 @@ function renderQueueView() {
                         <span style="font-size: 12px; color: var(--text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${escapeHTML(currentSong.artist)}</span>
                     </div>
                 </div>
-                <div style="flex: 1; font-size: 13px; color: var(--text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; padding: 0 16px;">
+                <div class="now-playing-album-col" style="flex: 1; font-size: 13px; color: var(--text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; padding: 0 16px;">
                     ${escapeHTML(currentSong.album)}
                 </div>
                 <div style="display: flex; align-items: center; gap: 12px;">
@@ -3050,8 +3074,381 @@ function handleSearch() {
     updateActiveRowHighlight();
 }
 
+// --- SPOTIFY-STYLE MOBILE ACTION SHEET (OPTIONS BOTTOM SHEET) ---
+let activeSheetDismissTimeout = null;
+
+function closeMobileActionSheet() {
+    const sheet = document.getElementById('mobile-action-sheet');
+    const backdrop = document.getElementById('mobile-action-sheet-backdrop');
+    if (sheet) {
+        sheet.classList.remove('open');
+        sheet.style.transform = '';
+    }
+    if (backdrop) backdrop.classList.remove('open');
+    if (activeSheetDismissTimeout) clearTimeout(activeSheetDismissTimeout);
+    activeSheetDismissTimeout = setTimeout(() => {
+        const plPanel = document.getElementById('mobile-sheet-playlists-panel');
+        const actionsList = document.getElementById('mobile-sheet-actions');
+        if (plPanel) plPanel.style.display = 'none';
+        if (actionsList) actionsList.style.display = 'flex';
+    }, 320);
+}
+
+function openMobileActionSheetForSong(songId, context = null) {
+    const sheet = document.getElementById('mobile-action-sheet');
+    const backdrop = document.getElementById('mobile-action-sheet-backdrop');
+    const art = document.getElementById('mobile-sheet-art');
+    const title = document.getElementById('mobile-sheet-title');
+    const subtitle = document.getElementById('mobile-sheet-subtitle');
+    const likeBtn = document.getElementById('mobile-sheet-header-like-btn');
+    const actionsList = document.getElementById('mobile-sheet-actions');
+    const plPanel = document.getElementById('mobile-sheet-playlists-panel');
+
+    if (!sheet || !backdrop || !actionsList) return;
+
+    const song = songs.find(s => s.id === songId);
+    if (!song) return;
+
+    const isLiked = likedSongIds.includes(songId);
+
+    // Header Setup
+    if (art) art.src = song.cover;
+    if (title) title.textContent = song.title;
+    if (subtitle) subtitle.textContent = `${song.artist} • ${song.album || 'Single'}`;
+
+    if (likeBtn) {
+        likeBtn.style.display = 'flex';
+        likeBtn.classList.toggle('liked', isLiked);
+        likeBtn.innerHTML = isLiked ?
+            '<i data-lucide="heart" fill="var(--primary-green)" color="var(--primary-green)"></i>' :
+            '<i data-lucide="heart"></i>';
+        likeBtn.onclick = (e) => {
+            e.stopPropagation();
+            toggleLikeSong(songId);
+            const nowLiked = likedSongIds.includes(songId);
+            likeBtn.classList.toggle('liked', nowLiked);
+            likeBtn.innerHTML = nowLiked ?
+                '<i data-lucide="heart" fill="var(--primary-green)" color="var(--primary-green)"></i>' :
+                '<i data-lucide="heart"></i>';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            const likeItem = actionsList.querySelector('.sheet-action-item.like-toggle');
+            if (likeItem) {
+                likeItem.innerHTML = nowLiked ?
+                    `<i data-lucide="heart" fill="var(--primary-green)" color="var(--primary-green)"></i> <span>Remove from Liked Songs</span>` :
+                    `<i data-lucide="heart"></i> <span>Save to Liked Songs</span>`;
+                likeItem.classList.toggle('active-item', nowLiked);
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+        };
+    }
+
+    if (plPanel) plPanel.style.display = 'none';
+    actionsList.style.display = 'flex';
+    actionsList.innerHTML = '';
+
+    // 1. Like Action
+    const itemLike = document.createElement('div');
+    itemLike.className = `sheet-action-item like-toggle ${isLiked ? 'active-item' : ''}`;
+    itemLike.innerHTML = isLiked ?
+        `<i data-lucide="heart" fill="var(--primary-green)" color="var(--primary-green)"></i> <span>Remove from Liked Songs</span>` :
+        `<i data-lucide="heart"></i> <span>Save to Liked Songs</span>`;
+    itemLike.onclick = () => {
+        toggleLikeSong(songId);
+        closeMobileActionSheet();
+    };
+    actionsList.appendChild(itemLike);
+
+    // 2. Add to Playlist
+    const itemAddPl = document.createElement('div');
+    itemAddPl.className = 'sheet-action-item';
+    itemAddPl.innerHTML = `<i data-lucide="plus-circle"></i> <span>Add to Playlist</span> <i data-lucide="chevron-right" class="action-chevron"></i>`;
+    itemAddPl.onclick = () => {
+        actionsList.style.display = 'none';
+        if (plPanel) {
+            plPanel.style.display = 'flex';
+            populatePlaylistSheetList(songId);
+        }
+    };
+    actionsList.appendChild(itemAddPl);
+
+    // 3. Play Next
+    const itemPlayNext = document.createElement('div');
+    itemPlayNext.className = 'sheet-action-item';
+    itemPlayNext.innerHTML = `<i data-lucide="corner-down-right"></i> <span>Play Next</span>`;
+    itemPlayNext.onclick = () => {
+        currentQueue.splice(currentSongIndex + 1, 0, song);
+        if (currentView === 'queue') renderQueueView();
+        showToast(`"${song.title}" will play next`);
+        closeMobileActionSheet();
+    };
+    actionsList.appendChild(itemPlayNext);
+
+    // 4. Add to Queue
+    const itemAddQueue = document.createElement('div');
+    itemAddQueue.className = 'sheet-action-item';
+    itemAddQueue.innerHTML = `<i data-lucide="list-plus"></i> <span>Add to Queue</span>`;
+    itemAddQueue.onclick = () => {
+        currentQueue.push(song);
+        if (currentView === 'queue') renderQueueView();
+        showToast(`Added "${song.title}" to queue`);
+        closeMobileActionSheet();
+    };
+    actionsList.appendChild(itemAddQueue);
+
+    // 5. Go to Album
+    if (song.album) {
+        const itemGoAlbum = document.createElement('div');
+        itemGoAlbum.className = 'sheet-action-item';
+        itemGoAlbum.innerHTML = `<i data-lucide="disc-3"></i> <span>View Album "${escapeHTML(song.album)}"</span>`;
+        itemGoAlbum.onclick = () => {
+            closeMobileActionSheet();
+            closeMobileFullPlayer();
+            navigate('albums');
+            setTimeout(() => {
+                const movies = getAlbumsGroupedByMovies();
+                const matched = movies.find(m => m.name.toLowerCase() === song.album.toLowerCase());
+                if (matched) {
+                    selectedAlbumGroup = matched;
+                    renderAlbumsView();
+                }
+            }, 60);
+        };
+        actionsList.appendChild(itemGoAlbum);
+    }
+
+    // 6. Go to Artist
+    if (song.artist) {
+        const itemGoArtist = document.createElement('div');
+        itemGoArtist.className = 'sheet-action-item';
+        itemGoArtist.innerHTML = `<i data-lucide="user"></i> <span>View Artist "${escapeHTML(song.artist)}"</span>`;
+        itemGoArtist.onclick = () => {
+            closeMobileActionSheet();
+            closeMobileFullPlayer();
+            navigate('albums');
+            setTimeout(() => {
+                albumsMode = 'directors';
+                albumsSearchQuery = song.artist.toLowerCase();
+                const input = document.getElementById('albums-filter-input');
+                if (input) input.value = song.artist;
+                renderAlbumsView();
+            }, 60);
+        };
+        actionsList.appendChild(itemGoArtist);
+    }
+
+    // 7. Share Song
+    const itemShare = document.createElement('div');
+    itemShare.className = 'sheet-action-item';
+    itemShare.innerHTML = `<i data-lucide="share-2"></i> <span>Share Track</span>`;
+    itemShare.onclick = () => {
+        closeMobileActionSheet();
+        if (navigator.share) {
+            navigator.share({
+                title: `${song.title} - Mucify`,
+                text: `Listen to "${song.title}" by ${song.artist} on Mucify!`,
+                url: window.location.href
+            }).catch(() => { });
+        } else {
+            navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?song=${encodeURIComponent(song.title)}`)
+                .then(() => showToast(`Link copied to clipboard!`))
+                .catch(() => showToast(`Sharing "${song.title}"`));
+        }
+    };
+    actionsList.appendChild(itemShare);
+
+    // Queue-specific or Playlist-specific items
+    if (context && context.fromQueue) {
+        if (context.upcomingIndex > 0) {
+            const itemMoveTop = document.createElement('div');
+            itemMoveTop.className = 'sheet-action-item';
+            itemMoveTop.innerHTML = `<i data-lucide="arrow-up-to-line"></i> <span>Move to Top (Play Next)</span>`;
+            itemMoveTop.onclick = () => {
+                reorderUpcomingQueue(context.upcomingIndex, 0);
+                renderQueueView();
+                closeMobileActionSheet();
+            };
+            actionsList.appendChild(itemMoveTop);
+        }
+
+        const itemRemoveQueue = document.createElement('div');
+        itemRemoveQueue.className = 'sheet-action-item danger';
+        itemRemoveQueue.innerHTML = `<i data-lucide="trash-2"></i> <span>Remove from Queue</span>`;
+        itemRemoveQueue.onclick = () => {
+            const removed = currentQueue.splice(context.actualIndex, 1)[0];
+            renderQueueView();
+            showToast(`Removed "${removed ? removed.title : song.title}" from queue`);
+            closeMobileActionSheet();
+        };
+        actionsList.appendChild(itemRemoveQueue);
+    } else if (currentView === 'playlist' && activePlaylistId && activePlaylistId !== 'liked') {
+        const itemRemovePl = document.createElement('div');
+        itemRemovePl.className = 'sheet-action-item danger';
+        itemRemovePl.innerHTML = `<i data-lucide="trash-2"></i> <span>Remove from this Playlist</span>`;
+        itemRemovePl.onclick = () => {
+            const pl = playlists[activePlaylistId];
+            if (pl) {
+                pl.songs = pl.songs.filter(id => id !== songId);
+                savePlaylists();
+                renderPlaylistView(activePlaylistId);
+                showToast(`Removed from "${pl.name}"`);
+            }
+            closeMobileActionSheet();
+        };
+        actionsList.appendChild(itemRemovePl);
+    }
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    sheet.classList.add('open');
+    backdrop.classList.add('open');
+}
+
+function populatePlaylistSheetList(songId) {
+    const plList = document.getElementById('mobile-sheet-playlists-list');
+    if (!plList) return;
+    plList.innerHTML = '';
+
+    const keys = Object.keys(playlists).filter(k => k !== 'liked');
+    if (keys.length === 0) {
+        plList.innerHTML = `
+            <div style="text-align: center; padding: 24px 12px; color: var(--text-muted); font-size: 13px;">
+                No custom playlists yet.<br>Tap "New Playlist" above to create one!
+            </div>
+        `;
+        return;
+    }
+
+    keys.forEach(key => {
+        const pl = playlists[key];
+        const alreadyIn = pl.songs.includes(songId);
+        const item = document.createElement('div');
+        item.className = 'sheet-playlist-item';
+        item.innerHTML = `
+            <img src="${escapeHTML(pl.art)}" alt="">
+            <div class="sheet-pl-meta">
+                <div class="sheet-pl-name">${escapeHTML(pl.name)}</div>
+                <div class="sheet-pl-count">${pl.songs.length} ${pl.songs.length === 1 ? 'song' : 'songs'}${alreadyIn ? ' • Already added' : ''}</div>
+            </div>
+            ${alreadyIn ? '<i data-lucide="check" style="color: var(--primary-green); width: 18px; height: 18px;"></i>' : '<i data-lucide="plus" style="color: var(--text-muted); width: 18px; height: 18px;"></i>'}
+        `;
+        item.onclick = () => {
+            if (!pl.songs.includes(songId)) {
+                pl.songs.push(songId);
+                savePlaylists();
+                showToast(`Added to "${pl.name}"`);
+            } else {
+                showToast(`Already in "${pl.name}"`);
+            }
+            closeMobileActionSheet();
+        };
+        plList.appendChild(item);
+    });
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function openMobileActionSheetForPlaylist(playlistId) {
+    const sheet = document.getElementById('mobile-action-sheet');
+    const backdrop = document.getElementById('mobile-action-sheet-backdrop');
+    const art = document.getElementById('mobile-sheet-art');
+    const title = document.getElementById('mobile-sheet-title');
+    const subtitle = document.getElementById('mobile-sheet-subtitle');
+    const likeBtn = document.getElementById('mobile-sheet-header-like-btn');
+    const actionsList = document.getElementById('mobile-sheet-actions');
+    const plPanel = document.getElementById('mobile-sheet-playlists-panel');
+
+    if (!sheet || !backdrop || !actionsList) return;
+    const pl = playlists[playlistId];
+    if (!pl) return;
+
+    if (art) art.src = pl.art;
+    if (title) title.textContent = pl.name;
+    if (subtitle) subtitle.textContent = `Playlist • ${pl.songs.length} ${pl.songs.length === 1 ? 'song' : 'songs'}`;
+    if (likeBtn) likeBtn.style.display = 'none';
+
+    if (plPanel) plPanel.style.display = 'none';
+    actionsList.style.display = 'flex';
+    actionsList.innerHTML = '';
+
+    // 1. Play Playlist
+    const itemPlay = document.createElement('div');
+    itemPlay.className = 'sheet-action-item';
+    itemPlay.innerHTML = `<i data-lucide="play"></i> <span>Play Playlist</span>`;
+    itemPlay.onclick = () => {
+        closeMobileActionSheet();
+        playPlaylist(playlistId);
+    };
+    actionsList.appendChild(itemPlay);
+
+    // 2. Add Songs to Playlist
+    const itemAddSongs = document.createElement('div');
+    itemAddSongs.className = 'sheet-action-item';
+    itemAddSongs.innerHTML = `<i data-lucide="plus-circle"></i> <span>Add Songs to Playlist</span>`;
+    itemAddSongs.onclick = () => {
+        closeMobileActionSheet();
+        navigate('playlist', true, playlistId);
+        const addQueueModal = document.getElementById('queue-add-modal');
+        if (addQueueModal) {
+            addQueueModal.style.display = 'flex';
+            renderQueueAddModalList(playlistId);
+        }
+    };
+    actionsList.appendChild(itemAddSongs);
+
+    // 3. Rename Playlist
+    const itemRename = document.createElement('div');
+    itemRename.className = 'sheet-action-item';
+    itemRename.innerHTML = `<i data-lucide="edit-3"></i> <span>Rename Playlist</span>`;
+    itemRename.onclick = async () => {
+        closeMobileActionSheet();
+        const newName = await showPlaylistModal("Rename Playlist", pl.name);
+        if (newName && newName.trim() !== '') {
+            pl.name = newName.trim();
+            savePlaylists();
+            renderSidebarPlaylists();
+            renderLibraryView();
+            renderHomeView();
+            if (activePlaylistId === playlistId) {
+                renderPlaylistView(playlistId);
+            }
+            showToast(`Renamed to "${pl.name}"`);
+        }
+    };
+    actionsList.appendChild(itemRename);
+
+    // 4. Delete Playlist
+    const itemDelete = document.createElement('div');
+    itemDelete.className = 'sheet-action-item danger';
+    itemDelete.innerHTML = `<i data-lucide="trash-2"></i> <span>Delete Playlist</span>`;
+    itemDelete.onclick = () => {
+        closeMobileActionSheet();
+        if (confirm(`Delete the playlist "${pl.name}"?`)) {
+            delete playlists[playlistId];
+            savePlaylists();
+            renderSidebarPlaylists();
+            renderLibraryView();
+            renderHomeView();
+            if (activePlaylistId === playlistId) {
+                navigate('home');
+            }
+            showToast(`Deleted playlist "${pl.name}"`);
+        }
+    };
+    actionsList.appendChild(itemDelete);
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    sheet.classList.add('open');
+    backdrop.classList.add('open');
+}
+
 // --- 12. Context Menu & Modal Logic ---
 function showSongContextMenu(songId, x, y, context = null) {
+    if (window.innerWidth <= 820) {
+        openMobileActionSheetForSong(songId, context);
+        return;
+    }
+
     let menu = document.getElementById('song-context-menu');
     if (!menu) return;
 
@@ -3496,17 +3893,60 @@ function initEventListeners() {
         });
     }
 
-    // Mini-Player to Full Player Interaction Handlers
+    // Mini-Player to Full Player Interaction Handlers with Swipe Gestures
+    const playerBar = document.querySelector('.player-bar');
     const elPlayerTrackInfo = document.getElementById('player-track-info');
     const mobileExpandHintBtn = document.getElementById('mobile-expand-hint-btn');
 
-    if (elPlayerTrackInfo) {
-        elPlayerTrackInfo.addEventListener('click', (e) => {
-            // Expand full player on smaller screens when clicking track area (excluding like button)
-            if (window.innerWidth <= 820 && !e.target.closest('#player-like-btn')) {
+    if (playerBar) {
+        playerBar.addEventListener('click', (e) => {
+            // Expand full player on smaller screens when clicking anywhere on bar except action buttons
+            if (window.innerWidth <= 820) {
+                if (e.target.closest('#btn-play-pause') || e.target.closest('#btn-next') || e.target.closest('#player-like-btn')) {
+                    return;
+                }
                 openMobileFullPlayer();
             }
         });
+
+        // Swipe gestures on Mini Player
+        let miniStartX = 0;
+        let miniStartY = 0;
+        let miniStartTime = 0;
+
+        playerBar.addEventListener('touchstart', (e) => {
+            if (window.innerWidth > 820) return;
+            const t = e.touches[0];
+            miniStartX = t.clientX;
+            miniStartY = t.clientY;
+            miniStartTime = Date.now();
+        }, { passive: true });
+
+        playerBar.addEventListener('touchend', (e) => {
+            if (window.innerWidth > 820) return;
+            const t = e.changedTouches[0];
+            const dx = t.clientX - miniStartX;
+            const dy = t.clientY - miniStartY;
+            const dt = Date.now() - miniStartTime;
+
+            // Swipe UP -> expand full player
+            if (dy < -35 && Math.abs(dx) < 60) {
+                openMobileFullPlayer();
+                return;
+            }
+
+            // Swipe LEFT -> next song
+            if (dx < -45 && Math.abs(dy) < 50 && dt < 450) {
+                nextSong();
+                return;
+            }
+
+            // Swipe RIGHT -> previous song
+            if (dx > 45 && Math.abs(dy) < 50 && dt < 450) {
+                prevSong();
+                return;
+            }
+        }, { passive: true });
     }
 
     if (mobileExpandHintBtn) {
@@ -3522,6 +3962,48 @@ function initEventListeners() {
             e.stopPropagation();
             closeMobileFullPlayer();
         });
+    }
+
+    // Full Mobile Player Touch Drag-Down to Dismiss
+    const mobileFullPlayer = document.getElementById('mobile-full-player');
+    if (mobileFullPlayer) {
+        let fullStartY = 0;
+        let isDraggingFull = false;
+
+        mobileFullPlayer.addEventListener('touchstart', (e) => {
+            const target = e.target;
+            if (target.closest('.mobile-player-progress-section') || target.closest('.mobile-player-controls') || target.closest('.mobile-volume-group')) {
+                return;
+            }
+            fullStartY = e.touches[0].clientY;
+            isDraggingFull = true;
+        }, { passive: true });
+
+        mobileFullPlayer.addEventListener('touchmove', (e) => {
+            if (!isDraggingFull) return;
+            const currentY = e.touches[0].clientY;
+            const deltaY = currentY - fullStartY;
+            if (deltaY > 0) {
+                mobileFullPlayer.style.transition = 'none';
+                mobileFullPlayer.style.transform = `translateY(${deltaY}px)`;
+            }
+        }, { passive: true });
+
+        mobileFullPlayer.addEventListener('touchend', (e) => {
+            if (!isDraggingFull) return;
+            isDraggingFull = false;
+            const currentY = e.changedTouches[0].clientY;
+            const deltaY = currentY - fullStartY;
+            mobileFullPlayer.style.transition = 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)';
+            if (deltaY > 80) {
+                closeMobileFullPlayer();
+                setTimeout(() => {
+                    mobileFullPlayer.style.transform = '';
+                }, 350);
+            } else {
+                mobileFullPlayer.style.transform = 'translateY(0)';
+            }
+        }, { passive: true });
     }
 
     // Full Mobile Player Playback Control Handlers
@@ -3722,27 +4204,97 @@ function initEventListeners() {
         if (plDropdown) plDropdown.style.display = 'none';
     });
 
-    // Create Playlist Button
+    // Helper to create a new playlist
+    async function createNewPlaylist() {
+        const title = await showPlaylistModal("Create Playlist");
+        if (!title || title.trim() === '') return null;
+
+        const id = `playlist-${Date.now()}`;
+        playlists[id] = {
+            name: title.trim(),
+            desc: "Custom user-created playlist.",
+            art: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=300&q=80",
+            songs: []
+        };
+        savePlaylists();
+
+        renderSidebarPlaylists();
+        renderLibraryView();
+        renderHomeView();
+        navigate('playlist', true, id);
+        showToast(`Created playlist "${title.trim()}"`);
+        return id;
+    }
+
+    // Create Playlist Buttons
     const createPlBtn = document.getElementById('create-playlist-btn');
-    if (createPlBtn) {
-        createPlBtn.addEventListener('click', async () => {
-            const title = await showPlaylistModal("Create Playlist");
-            if (!title || title.trim() === '') return;
+    if (createPlBtn) createPlBtn.addEventListener('click', createNewPlaylist);
 
-            const id = `playlist-${Date.now()}`;
-            playlists[id] = {
-                name: title.trim(),
-                desc: "Custom user-created playlist.",
-                art: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=300&q=80",
-                songs: []
-            };
-            savePlaylists();
+    const libraryCreatePlBtn = document.getElementById('library-create-pl-btn');
+    if (libraryCreatePlBtn) libraryCreatePlBtn.addEventListener('click', createNewPlaylist);
 
-            renderSidebarPlaylists();
-            renderLibraryView();
-            renderHomeView();
-            navigate('playlist', true, id);
+    const mobileSheetNewPlBtn = document.getElementById('mobile-sheet-new-pl-btn');
+    if (mobileSheetNewPlBtn) {
+        mobileSheetNewPlBtn.addEventListener('click', async () => {
+            closeMobileActionSheet();
+            await createNewPlaylist();
         });
+    }
+
+    // Mobile Action Sheet Close & Subpanel Handlers
+    const sheetBackdrop = document.getElementById('mobile-action-sheet-backdrop');
+    if (sheetBackdrop) sheetBackdrop.addEventListener('click', closeMobileActionSheet);
+
+    const sheetCancelBtn = document.getElementById('mobile-sheet-cancel-btn');
+    if (sheetCancelBtn) sheetCancelBtn.addEventListener('click', closeMobileActionSheet);
+
+    const sheetPlBackBtn = document.getElementById('mobile-sheet-pl-back');
+    if (sheetPlBackBtn) {
+        sheetPlBackBtn.addEventListener('click', () => {
+            const plPanel = document.getElementById('mobile-sheet-playlists-panel');
+            const actionsList = document.getElementById('mobile-sheet-actions');
+            if (plPanel) plPanel.style.display = 'none';
+            if (actionsList) actionsList.style.display = 'flex';
+        });
+    }
+
+    // Mobile Action Sheet Drag-Down-to-Dismiss Gesture
+    const sheetEl = document.getElementById('mobile-action-sheet');
+    const sheetDragHandle = document.getElementById('mobile-sheet-drag-handle');
+    if (sheetEl && sheetDragHandle) {
+        let sheetStartY = 0;
+        let isDraggingSheet = false;
+
+        sheetDragHandle.addEventListener('touchstart', (e) => {
+            sheetStartY = e.touches[0].clientY;
+            isDraggingSheet = true;
+        }, { passive: true });
+
+        sheetDragHandle.addEventListener('touchmove', (e) => {
+            if (!isDraggingSheet) return;
+            const currentY = e.touches[0].clientY;
+            const deltaY = currentY - sheetStartY;
+            if (deltaY > 0) {
+                sheetEl.style.transition = 'none';
+                sheetEl.style.transform = `translateY(${deltaY}px)`;
+            }
+        }, { passive: true });
+
+        sheetDragHandle.addEventListener('touchend', (e) => {
+            if (!isDraggingSheet) return;
+            isDraggingSheet = false;
+            const currentY = e.changedTouches[0].clientY;
+            const deltaY = currentY - sheetStartY;
+            sheetEl.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
+            if (deltaY > 60) {
+                closeMobileActionSheet();
+                setTimeout(() => {
+                    sheetEl.style.transform = '';
+                }, 320);
+            } else {
+                sheetEl.style.transform = 'translateY(0)';
+            }
+        }, { passive: true });
     }
 
     // Playlist Options Dots Dropdown
@@ -3750,6 +4302,10 @@ function initEventListeners() {
     if (plOptionsBtn) {
         plOptionsBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            if (window.innerWidth <= 820) {
+                openMobileActionSheetForPlaylist(activePlaylistId);
+                return;
+            }
             const dropdown = document.getElementById('playlist-options-dropdown');
             if (dropdown) {
                 const isVisible = dropdown.style.display === 'flex';
