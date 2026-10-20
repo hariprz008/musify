@@ -3,8 +3,26 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Mucify - Premium Web Player</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Mucify - Mobile Music Player</title>
+
+    <!-- Mobile Application & PWA Meta Tags -->
+    <meta name="application-name" content="Mucify">
+    <meta name="apple-mobile-web-app-title" content="Mucify">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#121212">
+    <meta name="color-scheme" content="dark">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- Web App Manifest & App Icons -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+
     <!-- Google Fonts for premium typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,10 +31,61 @@
         rel="stylesheet">
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="styles.css?v=9.0">
+    <link rel="stylesheet" href="styles.css?v=10.0">
 </head>
 
 <body>
+
+    <!-- Network Offline Status Banner -->
+    <div class="network-status-indicator" id="network-status-indicator" style="display: none;">
+        <i data-lucide="wifi-off"></i>
+        <span>Offline Mode &bull; Cached music is playable</span>
+    </div>
+
+    <!-- iOS Add to Home Screen Instructions Modal -->
+    <div class="ios-install-modal-backdrop" id="ios-install-modal-backdrop" style="display: none;"></div>
+    <div class="ios-install-modal" id="ios-install-modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="ios-modal-header">
+            <div class="ios-modal-brand">
+                <img src="assets/icons/icon-192.png" alt="Mucify" class="ios-modal-icon">
+                <div>
+                    <h3 class="ios-modal-title">Install Mucify</h3>
+                    <p class="ios-modal-sub">Add to your iPhone Home Screen</p>
+                </div>
+            </div>
+            <button class="ios-modal-close" id="ios-modal-close-btn" aria-label="Close modal">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="ios-modal-body">
+            <div class="ios-step">
+                <div class="ios-step-badge">1</div>
+                <div class="ios-step-content">
+                    <p>Tap the <strong>Share</strong> button in Safari's bottom toolbar.</p>
+                    <div class="ios-step-icon-preview">
+                        <i data-lucide="share"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="ios-step">
+                <div class="ios-step-badge">2</div>
+                <div class="ios-step-content">
+                    <p>Scroll down and select <strong>Add to Home Screen</strong>.</p>
+                    <div class="ios-step-icon-preview">
+                        <i data-lucide="plus-square"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="ios-step">
+                <div class="ios-step-badge">3</div>
+                <div class="ios-step-content">
+                    <p>Tap <strong>Add</strong> in the top-right corner to launch Mucify like a native app!</p>
+                </div>
+            </div>
+        </div>
+        <button class="ios-modal-gotit-btn" id="ios-modal-gotit-btn">Got it</button>
+    </div>
+
     <!-- Mobile Drawer Sidebar (Sliding panel on mobile & tablet) -->
     <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop"></div>
     <aside class="mobile-drawer" id="mobile-drawer">
@@ -173,6 +242,8 @@
 
                         <!-- Dropdown Menu -->
                         <div class="profile-dropdown" id="profile-dropdown-menu">
+                            <a href="#" id="profile-install-btn"><i data-lucide="smartphone" class="dropdown-icon"></i>
+                                Install App</a>
                             <a href="#"><i data-lucide="user" class="dropdown-icon"></i> Account</a>
                             <a href="#"><i data-lucide="settings" class="dropdown-icon"></i> Settings</a>
                             <div class="dropdown-divider"></div>
@@ -1162,7 +1233,7 @@
         <button class="sheet-cancel-btn" id="mobile-sheet-cancel-btn">Close</button>
     </div>
 
-    <script src="app2.js?v=2.0"></script>
+    <script src="app2.js?v=3.0"></script>
     <script>
         // Initialize Lucide Icons
         lucide.createIcons();
