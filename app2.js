@@ -1146,23 +1146,75 @@ function toggleLikeSong(songId) {
 }
 
 function syncLikeButtons(songId) {
+    const isLiked = likedSongIds.includes(songId);
     const currentSong = currentQueue[currentSongIndex];
 
+    // 1. Desktop / Mini-player Like button
     if (currentSong && currentSong.id === songId && elPlayerLikeBtn) {
-        const isLiked = likedSongIds.includes(songId);
-        if (isLiked) {
-            elPlayerLikeBtn.classList.add('liked');
-            const icon = elPlayerLikeBtn.querySelector('svg, i');
-            if (icon) icon.setAttribute('fill', 'var(--primary-green)');
-        } else {
-            elPlayerLikeBtn.classList.remove('liked');
-            const icon = elPlayerLikeBtn.querySelector('svg, i');
-            if (icon) icon.removeAttribute('fill');
+        elPlayerLikeBtn.classList.toggle('liked', isLiked);
+        const icon = elPlayerLikeBtn.querySelector('svg, i');
+        if (icon) {
+            if (isLiked) {
+                icon.setAttribute('fill', 'var(--primary-green)');
+                icon.setAttribute('color', 'var(--primary-green)');
+            } else {
+                icon.removeAttribute('fill');
+                icon.setAttribute('color', 'currentColor');
+            }
         }
     }
 
-    document.querySelectorAll(`.row-action-btn[data-song-id="${songId}"]`).forEach(btn => {
-        const isLiked = likedSongIds.includes(songId);
+    // 2. Mobile Full Player Like button
+    const mLikeBtn = document.getElementById('mobile-player-like-btn');
+    if (currentSong && currentSong.id === songId && mLikeBtn) {
+        mLikeBtn.classList.toggle('liked', isLiked);
+        const icon = mLikeBtn.querySelector('svg, i');
+        if (icon) {
+            if (isLiked) {
+                icon.setAttribute('fill', 'var(--primary-green)');
+                icon.setAttribute('color', 'var(--primary-green)');
+            } else {
+                icon.removeAttribute('fill');
+                icon.setAttribute('color', 'currentColor');
+            }
+        }
+    }
+
+    // 3. Mobile Action Sheet Header Like button
+    const sheetLikeBtn = document.getElementById('mobile-sheet-header-like-btn');
+    const targetSong = songs.find(s => s.id === songId);
+    if (sheetLikeBtn && targetSong) {
+        const sheetTitle = document.getElementById('mobile-sheet-title');
+        if (sheetTitle && sheetTitle.textContent === targetSong.title) {
+            sheetLikeBtn.classList.toggle('liked', isLiked);
+            const icon = sheetLikeBtn.querySelector('svg, i');
+            if (icon) {
+                if (isLiked) {
+                    icon.setAttribute('fill', 'var(--primary-green)');
+                    icon.setAttribute('color', 'var(--primary-green)');
+                } else {
+                    icon.removeAttribute('fill');
+                    icon.setAttribute('color', 'currentColor');
+                }
+            }
+        }
+    }
+
+    // 4. Mobile Action Sheet list item (if open)
+    const sheetActionLike = document.querySelector('.sheet-action-item.like-toggle');
+    if (sheetActionLike && targetSong) {
+        const sheetTitle = document.getElementById('mobile-sheet-title');
+        if (sheetTitle && sheetTitle.textContent === targetSong.title) {
+            sheetActionLike.classList.toggle('active-item', isLiked);
+            sheetActionLike.innerHTML = isLiked ?
+                `<i data-lucide="heart" fill="var(--primary-green)" color="var(--primary-green)"></i> <span>Remove from Liked Songs</span>` :
+                `<i data-lucide="heart"></i> <span>Save to Liked Songs</span>`;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+    }
+
+    // 5. Track rows across all views and queue
+    document.querySelectorAll(`.row-action-btn[data-song-id="${songId}"], .queue-table-row[data-song-id="${songId}"] .row-action-btn`).forEach(btn => {
         btn.classList.toggle('liked', isLiked);
         const icon = btn.querySelector('svg, i');
         if (icon) {
@@ -2002,7 +2054,7 @@ function renderQueueView() {
                     <button class="remove-queue-btn" data-action="remove" title="Remove from Queue" draggable="false">
                         <i data-lucide="x" class="small-icon"></i>
                     </button>
-                    <button class="row-action-btn ${isLiked ? 'liked' : ''}" data-action="like" title="${isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}" draggable="false">
+                    <button class="row-action-btn ${isLiked ? 'liked' : ''}" data-song-id="${song.id}" data-action="like" title="${isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}" draggable="false">
                         <i data-lucide="heart" ${isLiked ? 'fill="var(--primary-green)" color="var(--primary-green)"' : ''} class="small-icon"></i>
                     </button>
                     <button class="row-menu-btn" data-action="menu" title="More options" draggable="false">
@@ -3195,6 +3247,17 @@ function openMobileActionSheetForSong(songId, context = null) {
     };
     actionsList.appendChild(itemAddQueue);
 
+    // 5. View Queue
+    const itemOpenQueue = document.createElement('div');
+    itemOpenQueue.className = 'sheet-action-item';
+    itemOpenQueue.innerHTML = `<i data-lucide="list-music"></i> <span>View Current Queue</span>`;
+    itemOpenQueue.onclick = () => {
+        closeMobileActionSheet();
+        closeMobileFullPlayer();
+        navigate('queue');
+    };
+    actionsList.appendChild(itemOpenQueue);
+
     // 5. Go to Album
     if (song.album) {
         const itemGoAlbum = document.createElement('div');
@@ -3745,7 +3808,8 @@ function initEventListeners() {
     if (elShuffleBtn) elShuffleBtn.addEventListener('click', toggleShuffle);
     if (elRepeatBtn) elRepeatBtn.addEventListener('click', toggleRepeat);
     if (elPlayerLikeBtn) {
-        elPlayerLikeBtn.addEventListener('click', () => {
+        elPlayerLikeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             const currentSong = currentQueue[currentSongIndex];
             if (currentSong) toggleLikeSong(currentSong.id);
         });
@@ -3969,21 +4033,34 @@ function initEventListeners() {
     if (mobileFullPlayer) {
         let fullStartY = 0;
         let isDraggingFull = false;
+        let hasMovedSignificantly = false;
 
         mobileFullPlayer.addEventListener('touchstart', (e) => {
             const target = e.target;
-            if (target.closest('.mobile-player-progress-section') || target.closest('.mobile-player-controls') || target.closest('.mobile-volume-group')) {
+            if (target.closest('button') ||
+                target.closest('.mobile-player-controls') ||
+                target.closest('.mobile-player-progress-section') ||
+                target.closest('.mobile-player-bottom-bar') ||
+                target.closest('.mobile-volume-group') ||
+                target.closest('#mobile-player-like-btn') ||
+                target.closest('#mobile-player-more-btn') ||
+                target.closest('#mobile-player-collapse-btn') ||
+                target.closest('#mobile-btn-queue') ||
+                target.closest('#mobile-btn-mute')) {
+                isDraggingFull = false;
                 return;
             }
             fullStartY = e.touches[0].clientY;
             isDraggingFull = true;
+            hasMovedSignificantly = false;
         }, { passive: true });
 
         mobileFullPlayer.addEventListener('touchmove', (e) => {
             if (!isDraggingFull) return;
             const currentY = e.touches[0].clientY;
             const deltaY = currentY - fullStartY;
-            if (deltaY > 0) {
+            if (deltaY > 10) {
+                hasMovedSignificantly = true;
                 mobileFullPlayer.style.transition = 'none';
                 mobileFullPlayer.style.transform = `translateY(${deltaY}px)`;
             }
@@ -3992,6 +4069,9 @@ function initEventListeners() {
         mobileFullPlayer.addEventListener('touchend', (e) => {
             if (!isDraggingFull) return;
             isDraggingFull = false;
+            if (!hasMovedSignificantly) {
+                return;
+            }
             const currentY = e.changedTouches[0].clientY;
             const deltaY = currentY - fullStartY;
             mobileFullPlayer.style.transition = 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)';
@@ -4081,8 +4161,12 @@ function initEventListeners() {
             e.stopPropagation();
             const currentSong = currentQueue[currentSongIndex];
             if (currentSong) {
-                const rect = mobilePlayerMoreBtn.getBoundingClientRect();
-                showSongContextMenu(currentSong.id, rect.left - 150, rect.bottom + 8);
+                if (window.innerWidth <= 820) {
+                    openMobileActionSheetForSong(currentSong.id);
+                } else {
+                    const rect = mobilePlayerMoreBtn.getBoundingClientRect();
+                    showSongContextMenu(currentSong.id, rect.left - 150, rect.bottom + 8);
+                }
             }
         });
     }
@@ -4677,6 +4761,8 @@ function syncVolumeUI() {
 
     const mVolFill = document.getElementById('mobile-volume-fill');
     if (mVolFill) mVolFill.style.width = `${pct}%`;
+    const mVolThumb = document.getElementById('mobileVolumeThumb');
+    if (mVolThumb) mVolThumb.style.left = `${pct}%`;
 
     const muteBtn = elVolumeBtn || document.getElementById('btn-mute');
     if (muteBtn) {
