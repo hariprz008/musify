@@ -873,6 +873,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderHomeView();
     syncVolumeUI();
     setGreeting();
+    initPwaAndMobileApp();
 
     if (songs.length > 0) {
         loadSong(songs[0], false);
@@ -888,11 +889,17 @@ function initAudio() {
     audio.addEventListener('play', () => {
         isPlaying = true;
         updatePlayPauseUI(true);
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'playing';
+        }
     });
 
     audio.addEventListener('pause', () => {
         isPlaying = false;
         updatePlayPauseUI(false);
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'paused';
+        }
     });
 
     audio.addEventListener('timeupdate', () => {
@@ -909,6 +916,8 @@ function initAudio() {
             if (mFill) mFill.style.width = `${pct}%`;
             if (mThumb) mThumb.style.left = `${pct}%`;
             if (mCurrent) mCurrent.textContent = formatTime(audio.currentTime);
+
+            updateMediaSessionPositionState();
         }
     });
 
@@ -975,6 +984,7 @@ function loadSong(song, shouldPlay = true) {
     syncMobileFullPlayer(song);
     updateNowPlayingPanel(song);
     updateActiveRowHighlight();
+    syncMediaSession(song);
 
     if (song && song.id) {
         listeningHistory = [song.id, ...listeningHistory.filter(id => id !== song.id)].slice(0, 20);
@@ -998,11 +1008,17 @@ function playAudio() {
     if (!audio) return;
     isPlaying = true;
     updatePlayPauseUI(true);
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'playing';
+    }
 
     audio.play().catch(err => {
         console.log("Autoplay blocked by browser. User gesture required.", err);
         isPlaying = false;
         updatePlayPauseUI(false);
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'paused';
+        }
     });
 }
 
@@ -1010,6 +1026,9 @@ function pauseAudio() {
     if (!audio) return;
     isPlaying = false;
     updatePlayPauseUI(false);
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'paused';
+    }
     audio.pause();
 }
 
@@ -1253,6 +1272,9 @@ function openMobileDrawer() {
     const backdrop = document.getElementById('mobile-drawer-backdrop');
     if (drawer) drawer.classList.add('open');
     if (backdrop) backdrop.classList.add('open');
+    try {
+        history.pushState({ modal: 'drawer' }, '');
+    } catch (e) { }
 }
 
 function closeMobileDrawer() {
@@ -1267,6 +1289,9 @@ function openMobileFullPlayer() {
     if (player) {
         player.classList.add('open');
         syncMobileFullPlayer();
+        try {
+            history.pushState({ modal: 'fullPlayer' }, '');
+        } catch (e) { }
     }
 }
 
@@ -4791,4 +4816,348 @@ function syncVolumeUI() {
             mMuteBtn.innerHTML = VOLUME_HIGH_SVG;
         }
     }
+}
+
+// --- 24. PWA, MediaSession & Mobile Native Features ---
+
+let deferredPwaPrompt = null;
+
+function triggerHaptic(type = 'light') {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try {
+            if (type === 'light') {
+                navigator.vibrate(12);
+            } else if (type === 'medium') {
+                navigator.vibrate(18);
+            } else if (type === 'heavy') {
+                navigator.vibrate([25, 30, 25]);
+            }
+        } catch (e) { }
+    }
+}
+
+function syncMediaSession(song) {
+    if (!('mediaSession' in navigator) || !song) return;
+
+    try {
+        const coverUrl = song.cover || 'assets/icons/icon-512.png';
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: song.title || 'Mucify Track',
+            artist: song.artist || 'Unknown Artist',
+            album: song.album || 'Mucify Music',
+            artwork: [
+                { src: coverUrl, sizes: '96x96', type: 'image/png' },
+                { src: coverUrl, sizes: '128x128', type: 'image/png' },
+                { src: coverUrl, sizes: '192x192', type: 'image/png' },
+                { src: coverUrl, sizes: '256x256', type: 'image/png' },
+                { src: coverUrl, sizes: '384x384', type: 'image/png' },
+                { src: coverUrl, sizes: '512x512', type: 'image/png' }
+            ]
+        });
+
+        navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+
+        if (!window._mediaSessionHandlersSet) {
+            window._mediaSessionHandlersSet = true;
+            navigator.mediaSession.setActionHandler('play', () => {
+                playAudio();
+                triggerHaptic('light');
+            });
+            navigator.mediaSession.setActionHandler('pause', () => {
+                pauseAudio();
+                triggerHaptic('light');
+            });
+            navigator.mediaSession.setActionHandler('previoustrack', () => {
+                prevSong();
+                triggerHaptic('light');
+            });
+            navigator.mediaSession.setActionHandler('nexttrack', () => {
+                nextSong();
+                triggerHaptic('light');
+            });
+            navigator.mediaSession.setActionHandler('seekto', (details) => {
+                if (details.fastSeek && 'fastSeek' in audio) {
+                    audio.fastSeek(details.seekTime);
+                    return;
+                }
+                if (details.seekTime !== undefined && audio.duration) {
+                    audio.currentTime = Math.min(Math.max(0, details.seekTime), audio.duration);
+                }
+            });
+            navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+                const skip = details.seekOffset || 10;
+                audio.currentTime = Math.max(audio.currentTime - skip, 0);
+            });
+            navigator.mediaSession.setActionHandler('seekforward', (details) => {
+                const skip = details.seekOffset || 10;
+                audio.currentTime = Math.min(audio.currentTime + skip, audio.duration);
+            });
+        }
+    } catch (err) {
+        console.warn('[MediaSession] Metadata update error:', err);
+    }
+}
+
+function updateMediaSessionPositionState() {
+    if ('mediaSession' in navigator && audio && audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+        try {
+            navigator.mediaSession.setPositionState({
+                duration: audio.duration,
+                playbackRate: audio.playbackRate || 1.0,
+                position: Math.min(audio.currentTime, audio.duration)
+            });
+        } catch (e) { }
+    }
+}
+
+function initPwaAndMobileApp() {
+    // 1. Register Service Worker for offline play & fast launching
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').then((registration) => {
+                console.log('[Mucify] ServiceWorker registered with scope:', registration.scope);
+            }).catch((error) => {
+                console.warn('[Mucify] ServiceWorker registration failed:', error);
+            });
+        });
+    }
+
+    // 2. Standalone Mode Detection
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+        navigator.standalone === true ||
+        window.matchMedia('(display-mode: fullscreen)').matches;
+
+    if (isStandalone) {
+        document.body.classList.add('pwa-standalone');
+    }
+
+    // 3. PWA Install Prompt handling
+    const banner = document.getElementById('mobile-install-banner');
+    const bannerInstallBtn = document.getElementById('install-banner-btn');
+    const bannerCloseBtn = document.getElementById('install-banner-close');
+
+    const iosModal = document.getElementById('ios-install-modal');
+    const iosBackdrop = document.getElementById('ios-install-modal-backdrop');
+    const iosCloseBtn = document.getElementById('ios-modal-close-btn');
+    const iosGotItBtn = document.getElementById('ios-modal-gotit-btn');
+    const modalStepsContainer = document.getElementById('install-modal-steps') || document.querySelector('.ios-modal-body');
+
+    const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    function openInstallModal() {
+        if (!iosModal || !iosBackdrop) return;
+
+        const subTitle = document.querySelector('.ios-modal-sub');
+        if (subTitle) {
+            subTitle.textContent = isIos ? 'Add to your iPhone Home Screen' : 'Install on your Android Phone';
+        }
+
+        if (modalStepsContainer) {
+            if (isIos) {
+                modalStepsContainer.innerHTML = `
+                    <div class="ios-step">
+                        <div class="ios-step-badge">1</div>
+                        <div class="ios-step-content">
+                            <p>Tap the <strong>Share</strong> button in Safari's bottom toolbar.</p>
+                            <div class="ios-step-icon-preview">
+                                <i data-lucide="share"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ios-step">
+                        <div class="ios-step-badge">2</div>
+                        <div class="ios-step-content">
+                            <p>Scroll down and tap <strong>Add to Home Screen</strong>.</p>
+                            <div class="ios-step-icon-preview">
+                                <i data-lucide="plus-square"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ios-step">
+                        <div class="ios-step-badge">3</div>
+                        <div class="ios-step-content">
+                            <p>Tap <strong>Add</strong> in the top-right corner to launch Mucify like a native app!</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                modalStepsContainer.innerHTML = `
+                    <div class="ios-step">
+                        <div class="ios-step-badge">1</div>
+                        <div class="ios-step-content">
+                            <p>Tap the browser menu <strong>(⋮)</strong> in the top-right corner.</p>
+                            <div class="ios-step-icon-preview">
+                                <i data-lucide="more-vertical"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ios-step">
+                        <div class="ios-step-badge">2</div>
+                        <div class="ios-step-content">
+                            <p>Select <strong>Install app</strong> or <strong>Add to Home screen</strong>.</p>
+                            <div class="ios-step-icon-preview">
+                                <i data-lucide="download"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ios-step">
+                        <div class="ios-step-badge">3</div>
+                        <div class="ios-step-content">
+                            <p>Confirm by tapping <strong>Install</strong> to launch Mucify from your home screen!</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        iosBackdrop.style.display = 'block';
+        iosModal.style.display = 'block';
+        if (window.lucide) lucide.createIcons();
+        triggerHaptic('light');
+    }
+
+    function closeInstallModal() {
+        if (iosModal && iosBackdrop) {
+            iosBackdrop.style.display = 'none';
+            iosModal.style.display = 'none';
+        }
+    }
+
+    if (iosCloseBtn) iosCloseBtn.addEventListener('click', closeInstallModal);
+    if (iosGotItBtn) iosGotItBtn.addEventListener('click', closeInstallModal);
+    if (iosBackdrop) iosBackdrop.addEventListener('click', closeInstallModal);
+
+    function triggerInstallFlow() {
+        triggerHaptic('medium');
+        if (deferredPwaPrompt) {
+            deferredPwaPrompt.prompt();
+            deferredPwaPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    if (banner) banner.style.display = 'none';
+                }
+                deferredPwaPrompt = null;
+            });
+        } else {
+            openInstallModal();
+        }
+    }
+
+    const profileInstallBtn = document.getElementById('profile-install-btn');
+    if (profileInstallBtn) {
+        profileInstallBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (elProfileDropdown) elProfileDropdown.classList.remove('show');
+            if (elProfileMenu) elProfileMenu.classList.remove('open');
+            triggerInstallFlow();
+        });
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPwaPrompt = e;
+    });
+
+    // 4. Offline / Online Status Indicator
+    const offlineIndicator = document.getElementById('network-status-indicator');
+    function updateOnlineStatus() {
+        if (offlineIndicator) {
+            if (!navigator.onLine) {
+                offlineIndicator.style.display = 'flex';
+                if (window.lucide) lucide.createIcons();
+            } else {
+                offlineIndicator.style.display = 'none';
+            }
+        }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    // 5. Prime audio context on first mobile touch gesture
+    const unlockMobileAudio = () => {
+        if (audio) {
+            // Preload to bypass autoplay gesture locks
+            audio.load();
+        }
+        document.removeEventListener('touchstart', unlockMobileAudio);
+        document.removeEventListener('touchend', unlockMobileAudio);
+        document.removeEventListener('click', unlockMobileAudio);
+    };
+    document.addEventListener('touchstart', unlockMobileAudio, { once: true, passive: true });
+    document.addEventListener('touchend', unlockMobileAudio, { once: true, passive: true });
+    document.addEventListener('click', unlockMobileAudio, { once: true });
+
+    // 6. Mobile Full Player Artwork Left/Right Swipe for Next/Previous Song
+    const mobileArtWrapper = document.querySelector('.mobile-player-art-section');
+    if (mobileArtWrapper) {
+        let artStartX = 0;
+        let artStartY = 0;
+        let artStartTime = 0;
+
+        mobileArtWrapper.addEventListener('touchstart', (e) => {
+            const t = e.touches[0];
+            artStartX = t.clientX;
+            artStartY = t.clientY;
+            artStartTime = Date.now();
+        }, { passive: true });
+
+        mobileArtWrapper.addEventListener('touchend', (e) => {
+            const t = e.changedTouches[0];
+            const dx = t.clientX - artStartX;
+            const dy = t.clientY - artStartY;
+            const dt = Date.now() - artStartTime;
+
+            // Horizontal swipe with minimal vertical drift
+            if (Math.abs(dx) > 40 && Math.abs(dy) < 50 && dt < 450) {
+                const artInner = document.querySelector('.mobile-player-art-wrapper');
+                if (dx < 0) {
+                    // Swiped Left -> Next Song
+                    if (artInner) artInner.classList.add('slide-left');
+                    setTimeout(() => {
+                        nextSong();
+                        triggerHaptic('medium');
+                        if (artInner) artInner.classList.remove('slide-left');
+                    }, 120);
+                } else {
+                    // Swiped Right -> Previous Song
+                    if (artInner) artInner.classList.add('slide-right');
+                    setTimeout(() => {
+                        prevSong();
+                        triggerHaptic('medium');
+                        if (artInner) artInner.classList.remove('slide-right');
+                    }, 120);
+                }
+            }
+        }, { passive: true });
+    }
+
+    // 7. Native Mobile Hardware & Gesture "Back" Navigation handling
+    window.addEventListener('popstate', (e) => {
+        const fullPlayer = document.getElementById('mobile-full-player');
+        const drawer = document.getElementById('mobile-drawer');
+        const actionSheet = document.getElementById('mobile-action-sheet');
+        const addSongsModal = document.getElementById('queue-add-songs-modal');
+
+        if (actionSheet && actionSheet.classList.contains('open')) {
+            closeMobileActionSheet();
+            return;
+        }
+        if (fullPlayer && fullPlayer.classList.contains('open')) {
+            closeMobileFullPlayer();
+            return;
+        }
+        if (drawer && drawer.classList.contains('open')) {
+            closeMobileDrawer();
+            return;
+        }
+        if (addSongsModal && addSongsModal.style.display !== 'none') {
+            addSongsModal.style.display = 'none';
+            return;
+        }
+        if (iosModal && iosModal.style.display !== 'none') {
+            closeInstallModal();
+            return;
+        }
+    });
 }
