@@ -1101,9 +1101,38 @@ h1 {
     transform: scale(1.1);
 }
 
-.row-action-btn.liked {
+.row-action-btn.liked,
+.track-like-btn.liked,
+.mobile-player-like-btn.liked,
+.sheet-header-like-btn.liked {
     color: var(--primary-green) !important;
     opacity: 1 !important;
+}
+
+.row-action-btn.liked svg,
+.row-action-btn.liked i,
+.track-like-btn.liked svg,
+.track-like-btn.liked i,
+.mobile-player-like-btn.liked svg,
+.mobile-player-like-btn.liked i,
+.sheet-header-like-btn.liked svg,
+.sheet-header-like-btn.liked i,
+.sheet-action-item.active-item svg,
+.sheet-action-item.active-item i {
+    fill: var(--primary-green) !important;
+    stroke: var(--primary-green) !important;
+    color: var(--primary-green) !important;
+}
+
+.row-action-btn:not(.liked) svg,
+.row-action-btn:not(.liked) i,
+.track-like-btn:not(.liked) svg,
+.track-like-btn:not(.liked) i,
+.mobile-player-like-btn:not(.liked) svg,
+.mobile-player-like-btn:not(.liked) i,
+.sheet-header-like-btn:not(.liked) svg,
+.sheet-header-like-btn:not(.liked) i {
+    fill: none !important;
 }
 
 .empty-playlist-msg {
@@ -2001,6 +2030,8 @@ h1 {
 .mobile-player-like-btn {
     width: 44px;
     height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -2009,14 +2040,20 @@ h1 {
     cursor: pointer;
     transition: transform 0.2s ease, color 0.2s ease;
     flex-shrink: 0;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 5;
+    pointer-events: auto;
 }
 
 .mobile-player-like-btn:active {
-    transform: scale(1.2);
+    transform: scale(1.15);
 }
 
 .mobile-player-like-btn.liked {
-    color: var(--primary-green);
+    color: var(--primary-green) !important;
 }
 
 .mobile-player-progress-section {
@@ -2120,12 +2157,13 @@ h1 {
 
 .mobile-player-bottom-bar {
     position: relative;
-    z-index: 2;
+    z-index: 5;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-top: 10px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
+    pointer-events: auto;
 }
 
 .mobile-bottom-action-btn {
@@ -2133,12 +2171,22 @@ h1 {
     align-items: center;
     gap: 6px;
     color: rgba(255, 255, 255, 0.7);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    padding: 6px 10px;
-    border-radius: 16px;
-    transition: color 0.2s ease, background 0.2s ease;
+    padding: 8px 12px;
+    min-height: 44px;
+    border-radius: 20px;
+    transition: color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
+}
+
+.mobile-bottom-action-btn:active {
+    transform: scale(0.96);
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .mobile-bottom-action-btn:hover {
