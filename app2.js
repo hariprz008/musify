@@ -876,7 +876,14 @@ document.addEventListener('DOMContentLoaded', () => {
     initPwaAndMobileApp();
 
     if (songs.length > 0) {
-        loadSong(songs[0], false);
+        let initialSong = songs[0];
+        try {
+            const savedState = JSON.parse(localStorage.getItem('mucify_app_state_v1'));
+            if (savedState && typeof savedState.activeSongIndex === 'number' && songs[savedState.activeSongIndex]) {
+                initialSong = songs[savedState.activeSongIndex];
+            }
+        } catch (e) { }
+        loadSong(initialSong, false);
     }
 });
 
@@ -4949,65 +4956,21 @@ function initPwaAndMobileApp() {
 
         const subTitle = document.querySelector('.ios-modal-sub');
         if (subTitle) {
-            subTitle.textContent = isIos ? 'Add to your iPhone Home Screen' : 'Install on your Android Phone';
+            subTitle.textContent = 'Direct App Package Download';
         }
 
         if (modalStepsContainer) {
-            if (isIos) {
-                modalStepsContainer.innerHTML = `
-                    <div class="ios-step">
-                        <div class="ios-step-badge">1</div>
-                        <div class="ios-step-content">
-                            <p>Tap the <strong>Share</strong> button in Safari's bottom toolbar.</p>
-                            <div class="ios-step-icon-preview">
-                                <i data-lucide="share"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ios-step">
-                        <div class="ios-step-badge">2</div>
-                        <div class="ios-step-content">
-                            <p>Scroll down and tap <strong>Add to Home Screen</strong>.</p>
-                            <div class="ios-step-icon-preview">
-                                <i data-lucide="plus-square"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ios-step">
-                        <div class="ios-step-badge">3</div>
-                        <div class="ios-step-content">
-                            <p>Tap <strong>Add</strong> in the top-right corner to launch Mucify like a native app!</p>
-                        </div>
-                    </div>
-                `;
-            } else {
-                modalStepsContainer.innerHTML = `
-                    <div class="ios-step">
-                        <div class="ios-step-badge">1</div>
-                        <div class="ios-step-content">
-                            <p>Tap the browser menu <strong>(⋮)</strong> in the top-right corner.</p>
-                            <div class="ios-step-icon-preview">
-                                <i data-lucide="more-vertical"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ios-step">
-                        <div class="ios-step-badge">2</div>
-                        <div class="ios-step-content">
-                            <p>Select <strong>Install app</strong> or <strong>Add to Home screen</strong>.</p>
-                            <div class="ios-step-icon-preview">
-                                <i data-lucide="download"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ios-step">
-                        <div class="ios-step-badge">3</div>
-                        <div class="ios-step-content">
-                            <p>Confirm by tapping <strong>Install</strong> to launch Mucify from your home screen!</p>
-                        </div>
-                    </div>
-                `;
-            }
+            modalStepsContainer.innerHTML = `
+                <div style="text-align: center; padding: 12px 0;">
+                    <p style="color: var(--text-muted); font-size: 13.5px; margin-bottom: 18px; line-height: 1.5;">
+                        Download the Mucify mobile app directly to your device for instant offline music playback.
+                    </p>
+                    <a href="mucify.apk" download="mucify.apk" class="ios-modal-gotit-btn" style="display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;">
+                        <i data-lucide="download"></i>
+                        <span>Download Now (APK)</span>
+                    </a>
+                </div>
+            `;
         }
 
         iosBackdrop.style.display = 'block';
@@ -5044,12 +5007,10 @@ function initPwaAndMobileApp() {
 
     const profileInstallBtn = document.getElementById('profile-install-btn');
     if (profileInstallBtn) {
-        profileInstallBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        profileInstallBtn.addEventListener('click', () => {
             if (elProfileDropdown) elProfileDropdown.classList.remove('show');
             if (elProfileMenu) elProfileMenu.classList.remove('open');
-            triggerInstallFlow();
+            triggerHaptic('medium');
         });
     }
 

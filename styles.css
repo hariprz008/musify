@@ -5027,6 +5027,11 @@ textarea {
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-sizing: border-box;
 }
 
 .ios-modal-gotit-btn:active {
