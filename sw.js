@@ -3,7 +3,7 @@
  * Provides offline caching, instant app launching, and Background Sync API support.
  */
 
-const CACHE_NAME = 'mucify-cache-v1.1.0';
+const CACHE_NAME = 'mucify-cache-v1.2.0';
 
 const PRECACHE_ASSETS = [
     './',
@@ -17,7 +17,8 @@ const PRECACHE_ASSETS = [
     './assets/icons/icon-512.png',
     './assets/icons/icon-512-maskable.png',
     './assets/icons/apple-touch-icon.png',
-    './assets/icons/favicon-32.png'
+    './assets/icons/favicon-32.png',
+    './assets/icons/free-icon-40407.png',
 ];
 
 // IndexedDB details shared with the client for Background Sync
