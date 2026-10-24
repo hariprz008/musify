@@ -152,20 +152,21 @@
             // 3. Restore audio player & current song
             if (state.audioState) {
                 const audio = document.getElementById('audio-player');
-                if (typeof state.activeSongIndex === 'number' && Array.isArray(window.songs) && window.songs[state.activeSongIndex]) {
+                const isRandomActive = Boolean(window.ENABLE_RANDOM_START || (typeof localStorage !== 'undefined' && localStorage.getItem('mucify_random_start') === 'true'));
+                if (!isRandomActive && typeof state.activeSongIndex === 'number' && Array.isArray(window.songs) && window.songs[state.activeSongIndex]) {
                     setTimeout(() => {
-                        if (typeof window.loadSong === 'function') {
+                        if (typeof window.loadSong === 'function' && window.currentSongIndex !== state.activeSongIndex) {
                             window.loadSong(window.songs[state.activeSongIndex], false);
-                            if (audio && state.audioState.currentTime > 0) {
-                                const onMeta = () => {
-                                    audio.currentTime = Math.min(state.audioState.currentTime, audio.duration || state.audioState.currentTime);
-                                    audio.removeEventListener('loadedmetadata', onMeta);
-                                };
-                                if (audio.readyState >= 1) {
-                                    audio.currentTime = state.audioState.currentTime;
-                                } else {
-                                    audio.addEventListener('loadedmetadata', onMeta);
-                                }
+                        }
+                        if (audio && state.audioState.currentTime > 0) {
+                            const onMeta = () => {
+                                audio.currentTime = Math.min(state.audioState.currentTime, audio.duration || state.audioState.currentTime);
+                                audio.removeEventListener('loadedmetadata', onMeta);
+                            };
+                            if (audio.readyState >= 1) {
+                                audio.currentTime = state.audioState.currentTime;
+                            } else {
+                                audio.addEventListener('loadedmetadata', onMeta);
                             }
                         }
                     }, 100);

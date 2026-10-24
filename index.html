@@ -982,6 +982,8 @@
                 <div class="progress-bar-wrapper">
                     <span class="time-stamp" id="time-current">0:00</span>
                     <div class="progress-track" id="progress-track">
+                        <input type="range" class="seek-bar-input" id="seek-bar" min="0" max="0" value="0" step="0.1"
+                            aria-label="Audio Seek Bar">
                         <div class="progress-fill" id="progress-fill"></div>
                         <div class="progress-thumb" id="elProgressThumb"></div>
                     </div>
@@ -1139,6 +1141,8 @@
         <!-- Scrubber Progress Bar -->
         <div class="mobile-player-progress-section">
             <div class="progress-track" id="mobile-progress-track">
+                <input type="range" class="seek-bar-input" id="mobile-seek-bar" min="0" max="0" value="0" step="0.1"
+                    aria-label="Audio Seek Bar">
                 <div class="progress-fill" id="mobile-progress-fill"></div>
                 <div class="progress-thumb" id="mobileProgressThumb"></div>
             </div>

@@ -1519,6 +1519,21 @@ h1 {
     cursor: pointer;
 }
 
+.seek-bar-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 5;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
 .progress-fill {
     height: 100%;
     width: 0%;
@@ -3828,6 +3843,29 @@ h1 {
     box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.05);
     opacity: 0.7;
     animation: spinVinyl 24s linear infinite;
+    animation-play-state: paused;
+}
+
+/* UI Animations bound to native HTML5 audio play/pause/ended state */
+.albums-vinyl-disc.spinning,
+.albums-vinyl-disc.is-playing,
+.spinning-cover.spinning,
+.spinning-cover.is-playing,
+#player-art.spinning,
+#mobile-player-art.spinning,
+.mobile-player-art-wrapper.spinning img {
+    animation: spinVinyl 20s linear infinite;
+    animation-play-state: running !important;
+}
+
+.albums-vinyl-disc.paused,
+.albums-vinyl-disc.is-paused,
+.spinning-cover.paused,
+.spinning-cover.is-paused,
+#player-art.paused,
+#mobile-player-art.paused,
+.mobile-player-art-wrapper.paused img {
+    animation-play-state: paused !important;
 }
 
 .albums-vinyl-center {

@@ -776,6 +776,41 @@ let previousVolume = volume;
 let isDraggingProgress = false;
 let playbackHistory = [];
 
+// ============================================================================
+// STARTUP CONFIGURATION & PERSISTENCE KEYS
+// ============================================================================
+// Feature 2: Random Start Option
+// Set ENABLE_RANDOM_START to true if you want the app to select a random song
+// from the playlist array on startup instead of starting at index 0 or restoring
+// the last played song.
+const ENABLE_RANDOM_START = false;
+
+// LocalStorage Keys
+const STORAGE_KEY_CURRENT_INDEX = 'mucify_current_song_index';
+const STORAGE_KEY_CURRENT_SONG_ID = 'mucify_current_song_id';
+const STORAGE_KEY_RANDOM_START = 'mucify_random_start';
+
+// Expose variables globally for inter-module synchronization (e.g. state-sync.js)
+window.ENABLE_RANDOM_START = ENABLE_RANDOM_START;
+window.songs = songs;
+window.currentSongIndex = currentSongIndex;
+window.currentQueue = currentQueue;
+
+/**
+ * Programmatic toggle helper for Random Start on startup.
+ * Can be called from the browser console: window.setRandomStartOnBoot(true)
+ * @param {boolean} enabled
+ */
+function setRandomStartOnBoot(enabled) {
+    try {
+        localStorage.setItem(STORAGE_KEY_RANDOM_START, enabled ? 'true' : 'false');
+        console.log(`[Mucify] Random start on boot set to: ${enabled}`);
+    } catch (e) {
+        console.warn('[Mucify] Failed to save random start preference:', e);
+    }
+}
+window.setRandomStartOnBoot = setRandomStartOnBoot;
+
 // Navigation History Stack
 let viewHistory = [{ view: 'home', playlistId: null }];
 let historyIndex = 0;
@@ -798,8 +833,11 @@ const VOLUME_LOW_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" heigh
 const VOLUME_MUTED_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-volume-x" id="volume-icon"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>`;
 
 function updatePlayPauseUI(playing) {
+    const isActuallyPlaying = (typeof playing === 'boolean') ? playing : Boolean(audio && !audio.paused);
+    isPlaying = isActuallyPlaying;
+
     if (elPlayPauseBtn) {
-        if (playing) {
+        if (isActuallyPlaying) {
             // Play State: Apply play state classes & switch icon source/innerHTML to pause lines
             elPlayPauseBtn.classList.remove('pause-state', 'is-paused', 'paused');
             elPlayPauseBtn.classList.add('play-state', 'is-playing', 'playing');
@@ -818,7 +856,7 @@ function updatePlayPauseUI(playing) {
 
     const mobilePlayBtn = document.getElementById('mobile-btn-play-pause');
     if (mobilePlayBtn) {
-        if (playing) {
+        if (isActuallyPlaying) {
             mobilePlayBtn.classList.remove('pause-state');
             mobilePlayBtn.classList.add('play-state');
             mobilePlayBtn.setAttribute('title', 'Pause');
@@ -906,70 +944,262 @@ document.addEventListener('DOMContentLoaded', () => {
     initPwaAndMobileApp();
 
     if (songs.length > 0) {
-        let initialSong = songs[0];
-        try {
-            const savedState = JSON.parse(localStorage.getItem('mucify_app_state_v1'));
-            if (savedState && typeof savedState.activeSongIndex === 'number' && songs[savedState.activeSongIndex]) {
-                initialSong = songs[savedState.activeSongIndex];
+        let initialIndex = 0;
+
+        // Check if Random Start alternative is active (via code constant or localStorage toggle)
+        const isRandomStart = ENABLE_RANDOM_START || localStorage.getItem(STORAGE_KEY_RANDOM_START) === 'true';
+
+        if (isRandomStart) {
+            // Feature 2: Random Start Option - select random song from playlist array
+            initialIndex = Math.floor(Math.random() * songs.length);
+            console.log(`[Mucify] Random Start active: selected song #${initialIndex} ("${songs[initialIndex].title}")`);
+        } else {
+            // Feature 1: Local Storage Persistence - check localStorage first
+            let foundSaved = false;
+
+            // 1. Direct saved index lookup
+            const savedIndexRaw = localStorage.getItem(STORAGE_KEY_CURRENT_INDEX);
+            if (savedIndexRaw !== null) {
+                const parsed = parseInt(savedIndexRaw, 10);
+                if (!isNaN(parsed) && parsed >= 0 && parsed < songs.length) {
+                    initialIndex = parsed;
+                    foundSaved = true;
+                }
             }
-        } catch (e) { }
-        loadSong(initialSong, false);
+
+            // 2. Fallback: match by saved song ID (handles playlist reordering safely)
+            if (!foundSaved) {
+                const savedSongId = localStorage.getItem(STORAGE_KEY_CURRENT_SONG_ID);
+                if (savedSongId) {
+                    const idIndex = songs.findIndex(s => s.id === savedSongId);
+                    if (idIndex !== -1) {
+                        initialIndex = idIndex;
+                        foundSaved = true;
+                    }
+                }
+            }
+
+            // 3. Fallback: check app state sync cache if present
+            if (!foundSaved) {
+                try {
+                    const savedState = JSON.parse(localStorage.getItem('mucify_app_state_v1'));
+                    if (savedState && typeof savedState.activeSongIndex === 'number' && songs[savedState.activeSongIndex]) {
+                        initialIndex = savedState.activeSongIndex;
+                        foundSaved = true;
+                    }
+                } catch (e) { }
+            }
+
+            if (foundSaved) {
+                console.log(`[Mucify] Restored last played song from localStorage: #${initialIndex} ("${songs[initialIndex].title}")`);
+            } else {
+                console.log(`[Mucify] No saved song found in localStorage. Starting at index 0 ("${songs[0].title}")`);
+            }
+        }
+
+        currentSongIndex = initialIndex;
+        window.currentSongIndex = initialIndex;
+        loadSong(songs[initialIndex], false);
     }
 });
 
 // --- 6. Audio Setup & Handlers ---
+/**
+ * Synchronizes cover/vinyl disc rotation animations across desktop, mobile, and album views.
+ * @param {boolean} isRunning - true to spin, false to pause at current angle
+ */
+function updateSpinningCovers(isRunning) {
+    const targets = document.querySelectorAll(
+        '#player-art, #mobile-player-art, .mobile-player-art-wrapper img, .albums-vinyl-disc, .spinning-cover'
+    );
+    targets.forEach(el => {
+        if (!el) return;
+        if (isRunning) {
+            el.classList.add('is-playing', 'spinning');
+            el.classList.remove('is-paused', 'paused');
+            el.style.animationPlayState = 'running';
+        } else {
+            el.classList.remove('is-playing', 'spinning');
+            el.classList.add('is-paused', 'paused');
+            el.style.animationPlayState = 'paused';
+        }
+    });
+}
+
+/**
+ * Resets spinning cover animations when a track ends or stops.
+ */
+function resetSpinningCovers() {
+    const targets = document.querySelectorAll(
+        '#player-art, #mobile-player-art, .mobile-player-art-wrapper img, .albums-vinyl-disc, .spinning-cover'
+    );
+    targets.forEach(el => {
+        if (!el) return;
+        el.classList.remove('is-playing', 'spinning', 'is-paused', 'paused');
+        el.style.animationPlayState = 'paused';
+    });
+}
+
+/**
+ * Starts all UI animations (button states, playing GIFs, spinning covers).
+ * Bound strictly to the native HTML5 Audio 'play' event.
+ */
+function startUIAnimations() {
+    isPlaying = true;
+    updatePlayPauseUI(true);
+    updateActiveRowHighlight();
+    updateSpinningCovers(true);
+
+    const queueGif = document.querySelector('.queue-track-row.now-playing-row .playing-gif');
+    if (queueGif) queueGif.style.display = 'block';
+
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'playing';
+    }
+}
+
+/**
+ * Stops or pauses all UI animations (button states, playing GIFs, spinning covers).
+ * Bound strictly to the native HTML5 Audio 'pause' event.
+ */
+function stopUIAnimations() {
+    isPlaying = false;
+    updatePlayPauseUI(false);
+    updateActiveRowHighlight();
+    updateSpinningCovers(false);
+
+    const queueGif = document.querySelector('.queue-track-row.now-playing-row .playing-gif');
+    if (queueGif) queueGif.style.display = 'none';
+
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'paused';
+    }
+}
+
+/**
+ * Resets all UI animations when a track reaches the end.
+ * Bound strictly to the native HTML5 Audio 'ended' event.
+ */
+function resetUIAnimations() {
+    stopUIAnimations();
+    resetSpinningCovers();
+}
+
 function initAudio() {
     if (!audio) return;
     audio.volume = isMuted ? 0 : volume;
     audio.muted = isMuted;
 
+    // 1. Play Event: Start all UI animations (spinning covers, playing GIFs, button states)
     audio.addEventListener('play', () => {
-        isPlaying = true;
-        updatePlayPauseUI(true);
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.playbackState = 'playing';
-        }
+        startUIAnimations();
     });
 
+    // 2. Pause Event: Stop / pause all UI animations
     audio.addEventListener('pause', () => {
-        isPlaying = false;
-        updatePlayPauseUI(false);
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.playbackState = 'paused';
-        }
+        stopUIAnimations();
     });
 
-    audio.addEventListener('timeupdate', () => {
-        if (!isDraggingProgress && audio.duration) {
-            const pct = (audio.currentTime / audio.duration) * 100;
-            if (elProgressFill) elProgressFill.style.width = `${pct}%`;
-            if (elProgressThumb) elProgressThumb.style.left = `${pct}%`;
-            if (elTimeCurrent) elTimeCurrent.textContent = formatTime(audio.currentTime);
-
-            // Sync Mobile Full Player Scrubber
-            const mFill = document.getElementById('mobile-progress-fill');
-            const mThumb = document.getElementById('mobileProgressThumb');
-            const mCurrent = document.getElementById('mobile-time-current');
-            if (mFill) mFill.style.width = `${pct}%`;
-            if (mThumb) mThumb.style.left = `${pct}%`;
-            if (mCurrent) mCurrent.textContent = formatTime(audio.currentTime);
-
-            updateMediaSessionPositionState();
-        }
-    });
-
-    audio.addEventListener('loadedmetadata', () => {
-        if (elTimeTotal) elTimeTotal.textContent = formatTime(audio.duration);
-        const mTotal = document.getElementById('mobile-time-total');
-        if (mTotal) mTotal.textContent = formatTime(audio.duration);
-    });
-
+    // 3. Ended Event: Reset animations and move to the next song
     audio.addEventListener('ended', () => {
+        resetUIAnimations();
         if (repeatMode === 'one') {
             audio.currentTime = 0;
             playAudio();
         } else {
             nextSong();
+        }
+    });
+
+    // 4. loadedmetadata Event: Format duration into min/sec, update total time label, set seek bar max
+    audio.addEventListener('loadedmetadata', () => {
+        const duration = audio.duration;
+        if (duration && !isNaN(duration) && isFinite(duration) && duration > 0) {
+            const formattedTotal = formatTime(duration);
+            if (elTimeTotal) elTimeTotal.textContent = formattedTotal;
+            const mTotal = document.getElementById('mobile-time-total');
+            if (mTotal) mTotal.textContent = formattedTotal;
+
+            // Set max value on <input type="range"> seek elements
+            const rangeInputs = document.querySelectorAll(
+                'input[type="range"].seek-bar, input[type="range"].seek-bar-input, #seek-bar, #mobile-seek-bar, .progress-track input[type="range"], .progress-bar-wrapper input[type="range"]'
+            );
+            rangeInputs.forEach(input => {
+                input.min = '0';
+                input.max = duration.toString();
+                input.step = '0.1';
+            });
+        }
+        if (typeof updateMediaSessionPositionState === 'function') {
+            updateMediaSessionPositionState();
+        }
+    });
+
+    // Handle duration changes dynamically if streaming or loaded in chunks
+    audio.addEventListener('durationchange', () => {
+        const duration = audio.duration;
+        if (duration && !isNaN(duration) && isFinite(duration) && duration > 0) {
+            const formattedTotal = formatTime(duration);
+            if (elTimeTotal) elTimeTotal.textContent = formattedTotal;
+            const mTotal = document.getElementById('mobile-time-total');
+            if (mTotal) mTotal.textContent = formattedTotal;
+
+            const rangeInputs = document.querySelectorAll(
+                'input[type="range"].seek-bar, input[type="range"].seek-bar-input, #seek-bar, #mobile-seek-bar, .progress-track input[type="range"], .progress-bar-wrapper input[type="range"]'
+            );
+            rangeInputs.forEach(input => {
+                input.max = duration.toString();
+            });
+        }
+    });
+
+    // 5. timeupdate Event: Format currentTime into min/sec, update current time label, update seek bar slider
+    audio.addEventListener('timeupdate', () => {
+        const currentTime = audio.currentTime || 0;
+        const duration = audio.duration || (currentQueue[currentSongIndex] && currentQueue[currentSongIndex].durationSec) || 0;
+
+        // Format and display current elapsed time
+        const formattedCurrent = formatTime(currentTime);
+        if (elTimeCurrent) elTimeCurrent.textContent = formattedCurrent;
+        const mCurrent = document.getElementById('mobile-time-current');
+        if (mCurrent) mCurrent.textContent = formattedCurrent;
+
+        // Ensure total time is displayed if loadedmetadata was delayed
+        if (duration > 0 && elTimeTotal && (elTimeTotal.textContent === '0:00' || elTimeTotal.textContent === '')) {
+            const formattedTotal = formatTime(duration);
+            elTimeTotal.textContent = formattedTotal;
+            const mTotal = document.getElementById('mobile-time-total');
+            if (mTotal) mTotal.textContent = formattedTotal;
+        }
+
+        // Only update slider position if the user is not actively dragging it
+        if (!isDraggingProgress) {
+            // Update <input type="range"> value so the slider moves forward as song plays
+            const rangeInputs = document.querySelectorAll(
+                'input[type="range"].seek-bar, input[type="range"].seek-bar-input, #seek-bar, #mobile-seek-bar, .progress-track input[type="range"], .progress-bar-wrapper input[type="range"]'
+            );
+            rangeInputs.forEach(input => {
+                if (duration > 0 && (!input.max || input.max === '0' || input.max === '100')) {
+                    input.max = duration.toString();
+                }
+                input.value = currentTime.toString();
+            });
+
+            // Update custom progress bar fill and thumb
+            if (duration > 0) {
+                const pct = Math.min(100, Math.max(0, (currentTime / duration) * 100));
+                if (elProgressFill) elProgressFill.style.width = `${pct}%`;
+                if (elProgressThumb) elProgressThumb.style.left = `${pct}%`;
+
+                const mFill = document.getElementById('mobile-progress-fill');
+                const mThumb = document.getElementById('mobileProgressThumb');
+                if (mFill) mFill.style.width = `${pct}%`;
+                if (mThumb) mThumb.style.left = `${pct}%`;
+            }
+        }
+
+        if (typeof updateMediaSessionPositionState === 'function') {
+            updateMediaSessionPositionState();
         }
     });
 
@@ -1011,7 +1241,54 @@ function resolveAudioUrl(url) {
 function loadSong(song, shouldPlay = true) {
     if (!song || !audio) return;
 
+    // 1. Synchronize currentSongIndex with the loaded song
+    const queueIdx = currentQueue.findIndex(s => s.id === song.id);
+    if (queueIdx !== -1) {
+        currentSongIndex = queueIdx;
+    } else {
+        const masterIdx = songs.findIndex(s => s.id === song.id);
+        if (masterIdx !== -1) {
+            currentSongIndex = masterIdx;
+        }
+    }
+    window.currentSongIndex = currentSongIndex;
+    window.currentQueue = currentQueue;
+
+    // 2. Feature 1: Persist current song index and ID to localStorage
+    try {
+        const masterIdx = songs.findIndex(s => s.id === song.id);
+        const indexToSave = masterIdx !== -1 ? masterIdx : currentSongIndex;
+        localStorage.setItem(STORAGE_KEY_CURRENT_INDEX, indexToSave.toString());
+        if (song.id) {
+            localStorage.setItem(STORAGE_KEY_CURRENT_SONG_ID, song.id);
+        }
+    } catch (e) {
+        console.warn('[Mucify] Failed to save current song to localStorage:', e);
+    }
+
     audio.src = resolveAudioUrl(song.url);
+
+    // Initialize progress bar values and timestamps immediately
+    if (elTimeCurrent) elTimeCurrent.textContent = '0:00';
+    const mCurrent = document.getElementById('mobile-time-current');
+    if (mCurrent) mCurrent.textContent = '0:00';
+
+    const initialTotal = song.duration || (song.durationSec ? formatTime(song.durationSec) : '0:00');
+    if (elTimeTotal) elTimeTotal.textContent = initialTotal;
+    const mTotal = document.getElementById('mobile-time-total');
+    if (mTotal) mTotal.textContent = initialTotal;
+
+    if (elProgressFill) elProgressFill.style.width = '0%';
+    if (elProgressThumb) elProgressThumb.style.left = '0%';
+    const mFill = document.getElementById('mobile-progress-fill');
+    const mThumb = document.getElementById('mobileProgressThumb');
+    if (mFill) mFill.style.width = '0%';
+    if (mThumb) mThumb.style.left = '0%';
+
+    document.querySelectorAll('input[type="range"].seek-bar, input[type="range"].seek-bar-input, #seek-bar, #mobile-seek-bar, .progress-track input[type="range"]').forEach(input => {
+        input.value = '0';
+        if (song.durationSec) input.max = song.durationSec.toString();
+    });
 
     if (elPlayerArt) elPlayerArt.src = song.cover;
     if (elPlayerTitle) elPlayerTitle.textContent = song.title;
@@ -1043,45 +1320,39 @@ function loadSong(song, shouldPlay = true) {
         pauseAudio();
     }
 }
+window.loadSong = loadSong;
 
 function playAudio() {
     if (!audio) return;
-    isPlaying = true;
-    updatePlayPauseUI(true);
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.playbackState = 'playing';
-    }
 
     const currentSong = currentQueue[currentSongIndex];
     if (currentSong && currentSong.id && lastRecordedSongPlayId !== currentSong.id) {
         recordSongPlay(currentSong.id);
     }
 
-    audio.play().catch(err => {
-        console.log("Autoplay blocked by browser. User gesture required.", err);
-        isPlaying = false;
-        updatePlayPauseUI(false);
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.playbackState = 'paused';
-        }
-    });
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(err => {
+            console.log("Autoplay or playback was prevented by browser:", err);
+            stopUIAnimations();
+        });
+    }
 }
 
 function pauseAudio() {
     if (!audio) return;
-    isPlaying = false;
-    updatePlayPauseUI(false);
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.playbackState = 'paused';
-    }
     audio.pause();
+    // Native 'pause' event listener on audio automatically handles stopUIAnimations()
 }
 
 function togglePlay() {
-    if (isPlaying) {
-        pauseAudio();
-    } else {
+    if (!audio) return;
+
+    // Check native media property audio.paused instead of custom boolean
+    if (audio.paused) {
         playAudio();
+    } else {
+        pauseAudio();
     }
 }
 
@@ -3003,6 +3274,32 @@ function updateActiveRowHighlight() {
         }
     });
 
+    // Also synchronize music cards across views (e.g. Home view cards)
+    document.querySelectorAll('.music-card').forEach(card => {
+        const cardSongId = card.getAttribute('data-song-id');
+        const isCurrent = (cardSongId === currentSong.id);
+        const cardPlayBtn = card.querySelector('.play-card-btn');
+        const cardPlayIcon = card.querySelector('.play-card-btn svg, .play-card-btn i, .play-card-icon');
+
+        if (isCurrent && isPlaying) {
+            card.classList.add('active-playing', 'is-playing', 'playing');
+            card.classList.remove('is-paused', 'paused');
+            if (cardPlayBtn) {
+                cardPlayBtn.classList.remove('pause-state', 'is-paused', 'paused');
+                cardPlayBtn.classList.add('play-state', 'is-playing', 'playing');
+            }
+            if (cardPlayIcon) cardPlayIcon.setAttribute('data-lucide', 'pause');
+        } else {
+            card.classList.remove('active-playing', 'is-playing', 'playing');
+            if (isCurrent) card.classList.add('pause-state', 'is-paused', 'paused');
+            if (cardPlayBtn) {
+                cardPlayBtn.classList.remove('play-state', 'is-playing', 'playing');
+                cardPlayBtn.classList.add('pause-state', 'is-paused', 'paused');
+            }
+            if (cardPlayIcon) cardPlayIcon.setAttribute('data-lucide', 'play');
+        }
+    });
+
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
@@ -3963,7 +4260,15 @@ function initEventListeners() {
         });
     }
 
-    // Progress Bar Interactions
+    // Progress Bar Interactions (Range Inputs & Custom Track Sliders)
+    const seekRangeInputs = document.querySelectorAll(
+        'input[type="range"].seek-bar, input[type="range"].seek-bar-input, #seek-bar, #mobile-seek-bar, .progress-bar-wrapper input[type="range"], .mobile-player-progress-section input[type="range"]'
+    );
+    seekRangeInputs.forEach(input => {
+        input.addEventListener('input', handleSeekInput);
+        input.addEventListener('change', handleSeekChange);
+    });
+
     if (elProgressBar) {
         elProgressBar.addEventListener('mousedown', (e) => {
             isDraggingProgress = true;
@@ -4867,6 +5172,57 @@ function handleProgressSeek(e, targetBar = null) {
     if (elTimeCurrent) elTimeCurrent.textContent = formatTime(audio.currentTime);
     const mCurrent = document.getElementById('mobile-time-current');
     if (mCurrent) mCurrent.textContent = formatTime(audio.currentTime);
+
+    // Sync any <input type="range"> seek bars
+    document.querySelectorAll('input[type="range"].seek-bar, input[type="range"].seek-bar-input, #seek-bar, #mobile-seek-bar, .progress-track input[type="range"]').forEach(input => {
+        input.value = audio.currentTime.toString();
+    });
+}
+
+/**
+ * Handles 'input' event when dragging a seek range slider
+ */
+function handleSeekInput(e) {
+    if (!audio) return;
+    isDraggingProgress = true;
+    const seekTime = parseFloat(e.target.value);
+    if (!isNaN(seekTime)) {
+        audio.currentTime = seekTime;
+
+        // Immediate timestamp update
+        const formatted = formatTime(seekTime);
+        if (elTimeCurrent) elTimeCurrent.textContent = formatted;
+        const mCurrent = document.getElementById('mobile-time-current');
+        if (mCurrent) mCurrent.textContent = formatted;
+
+        const duration = audio.duration || parseFloat(e.target.max) || (currentQueue[currentSongIndex] && currentQueue[currentSongIndex].durationSec) || 0;
+        if (duration > 0) {
+            const pct = Math.min(100, Math.max(0, (seekTime / duration) * 100));
+            if (elProgressFill) elProgressFill.style.width = `${pct}%`;
+            if (elProgressThumb) elProgressThumb.style.left = `${pct}%`;
+
+            const mFill = document.getElementById('mobile-progress-fill');
+            const mThumb = document.getElementById('mobileProgressThumb');
+            if (mFill) mFill.style.width = `${pct}%`;
+            if (mThumb) mThumb.style.left = `${pct}%`;
+        }
+
+        // Keep other seek inputs in sync
+        document.querySelectorAll('input[type="range"].seek-bar, input[type="range"].seek-bar-input, #seek-bar, #mobile-seek-bar, .progress-track input[type="range"]').forEach(input => {
+            if (input !== e.target) input.value = seekTime.toString();
+        });
+    }
+}
+
+/**
+ * Handles 'change' event when user commits seek range slider
+ */
+function handleSeekChange(e) {
+    isDraggingProgress = false;
+    const seekTime = parseFloat(e.target.value);
+    if (!isNaN(seekTime) && audio) {
+        audio.currentTime = seekTime;
+    }
 }
 
 function handleVolumeSeek(e, targetBar = null) {
