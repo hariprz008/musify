@@ -694,6 +694,36 @@ const songs = [
 // --- 2. State & Storage Initialization ---
 let likedSongIds = JSON.parse(localStorage.getItem('mucify_liked_songs')) || [];
 let listeningHistory = JSON.parse(localStorage.getItem('mucify_listening_history')) || [];
+let songPlayCounts = {};
+try {
+    songPlayCounts = JSON.parse(localStorage.getItem('mucify_play_counts')) || {};
+} catch (e) {
+    songPlayCounts = {};
+}
+
+// Bootstrap play counts from listeningHistory if none recorded yet
+if (Object.keys(songPlayCounts).length === 0 && Array.isArray(listeningHistory) && listeningHistory.length > 0) {
+    listeningHistory.forEach((id, idx) => {
+        songPlayCounts[id] = Math.max(1, listeningHistory.length - idx);
+    });
+    try {
+        localStorage.setItem('mucify_play_counts', JSON.stringify(songPlayCounts));
+    } catch (e) { }
+}
+
+let lastRecordedSongPlayId = null;
+
+function recordSongPlay(songId) {
+    if (!songId) return;
+    songPlayCounts[songId] = (songPlayCounts[songId] || 0) + 1;
+    lastRecordedSongPlayId = songId;
+    try {
+        localStorage.setItem('mucify_play_counts', JSON.stringify(songPlayCounts));
+    } catch (e) {
+        console.warn('[Mucify] Failed to save play counts:', e);
+    }
+    renderTopTracks();
+}
 
 const defaultPlaylists = {
     "liked": {
@@ -994,6 +1024,9 @@ function loadSong(song, shouldPlay = true) {
     syncMediaSession(song);
 
     if (song && song.id) {
+        if (shouldPlay) {
+            recordSongPlay(song.id);
+        }
         listeningHistory = [song.id, ...listeningHistory.filter(id => id !== song.id)].slice(0, 20);
         try {
             localStorage.setItem('mucify_listening_history', JSON.stringify(listeningHistory));
@@ -1017,6 +1050,11 @@ function playAudio() {
     updatePlayPauseUI(true);
     if ('mediaSession' in navigator) {
         navigator.mediaSession.playbackState = 'playing';
+    }
+
+    const currentSong = currentQueue[currentSongIndex];
+    if (currentSong && currentSong.id && lastRecordedSongPlayId !== currentSong.id) {
+        recordSongPlay(currentSong.id);
     }
 
     audio.play().catch(err => {
@@ -1482,8 +1520,86 @@ function navForward() {
 }
 
 // --- 10. View Rendering Logic ---
+function renderTopTracks() {
+    const grid = document.getElementById('home-top-tracks-grid');
+    if (!grid) return;
+
+    // Filter songs that have recorded plays (> 0) and sort by play count descending
+    const playedSongs = songs
+        .filter(s => (songPlayCounts[s.id] || 0) > 0)
+        .sort((a, b) => {
+            const countDiff = (songPlayCounts[b.id] || 0) - (songPlayCounts[a.id] || 0);
+            if (countDiff !== 0) return countDiff;
+            const idxA = listeningHistory.indexOf(a.id);
+            const idxB = listeningHistory.indexOf(b.id);
+            if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+            return 0;
+        });
+
+    let topTracks = [];
+    if (playedSongs.length > 0) {
+        // Show up to 5 songs that the user hears most of the time
+        topTracks = playedSongs.slice(0, 5);
+    } else {
+        // Default top 5 curated tracks when no playback history exists yet
+        const defaultIndices = [7, 11, 4, 2, 0];
+        topTracks = defaultIndices.map(i => songs[i]).filter(Boolean).slice(0, 5);
+    }
+
+    grid.innerHTML = '';
+
+    topTracks.forEach((song) => {
+        const songIdx = songs.findIndex(s => s.id === song.id);
+        const count = songPlayCounts[song.id] || 0;
+        const card = document.createElement('div');
+        card.className = 'music-card';
+        card.setAttribute('data-song-id', song.id);
+        card.setAttribute('data-song-index', songIdx);
+
+        card.innerHTML = `
+            <div class="card-art-wrapper">
+                <img src="${escapeHTML(song.cover)}" alt="${escapeHTML(song.title)}" class="card-img" loading="lazy">
+                <button class="play-card-btn hover-reveal" title="Play ${escapeHTML(song.title)}">
+                    <i data-lucide="play" class="play-card-icon"></i>
+                </button>
+            </div>
+            <div class="card-metadata">
+                <h3>${escapeHTML(song.title)}</h3>
+                <p>${escapeHTML(song.artist)}${count > 0 ? ` • ${count} ${count === 1 ? 'play' : 'plays'}` : ''}</p>
+            </div>
+        `;
+
+        card.addEventListener('click', (e) => {
+            const playBtn = e.target.closest('.play-card-btn');
+            const currentSong = currentQueue[currentSongIndex];
+            if (currentSong && currentSong.id === song.id && playBtn) {
+                e.stopPropagation();
+                togglePlay();
+            } else {
+                if (songIdx !== -1) {
+                    playSongFromContext(songIdx, songs);
+                }
+            }
+        });
+
+        card.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            showSongContextMenu(song.id, e.clientX, e.clientY);
+        });
+
+        grid.appendChild(card);
+    });
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
 function renderHomeView() {
-    // 1. Render Mood Boosters shelf cards dynamically
+    // 1. Render Top Tracks shelf cards dynamically (most heard songs, up to 5)
+    renderTopTracks();
+
+    // 2. Render Mood Boosters shelf cards dynamically
     const moodGrid = document.getElementById('home-mood-boosters-grid');
     if (moodGrid) {
         moodGrid.innerHTML = '';
@@ -4627,13 +4743,8 @@ function initEventListeners() {
         });
     });
 
-    // Home Top Tracks Music Cards
-    document.querySelectorAll('#home-view .music-card[data-song-index]').forEach(card => {
-        card.addEventListener('click', () => {
-            const idx = parseInt(card.getAttribute('data-song-index'), 10);
-            playSongFromContext(idx, songs);
-        });
-    });
+    // Home Top Tracks Dynamic Cards
+    renderTopTracks();
 
     // Home Mood Boosters Playlist Cards
     document.querySelectorAll('#home-view .music-card[data-playlist-id]').forEach(card => {
