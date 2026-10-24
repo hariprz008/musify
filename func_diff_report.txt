@@ -1,0 +1,1389 @@
+==================== cleanup ====================
+--- app.js
++++ app1.js
+@@ -1,11 +1,8 @@
+ function cleanup() {
+             modal.style.display = 'none';
+-            if (cancelBtn) {
+-                const newCancel = cancelBtn.cloneNode(true);
+-                cancelBtn.replaceWith(newCancel);
+-            }
+-            if (saveBtn) {
+-                const newSave = saveBtn.cloneNode(true);
+-                saveBtn.replaceWith(newSave);
+-            }
++            // Remove listeners by cloning
++            const newCancel = cancelBtn.cloneNode(true);
++            const newSave = saveBtn.cloneNode(true);
++            cancelBtn.replaceWith(newCancel);
++            saveBtn.replaceWith(newSave);
+         }
+
+==================== formatTime ====================
+--- app.js
++++ app1.js
+@@ -1,5 +1,5 @@
+ function formatTime(seconds) {
+-    if (isNaN(seconds) || seconds < 0) return "0:00";
++    if (isNaN(seconds)) return "0:00";
+     const minutes = Math.floor(seconds / 60);
+     const secs = Math.floor(seconds % 60);
+     return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+
+
+==================== handleProgressSeek ====================
+--- app.js
++++ app1.js
+@@ -1,14 +1,10 @@
+-function handleProgressSeek(clientX, commit = false) {
+-    if (!elProgressTrack) return;
++function handleProgressSeek(clientX) {
+     const rect = elProgressTrack.getBoundingClientRect();
+     const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+-    if (elProgressFill) elProgressFill.style.width = `${percent * 100}%`;
+-    if (elProgressThumb) elProgressThumb.style.left = `${percent * 100}%`;
+-    
+-    if (audio && audio.duration) {
+-        if (elTimeCurrent) elTimeCurrent.textContent = formatTime(percent * audio.duration);
+-        if (commit) {
+-            audio.currentTime = percent * audio.duration;
+-        }
++    elProgressFill.style.width = `${percent * 100}%`;
++    elProgressThumb.style.left = `${percent * 100}%`;
++
++    if (audio.duration) {
++        audio.currentTime = percent * audio.duration;
+     }
+ }
+
+==================== handleSearch ====================
+--- app.js
++++ app1.js
+@@ -1,21 +1,20 @@
+ function handleSearch() {
+-    if (!elSearchInput) return;
+     const query = elSearchInput.value.trim().toLowerCase();
+     const resultsSection = document.getElementById('search-results-section');
+     const resultsBody = document.getElementById('search-results-body');
+-    if (!resultsSection || !resultsBody) return;
+-    
++
+     if (query === '') {
+         resultsSection.style.display = 'none';
+-        if (elClearSearchBtn) elClearSearchBtn.style.display = 'none';
++        elClearSearchBtn.style.display = 'none';
+         return;
+     }
+ 
+-    if (elClearSearchBtn) elClearSearchBtn.style.display = 'block';
++    elClearSearchBtn.style.display = 'block';
+     resultsSection.style.display = 'block';
+     resultsBody.innerHTML = '';
+ 
+-    const matchedSongs = songs.filter(song => 
++    // Filter database
++    const matchedSongs = songs.filter(song =>
+         song.title.toLowerCase().includes(query) ||
+         song.artist.toLowerCase().includes(query) ||
+         song.album.toLowerCase().includes(query)
+@@ -70,6 +69,7 @@
+                 e.stopPropagation();
+                 showSongContextMenu(song.id, e.clientX, e.clientY);
+             } else {
++                // When playing from search results, load them as current queue
+                 playSongFromContext(idx, matchedSongs);
+             }
+         });
+@@ -78,5 +78,5 @@
+     });
+ 
+     updateActiveRowHighlight();
+-    if (typeof lucide !== 'undefined') lucide.createIcons();
++    lucide.createIcons();
+ }
+
+==================== handleVolumeSeek ====================
+--- app.js
++++ app1.js
+@@ -1,10 +1,9 @@
+ function handleVolumeSeek(clientX) {
+-    if (!elVolumeTrack) return;
+     const rect = elVolumeTrack.getBoundingClientRect();
+     const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+     volume = percent;
+     isMuted = false;
+-    if (audio) audio.volume = volume;
++    audio.volume = volume;
+     localStorage.setItem('mucify_volume', volume);
+     syncVolumeUI();
+ }
+
+==================== initAudio ====================
+--- app.js
++++ app1.js
+@@ -1,20 +1,19 @@
+ function initAudio() {
+-    if (!audio) return;
+     audio.volume = isMuted ? 0 : volume;
+ 
+     // Track Time Update
+     audio.addEventListener('timeupdate', () => {
+-        if (audio.duration && !isDraggingProgress) {
++        if (audio.duration) {
+             const percent = (audio.currentTime / audio.duration) * 100;
+-            if (elProgressFill) elProgressFill.style.width = `${percent}%`;
+-            if (elProgressThumb) elProgressThumb.style.left = `${percent}%`;
+-            if (elTimeCurrent) elTimeCurrent.textContent = formatTime(audio.currentTime);
++            elProgressFill.style.width = `${percent}%`;
++            elProgressThumb.style.left = `${percent}%`;
++            elTimeCurrent.textContent = formatTime(audio.currentTime);
+         }
+     });
+ 
+     // Duration Loaded
+     audio.addEventListener('loadedmetadata', () => {
+-        if (elTimeTotal) elTimeTotal.textContent = formatTime(audio.duration);
++        elTimeTotal.textContent = formatTime(audio.duration);
+     });
+ 
+     // Handle Ended Track
+@@ -27,15 +26,13 @@
+         }
+     });
+ 
+-    // Audio Error Fallback (Cloudinary / network fails, safely try local path without infinite loop)
++    // Audio Error Fallback (Cloudinary fails, try local directory)
+     audio.addEventListener('error', (e) => {
+         const currentSong = currentQueue[currentSongIndex];
+-        if (!currentSong) return;
++        console.warn(`Cloudinary loading failed for "${currentSong.title}". Reverting to local asset...`, e);
+ 
+-        console.warn(`Audio source loading failed for "${currentSong.title}". Attempting local fallback...`, e);
+-
+-        if (!audio._hasTriedFallback && currentSong.localUrl) {
+-            audio._hasTriedFallback = true;
++        // Check if we already tried local Url to avoid infinite loop
++        if (audio.src !== window.location.origin + '/' + currentSong.localUrl && !audio.src.endsWith(currentSong.localUrl)) {
+             audio.src = currentSong.localUrl;
+             if (isPlaying) {
+                 playAudio();
+
+
+==================== initEventListeners ====================
+--- app.js
++++ app1.js
+@@ -1,87 +1,49 @@
+ function initEventListeners() {
+     // 1. Footer Control Toggles
+-    if (elPlayPauseBtn) elPlayPauseBtn.addEventListener('click', togglePlay);
+-    if (elPrevBtn) elPrevBtn.addEventListener('click', prevSong);
+-    if (elNextBtn) elNextBtn.addEventListener('click', nextSong);
+-    if (elShuffleBtn) elShuffleBtn.addEventListener('click', toggleShuffle);
+-    if (elRepeatBtn) elRepeatBtn.addEventListener('click', toggleRepeat);
+-
+-    // 2. Click & Drag Progress Timeline
+-    if (elProgressTrack) {
+-        const startProgressDrag = (clientX) => {
+-            isDraggingProgress = true;
+-            handleProgressSeek(clientX, false);
+-            const onMouseMove = (moveEvent) => handleProgressSeek(moveEvent.clientX, false);
+-            const onTouchMove = (touchEvent) => {
+-                if (touchEvent.touches.length > 0) handleProgressSeek(touchEvent.touches[0].clientX, false);
+-            };
+-            const onEnd = (endEvent) => {
+-                let clientXEnd = clientX;
+-                if (endEvent.clientX !== undefined) clientXEnd = endEvent.clientX;
+-                else if (endEvent.changedTouches && endEvent.changedTouches.length > 0) clientXEnd = endEvent.changedTouches[0].clientX;
+-                handleProgressSeek(clientXEnd, true);
+-                isDraggingProgress = false;
+-                window.removeEventListener('mousemove', onMouseMove);
+-                window.removeEventListener('mouseup', onEnd);
+-                window.removeEventListener('touchmove', onTouchMove);
+-                window.removeEventListener('touchend', onEnd);
+-            };
+-            window.addEventListener('mousemove', onMouseMove);
+-            window.addEventListener('mouseup', onEnd);
+-            window.addEventListener('touchmove', onTouchMove);
+-            window.addEventListener('touchend', onEnd);
++    elPlayPauseBtn.addEventListener('click', togglePlay);
++    elPrevBtn.addEventListener('click', prevSong);
++    elNextBtn.addEventListener('click', nextSong);
++    elShuffleBtn.addEventListener('click', toggleShuffle);
++    elRepeatBtn.addEventListener('click', toggleRepeat);
++
++    // 2. Click-to-Seek Progress Timeline
++    elProgressTrack.addEventListener('mousedown', (e) => {
++        handleProgressSeek(e.clientX);
++        const onMouseMove = (moveEvent) => handleProgressSeek(moveEvent.clientX);
++        const onMouseUp = () => {
++            window.removeEventListener('mousemove', onMouseMove);
++            window.removeEventListener('mouseup', onMouseUp);
+         };
+-
+-        elProgressTrack.addEventListener('mousedown', (e) => startProgressDrag(e.clientX));
+-        elProgressTrack.addEventListener('touchstart', (e) => {
+-            if (e.touches.length > 0) startProgressDrag(e.touches[0].clientX);
+-        });
+-    }
+-
+-    // 3. Click & Drag Volume Track
+-    if (elVolumeTrack) {
+-        const startVolumeDrag = (clientX) => {
+-            handleVolumeSeek(clientX);
+-            const onMouseMove = (moveEvent) => handleVolumeSeek(moveEvent.clientX);
+-            const onTouchMove = (touchEvent) => {
+-                if (touchEvent.touches.length > 0) handleVolumeSeek(touchEvent.touches[0].clientX);
+-            };
+-            const onEnd = () => {
+-                window.removeEventListener('mousemove', onMouseMove);
+-                window.removeEventListener('mouseup', onEnd);
+-                window.removeEventListener('touchmove', onTouchMove);
+-                window.removeEventListener('touchend', onEnd);
+-            };
+-            window.addEventListener('mousemove', onMouseMove);
+-            window.addEventListener('mouseup', onEnd);
+-            window.addEventListener('touchmove', onTouchMove);
+-            window.addEventListener('touchend', onEnd);
++        window.addEventListener('mousemove', onMouseMove);
++        window.addEventListener('mouseup', onMouseUp);
++    });
++
++    // 3. Click-to-Seek Volume Track
++    elVolumeTrack.addEventListener('mousedown', (e) => {
++        handleVolumeSeek(e.clientX);
++        const onMouseMove = (moveEvent) => handleVolumeSeek(moveEvent.clientX);
++        const onMouseUp = () => {
++            window.removeEventListener('mousemove', onMouseMove);
++            window.removeEventListener('mouseup', onMouseUp);
+         };
+-
+-        elVolumeTrack.addEventListener('mousedown', (e) => startVolumeDrag(e.clientX));
+-        elVolumeTrack.addEventListener('touchstart', (e) => {
+-            if (e.touches.length > 0) startVolumeDrag(e.touches[0].clientX);
+-        });
+-    }
++        window.addEventListener('mousemove', onMouseMove);
++        window.addEventListener('mouseup', onMouseUp);
++    });
+ 
+     // 4. Mute Button
+-    if (elMuteBtn) {
+-        elMuteBtn.addEventListener('click', () => {
+-            isMuted = !isMuted;
+-            if (audio) audio.volume = isMuted ? 0 : volume;
+-            syncVolumeUI();
+-        });
+-    }
++    elMuteBtn.addEventListener('click', () => {
++        isMuted = !isMuted;
++        audio.volume = isMuted ? 0 : volume;
++        syncVolumeUI();
++    });
+ 
+     // 5. Player Heart Like Button
+-    if (elPlayerLikeBtn) {
+-        elPlayerLikeBtn.addEventListener('click', () => {
+-            const currentSong = currentQueue[currentSongIndex];
+-            if (currentSong) {
+-                toggleLikeSong(currentSong.id);
+-            }
+-        });
+-    }
++    elPlayerLikeBtn.addEventListener('click', () => {
++        const currentSong = currentQueue[currentSongIndex];
++        if (currentSong) {
++            toggleLikeSong(currentSong.id);
++        }
++    });
+ 
+     // 6. Navigation View Buttons
+     document.querySelectorAll('[data-view]').forEach(item => {
+@@ -92,31 +54,25 @@
+     });
+ 
+     // 7. Navigation History Arrows
+-    if (elNavBack) elNavBack.addEventListener('click', navBack);
+-    if (elNavForward) elNavForward.addEventListener('click', navForward);
++    elNavBack.addEventListener('click', navBack);
++    elNavForward.addEventListener('click', navForward);
+ 
+     // 8. Scrolling Glassmorphism Header
+-    if (elScrollContainer && elMainHeader) {
+-        elScrollContainer.addEventListener('scroll', () => {
+-            if (elScrollContainer.scrollTop > 20) {
+-                elMainHeader.classList.add('scrolled');
+-            } else {
+-                elMainHeader.classList.remove('scrolled');
+-            }
+-        });
+-    }
++    elScrollContainer.addEventListener('scroll', () => {
++        if (elScrollContainer.scrollTop > 20) {
++            elMainHeader.classList.add('scrolled');
++        } else {
++            elMainHeader.classList.remove('scrolled');
++        }
++    });
+ 
+     // 9. Search Bar Event Handlers
+-    if (elSearchInput) elSearchInput.addEventListener('input', handleSearch);
+-    if (elClearSearchBtn) {
+-        elClearSearchBtn.addEventListener('click', () => {
+-            if (elSearchInput) {
+-                elSearchInput.value = '';
+-                handleSearch();
+-                elSearchInput.focus();
+-            }
+-        });
+-    }
++    elSearchInput.addEventListener('input', handleSearch);
++    elClearSearchBtn.addEventListener('click', () => {
++        elSearchInput.value = '';
++        handleSearch();
++        elSearchInput.focus();
++    });
+ 
+     // 10. Direct Play Hooks on Quick Cards (Home view grid)
+     document.querySelectorAll('.quick-card').forEach(card => {
+@@ -133,6 +89,7 @@
+                     playPlaylist(playlistIdAttr);
+                 }
+             } else {
++                // Clicking card negotiates nav
+                 if (songIndexAttr !== null) {
+                     playSongFromContext(parseInt(songIndexAttr), songs);
+                 } else if (playlistIdAttr) {
+@@ -147,7 +104,7 @@
+     });
+ 
+     // 11. Top Tracks Shelf Cards on Home View
+-    document.querySelectorAll('.shelf .music-card').forEach(card => {
++    document.querySelectorAll('.music-card').forEach(card => {
+         card.addEventListener('click', (e) => {
+             const playCardBtn = e.target.closest('.play-card-btn');
+             const songIndexAttr = card.getAttribute('data-song-index');
+@@ -171,157 +128,119 @@
+     });
+ 
+     // 12. Profile Dropdown Menu Trigger
+-    if (elProfileMenu && elProfileDropdown) {
+-        elProfileMenu.addEventListener('click', (e) => {
+-            e.stopPropagation();
+-            elProfileMenu.classList.toggle('open');
+-            elProfileDropdown.classList.toggle('show');
+-        });
+-    }
++    elProfileMenu.addEventListener('click', (e) => {
++        e.stopPropagation();
++        elProfileMenu.classList.toggle('open');
++        elProfileDropdown.classList.toggle('show');
++    });
+ 
+     window.addEventListener('click', () => {
+-        if (elProfileMenu) elProfileMenu.classList.remove('open');
+-        if (elProfileDropdown) elProfileDropdown.classList.remove('show');
+-        
++        elProfileMenu.classList.remove('open');
++        elProfileDropdown.classList.remove('show');
++
++        // Hide playlist options dropdown and context menus on click away
+         const plDropdown = document.getElementById('playlist-options-dropdown');
+         if (plDropdown) plDropdown.style.display = 'none';
+-        
++
+         const songMenu = document.getElementById('song-context-menu');
+         if (songMenu) songMenu.style.display = 'none';
+     });
+ 
+     // 13. Create Playlist Button
+-    const createPlBtn = document.getElementById('create-playlist-btn');
+-    if (createPlBtn) {
+-        createPlBtn.addEventListener('click', async () => {
+-            const title = await showPlaylistModal("Create Playlist");
+-            if (!title || title.trim() === '') return;
+-
+-            const id = `playlist-${Date.now()}`;
+-            playlists[id] = {
+-                name: title.trim(),
+-                desc: "Custom user-created playlist.",
+-                art: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=300&q=80",
+-                songs: []
+-            };
++    document.getElementById('create-playlist-btn').addEventListener('click', async () => {
++        const title = await showPlaylistModal("Create Playlist");
++        if (!title || title.trim() === '') return;
++
++        const id = `playlist-${Date.now()}`;
++        playlists[id] = {
++            name: title.trim(),
++            desc: "Custom user-created playlist.",
++            art: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=300&q=80",
++            songs: []
++        };
++        savePlaylists();
++
++        renderSidebarPlaylists();
++        navigate('playlist', true, id);
++    });
++
++    // Playlist options dots button dropdown toggle
++    document.getElementById('playlist-options-btn').addEventListener('click', (e) => {
++        e.stopPropagation();
++        const dropdown = document.getElementById('playlist-options-dropdown');
++        const isVisible = dropdown.style.display === 'flex';
++        dropdown.style.display = isVisible ? 'none' : 'flex';
++    });
++
++    // Rename playlist dropdown item
++    document.getElementById('pl-opt-rename').addEventListener('click', async (e) => {
++        e.stopPropagation();
++        document.getElementById('playlist-options-dropdown').style.display = 'none';
++        if (!activePlaylistId || activePlaylistId === 'liked') return;
++
++        const pl = playlists[activePlaylistId];
++        const newName = await showPlaylistModal("Rename Playlist", pl.name);
++        if (newName && newName.trim() !== '') {
++            pl.name = newName.trim();
+             savePlaylists();
+-
+             renderSidebarPlaylists();
+-            navigate('playlist', true, id);
+-        });
+-    }
+-
+-    // Playlist options dots button dropdown toggle
+-    const plOptionsBtn = document.getElementById('playlist-options-btn');
+-    if (plOptionsBtn) {
+-        plOptionsBtn.addEventListener('click', (e) => {
+-            e.stopPropagation();
+-            const dropdown = document.getElementById('playlist-options-dropdown');
+-            if (dropdown) {
+-                const isVisible = dropdown.style.display === 'flex';
+-                dropdown.style.display = isVisible ? 'none' : 'flex';
+-            }
+-        });
+-    }
+-
+-    // Rename playlist dropdown item
+-    const plOptRename = document.getElementById('pl-opt-rename');
+-    if (plOptRename) {
+-        plOptRename.addEventListener('click', async (e) => {
+-            e.stopPropagation();
+-            const dropdown = document.getElementById('playlist-options-dropdown');
+-            if (dropdown) dropdown.style.display = 'none';
+-            if (!activePlaylistId || activePlaylistId === 'liked') return;
+-            
+-            const pl = playlists[activePlaylistId];
+-            if (!pl) return;
+-            const newName = await showPlaylistModal("Rename Playlist", pl.name);
+-            if (newName && newName.trim() !== '') {
+-                pl.name = newName.trim();
+-                savePlaylists();
+-                renderSidebarPlaylists();
+-                renderPlaylistView(activePlaylistId);
+-            }
+-        });
+-    }
++            renderPlaylistView(activePlaylistId);
++        }
++    });
+ 
+     // Delete playlist dropdown item
+-    const plOptDelete = document.getElementById('pl-opt-delete');
+-    if (plOptDelete) {
+-        plOptDelete.addEventListener('click', (e) => {
+-            e.stopPropagation();
+-            const dropdown = document.getElementById('playlist-options-dropdown');
+-            if (dropdown) dropdown.style.display = 'none';
+-            if (!activePlaylistId || activePlaylistId === 'liked') return;
+-
+-            const pl = playlists[activePlaylistId];
+-            if (!pl) return;
+-            if (confirm(`Are you sure you want to delete the playlist "${pl.name}"?`)) {
+-                delete playlists[activePlaylistId];
+-                savePlaylists();
+-                renderSidebarPlaylists();
+-                navigate('home');
+-            }
+-        });
+-    }
++    document.getElementById('pl-opt-delete').addEventListener('click', (e) => {
++        e.stopPropagation();
++        document.getElementById('playlist-options-dropdown').style.display = 'none';
++        if (!activePlaylistId || activePlaylistId === 'liked') return;
++
++        const pl = playlists[activePlaylistId];
++        if (confirm(`Are you sure you want to delete the playlist "${pl.name}"?`)) {
++            delete playlists[activePlaylistId];
++            savePlaylists();
++            renderSidebarPlaylists();
++            navigate('home');
++        }
++    });
+ 
+     // 14. Liked Play action button on headers
+-    const likedPlayBtn = document.getElementById('liked-play-btn');
+-    if (likedPlayBtn) {
+-        likedPlayBtn.addEventListener('click', () => {
+-            playPlaylist('liked');
+-        });
+-    }
++    document.getElementById('liked-play-btn').addEventListener('click', () => {
++        playPlaylist('liked');
++    });
+ 
+     // 15. Now Playing panel controls
+-    if (elBtnNowPlaying && elNowPlayingPanel) {
+-        elBtnNowPlaying.addEventListener('click', () => {
+-            const appContainer = document.querySelector('.app-container');
+-            if (!appContainer) return;
+-            const isActive = appContainer.classList.toggle('panel-active');
+-            elBtnNowPlaying.classList.toggle('active', isActive);
+-            elNowPlayingPanel.style.display = isActive ? 'flex' : 'none';
+-        });
+-    }
+-
+-    if (elCloseNowPlaying && elNowPlayingPanel) {
+-        elCloseNowPlaying.addEventListener('click', () => {
+-            const appContainer = document.querySelector('.app-container');
+-            if (appContainer) appContainer.classList.remove('panel-active');
+-            if (elBtnNowPlaying) elBtnNowPlaying.classList.remove('active');
+-            elNowPlayingPanel.style.display = 'none';
+-        });
+-    }
+-
+-    // 16. Queue Button - alerts user current queue
+-    const btnQueue = document.getElementById('btn-queue');
+-    if (btnQueue) {
+-        btnQueue.addEventListener('click', () => {
+-            const queueTitles = currentQueue.map((s, i) => `${i === currentSongIndex ? '▶ ' : '  '}${s.title} - ${s.artist}`).join('\n');
+-            alert(`Mucify Playback Queue:\n\n${queueTitles}`);
+-        });
+-    }
++    elBtnNowPlaying.addEventListener('click', () => {
++        const isActive = document.querySelector('.app-container').classList.toggle('panel-active');
++        elBtnNowPlaying.classList.toggle('active', isActive);
++        elNowPlayingPanel.style.display = isActive ? 'flex' : 'none';
++    });
++
++    elCloseNowPlaying.addEventListener('click', () => {
++        document.querySelector('.app-container').classList.remove('panel-active');
++        elBtnNowPlaying.classList.remove('active');
++        elNowPlayingPanel.style.display = 'none';
++    });
++
++    // 16. Queue Dummy Button - alerts user current queue
++    document.getElementById('btn-queue').addEventListener('click', () => {
++        const queueTitles = currentQueue.map((s, i) => `${i === currentSongIndex ? '▶ ' : '  '}${s.title} - ${s.artist}`).join('\n');
++        alert(`Mucify Playback Queue:\n\n${queueTitles}`);
++    });
+ 
+     // 17. Fullscreen Logic
+-    const btnFullscreen = document.getElementById('btn-fullscreen');
+-    if (btnFullscreen) {
+-        btnFullscreen.addEventListener('click', () => {
+-            if (!document.fullscreenElement) {
+-                document.documentElement.requestFullscreen().catch(err => {
+-                    alert(`Error attempting to enable full-screen mode: ${err.message}`);
+-                });
+-            } else {
+-                document.exitFullscreen();
+-            }
+-        });
+-    }
++    document.getElementById('btn-fullscreen').addEventListener('click', () => {
++        if (!document.fullscreenElement) {
++            document.documentElement.requestFullscreen().catch(err => {
++                alert(`Error attempting to enable full-screen mode: ${err.message}`);
++            });
++        } else {
++            document.exitFullscreen();
++        }
++    });
+ 
+     // Logout warning
+-    const logoutBtn = document.getElementById('logout-btn');
+-    if (logoutBtn) {
+-        logoutBtn.addEventListener('click', (e) => {
+-            e.preventDefault();
+-            alert("Mucify web player logged out. Feel free to re-login next session!");
+-        });
+-    }
++    document.getElementById('logout-btn').addEventListener('click', (e) => {
++        e.preventDefault();
++        alert("Mucify web player logged out. Feel free to re-login next session!");
++    });
+ }
+
+==================== loadSong ====================
+--- app.js
++++ app1.js
+@@ -1,35 +1,36 @@
+ function loadSong(song, shouldPlay = true) {
+-    if (!song || !audio) return;
++    if (!song) return;
+ 
+-    audio._hasTriedFallback = false;
++    // Try Cloudinary URL first
++    audio.src = song.url;
+ 
+-    // Try primary URL first
+-    audio.src = song.url;
+-    
+     // Update footer info
+-    if (elPlayerArt) elPlayerArt.src = song.cover;
+-    if (elPlayerTitle) elPlayerTitle.textContent = song.title;
+-    if (elPlayerArtist) elPlayerArtist.textContent = song.artist;
+-    
++    elPlayerArt.src = song.cover;
++    elPlayerTitle.textContent = song.title;
++    elPlayerArtist.textContent = song.artist;
++
+     // Update Like Heart icon in player
+-    syncLikeButtons(song.id);
++    if (likedSongIds.includes(song.id)) {
++        elPlayerLikeBtn.classList.add('liked');
++        const icon = elPlayerLikeBtn.querySelector('svg, i');
++        if (icon) icon.setAttribute('fill', 'var(--primary-green)');
++    } else {
++        elPlayerLikeBtn.classList.remove('liked');
++        const icon = elPlayerLikeBtn.querySelector('svg, i');
++        if (icon) icon.removeAttribute('fill');
++    }
+ 
+     // Update Right Panel Now Playing
+-    const panelArt = document.getElementById('panel-song-art');
+-    const panelTitle = document.getElementById('panel-song-title');
+-    const panelArtist = document.getElementById('panel-song-artist');
+-    const panelBio = document.getElementById('panel-artist-bio');
+-
+-    if (panelArt) panelArt.src = song.cover;
+-    if (panelTitle) panelTitle.textContent = song.title;
+-    if (panelArtist) panelArtist.textContent = song.artist;
+-    if (panelBio) panelBio.textContent = song.artistBio || `Track by ${song.artist}.`;
++    document.getElementById('panel-song-art').src = song.cover;
++    document.getElementById('panel-song-title').textContent = song.title;
++    document.getElementById('panel-song-artist').textContent = song.artist;
++    document.getElementById('panel-artist-bio').textContent = song.artistBio;
+ 
+     // Reset timelines
+-    if (elProgressFill) elProgressFill.style.width = '0%';
+-    if (elProgressThumb) elProgressThumb.style.left = '0%';
+-    if (elTimeCurrent) elTimeCurrent.textContent = "0:00";
+-    if (elTimeTotal) elTimeTotal.textContent = song.duration || "0:00";
++    elProgressFill.style.width = '0%';
++    elProgressThumb.style.left = '0%';
++    elTimeCurrent.textContent = "0:00";
++    elTimeTotal.textContent = song.duration;
+ 
+     // Highlight row in list
+     updateActiveRowHighlight();
+
+
+==================== navigate ====================
+--- app.js
++++ app1.js
+@@ -1,8 +1,10 @@
+ function navigate(viewName, addToHistory = true, playlistId = null) {
++    // Hide all views
+     document.querySelectorAll('.content-view').forEach(view => {
+         view.style.display = 'none';
+     });
+ 
++    // Remove active sidebar state
+     document.querySelectorAll('.nav-item').forEach(item => {
+         item.classList.remove('active');
+     });
+@@ -12,55 +14,49 @@
+ 
+     currentView = viewName;
+     activePlaylistId = playlistId;
+-    if (elHeaderSearchBar) elHeaderSearchBar.style.display = 'none';
++    elHeaderSearchBar.style.display = 'none';
+ 
++    // Show appropriate view & run display logic
+     if (viewName === 'home') {
+-        const homeView = document.getElementById('home-view');
+-        if (homeView) homeView.style.display = 'block';
+-        const navHome = document.querySelector('[data-view="home"]');
+-        if (navHome) navHome.classList.add('active');
++        document.getElementById('home-view').style.display = 'block';
++        document.querySelector('[data-view="home"]').classList.add('active');
+         setGreeting();
+     } else if (viewName === 'search') {
+-        const searchView = document.getElementById('search-view');
+-        if (searchView) searchView.style.display = 'block';
+-        const navSearch = document.querySelector('[data-view="search"]');
+-        if (navSearch) navSearch.classList.add('active');
+-        if (elHeaderSearchBar) elHeaderSearchBar.style.display = 'block';
+-        if (elSearchInput) setTimeout(() => elSearchInput.focus(), 50);
+-        handleSearch();
++        document.getElementById('search-view').style.display = 'block';
++        document.querySelector('[data-view="search"]').classList.add('active');
++        elHeaderSearchBar.style.display = 'block';
++        setTimeout(() => elSearchInput.focus(), 50);
++        handleSearch(); // trigger search filter
+     } else if (viewName === 'library') {
+-        const libView = document.getElementById('library-view');
+-        if (libView) libView.style.display = 'block';
+-        const navLib = document.querySelector('[data-view="library"]');
+-        if (navLib) navLib.classList.add('active');
++        document.getElementById('library-view').style.display = 'block';
++        document.querySelector('[data-view="library"]').classList.add('active');
+         renderLibraryView();
+     } else if (viewName === 'all-songs') {
+-        const allSongsView = document.getElementById('all-songs-view');
+-        if (allSongsView) allSongsView.style.display = 'block';
+-        const navAllSongs = document.querySelector('[data-view="all-songs"]');
+-        if (navAllSongs) navAllSongs.classList.add('active');
++        document.getElementById('all-songs-view').style.display = 'block';
++        document.querySelector('[data-view="all-songs"]').classList.add('active');
+         renderAllSongsView();
+     } else if (viewName === 'liked') {
+-        const likedView = document.getElementById('liked-songs-view');
+-        if (likedView) likedView.style.display = 'block';
+-        const navLiked = document.querySelector('[data-view="liked"]');
+-        if (navLiked) navLiked.classList.add('active');
++        document.getElementById('liked-songs-view').style.display = 'block';
++        document.querySelector('[data-view="liked"]').classList.add('active');
+         activePlaylistId = 'liked';
+         renderLikedSongsView();
+     } else if (viewName === 'playlist' && playlistId) {
+-        const plView = document.getElementById('playlist-view');
+-        if (plView) plView.style.display = 'block';
+-        
++        document.getElementById('playlist-view').style.display = 'block';
++
++        // Highlight in sidebar if it exists there
+         const sidebarPlItem = document.querySelector(`.playlist-nav-item[data-playlist-id="${playlistId}"]`);
+         if (sidebarPlItem) sidebarPlItem.classList.add('active');
+ 
+         renderPlaylistView(playlistId);
+     }
+ 
+-    if (elScrollContainer) elScrollContainer.scrollTop = 0;
+-    if (elMainHeader) elMainHeader.classList.remove('scrolled');
++    // Scroll main view back to top
++    elScrollContainer.scrollTop = 0;
++    elMainHeader.classList.remove('scrolled');
+ 
++    // Manage nav history lists
+     if (addToHistory) {
++        // If we were backward in stack, slice forward entries
+         if (historyIndex < viewHistory.length - 1) {
+             viewHistory.splice(historyIndex + 1);
+         }
+
+
+==================== nextSong ====================
+--- app.js
++++ app1.js
+@@ -1,7 +1,6 @@
+ function nextSong() {
+-    if (currentQueue.length === 0) return;
+-
+     if (isShuffle) {
++        // Choose index at random (excluding current if possible)
+         let randomIndex = currentSongIndex;
+         if (currentQueue.length > 1) {
+             while (randomIndex === currentSongIndex) {
+@@ -13,7 +12,7 @@
+     } else {
+         if (currentSongIndex === currentQueue.length - 1 && repeatMode === 'off') {
+             pauseAudio();
+-            if (audio) audio.currentTime = 0;
++            audio.currentTime = 0;
+             return;
+         }
+         currentSongIndex = (currentSongIndex + 1) % currentQueue.length;
+
+
+==================== pauseAudio ====================
+--- app.js
++++ app1.js
+@@ -1,11 +1,10 @@
+ function pauseAudio() {
+-    if (!audio) return;
+     isPlaying = false;
+     const playPauseIcon = document.getElementById('play-pause-icon');
+     if (playPauseIcon) {
+         playPauseIcon.setAttribute('data-lucide', 'play');
+         playPauseIcon.setAttribute('fill', '#000');
+     }
+-    if (typeof lucide !== 'undefined') lucide.createIcons();
++    lucide.createIcons();
+     audio.pause();
+ }
+
+==================== playAudio ====================
+--- app.js
++++ app1.js
+@@ -1,21 +1,16 @@
+ function playAudio() {
+-    if (!audio) return;
+     isPlaying = true;
+     const playPauseIcon = document.getElementById('play-pause-icon');
+     if (playPauseIcon) {
+         playPauseIcon.setAttribute('data-lucide', 'pause');
+         playPauseIcon.setAttribute('fill', '#000');
+     }
+-    if (typeof lucide !== 'undefined') lucide.createIcons();
+-    
++    lucide.createIcons();
++
+     audio.play().catch(err => {
+         console.log("Autoplay blocked by browser. User gesture required.", err);
+         isPlaying = false;
+-        const icon = document.getElementById('play-pause-icon');
+-        if (icon) {
+-            icon.setAttribute('data-lucide', 'play');
+-            icon.setAttribute('fill', '#000');
+-        }
+-        if (typeof lucide !== 'undefined') lucide.createIcons();
++        elPlayPauseIcon.setAttribute('data-lucide', 'play');
++        lucide.createIcons();
+     });
+ }
+
+==================== playPlaylist ====================
+--- app.js
++++ app1.js
+@@ -1,13 +1,11 @@
+ function playPlaylist(playlistId) {
+     const list = playlists[playlistId];
+     if (!list) return;
+-    if (!list.songs || list.songs.length === 0) {
++    if (list.songs.length === 0) {
+         alert("This playlist has no songs yet. Click the three-dots (...) menu next to any song in Search or other views to add tracks!");
+         return;
+     }
+-    
++
+     const playlistSongs = songs.filter(s => list.songs.includes(s.id));
+-    if (playlistSongs.length > 0) {
+-        playSongFromContext(0, playlistSongs);
+-    }
++    playSongFromContext(0, playlistSongs);
+ }
+
+==================== playSongFromContext ====================
+--- app.js
++++ app1.js
+@@ -1,8 +1,7 @@
+ function playSongFromContext(songIndex, queueContext) {
+-    if (!queueContext || queueContext.length === 0) return;
+     currentQueue = [...queueContext];
+-    currentSongIndex = songIndex >= 0 && songIndex < currentQueue.length ? songIndex : 0;
+-    
++    currentSongIndex = songIndex;
++
+     playbackHistory = [currentQueue[currentSongIndex].id];
+     loadSong(currentQueue[currentSongIndex], true);
+ }
+
+==================== prevSong ====================
+--- app.js
++++ app1.js
+@@ -1,11 +1,12 @@
+ function prevSong() {
+-    if (!audio) return;
+     if (audio.currentTime > 3) {
++        // If song is more than 3 seconds in, restart it
+         audio.currentTime = 0;
+         return;
+     }
+ 
+     if (isShuffle && playbackHistory.length > 1) {
++        // Pop current song, get previous
+         playbackHistory.pop();
+         const prevId = playbackHistory[playbackHistory.length - 1];
+         const prevIndex = currentQueue.findIndex(s => s.id === prevId);
+@@ -17,6 +18,6 @@
+     } else {
+         currentSongIndex = (currentSongIndex - 1 + currentQueue.length) % currentQueue.length;
+     }
+-    
++
+     loadSong(currentQueue[currentSongIndex]);
+ }
+
+==================== renderLibraryView ====================
+--- app.js
++++ app1.js
+@@ -1,19 +1,18 @@
+ function renderLibraryView() {
+     const likedCount = likedSongIds.length;
+-    const countEl = document.getElementById('library-liked-count');
+-    if (countEl) countEl.textContent = `${likedCount} ${likedCount === 1 ? 'song' : 'songs'}`;
++    document.getElementById('library-liked-count').textContent = `${likedCount} ${likedCount === 1 ? 'song' : 'songs'}`;
+ 
+     const grid = document.getElementById('library-playlists-grid');
+-    if (!grid) return;
+-    
++    // Clear dynamic playlists (keep Liked Card which is static in HTML)
+     const likedCard = grid.querySelector('.liked-songs-playlist-card');
+     grid.innerHTML = '';
+-    if (likedCard) grid.appendChild(likedCard);
++    grid.appendChild(likedCard);
+ 
++    // List custom playlists
+     Object.keys(playlists).forEach(key => {
+         if (key === 'liked') return;
+         const pl = playlists[key];
+-        
++
+         const card = document.createElement('div');
+         card.className = 'music-card playlist-card';
+         card.setAttribute('data-playlist-id', key);
+@@ -27,7 +26,8 @@
+                 <p>${pl.desc}</p>
+             </div>
+         `;
+-        
++
++        // Click to navigate, hover play to play direct
+         card.addEventListener('click', (e) => {
+             if (e.target.closest('.play-card-btn')) {
+                 e.stopPropagation();
+@@ -40,5 +40,5 @@
+         grid.appendChild(card);
+     });
+ 
+-    if (typeof lucide !== 'undefined') lucide.createIcons();
++    lucide.createIcons();
+ }
+
+==================== renderLikedSongsView ====================
+--- app.js
++++ app1.js
+@@ -3,7 +3,6 @@
+     const emptyMsg = document.getElementById('liked-empty-message');
+     const table = document.getElementById('liked-songs-table');
+     const statsCount = document.getElementById('liked-songs-count');
+-    if (!listBody || !table || !statsCount) return;
+ 
+     listBody.innerHTML = '';
+     const likedCount = likedSongIds.length;
+@@ -11,20 +10,23 @@
+ 
+     if (likedCount === 0) {
+         table.style.display = 'none';
+-        if (emptyMsg) emptyMsg.style.display = 'flex';
++        emptyMsg.style.display = 'flex';
+         return;
+     }
+ 
+     table.style.display = 'table';
+-    if (emptyMsg) emptyMsg.style.display = 'none';
++    emptyMsg.style.display = 'none';
+ 
++    // Filter songs matching liked ids
+     const likedSongs = songs.filter(s => likedSongIds.includes(s.id));
+ 
+     likedSongs.forEach((song, idx) => {
+         const row = document.createElement('tr');
+         row.setAttribute('data-song-id', song.id);
++
++        // Mock a relative Date Added (e.g. 2 days ago)
+         const dateAdded = "Jul 5, 2026";
+-        
++
+         row.innerHTML = `
+             <td class="col-index">
+                 <span class="index-num">${idx + 1}</span>
+@@ -49,6 +51,7 @@
+             </td>
+         `;
+ 
++        // Handle Row Actions
+         row.addEventListener('click', (e) => {
+             const likeBtn = e.target.closest('.row-action-btn');
+             const menuBtn = e.target.closest('.row-menu-btn');
+@@ -66,5 +69,5 @@
+         listBody.appendChild(row);
+     });
+ 
+-    if (typeof lucide !== 'undefined') lucide.createIcons();
++    lucide.createIcons();
+ }
+
+==================== renderPlaylistView ====================
+--- app.js
++++ app1.js
+@@ -2,21 +2,16 @@
+     const list = playlists[playlistId];
+     if (!list) return;
+ 
+-    const headerArt = document.getElementById('playlist-header-art');
+-    const headerTitle = document.getElementById('playlist-header-title');
+-    const headerDesc = document.getElementById('playlist-header-desc');
+-    const headerStats = document.getElementById('playlist-header-stats');
++    document.getElementById('playlist-header-art').src = list.art;
++    document.getElementById('playlist-header-title').textContent = list.name;
++    document.getElementById('playlist-header-desc').textContent = list.desc;
++
+     const listBody = document.getElementById('playlist-songs-list-body');
++    listBody.innerHTML = '';
+ 
+-    if (headerArt) headerArt.src = list.art;
+-    if (headerTitle) headerTitle.textContent = list.name;
+-    if (headerDesc) headerDesc.textContent = list.desc;
+-    if (!listBody) return;
+-
+-    listBody.innerHTML = '';
+-    
++    // Collect song items matching list IDs
+     const playlistSongs = songs.filter(s => list.songs.includes(s.id));
+-    if (headerStats) headerStats.textContent = `${playlistSongs.length} ${playlistSongs.length === 1 ? 'song' : 'songs'}`;
++    document.getElementById('playlist-header-stats').textContent = `${playlistSongs.length} ${playlistSongs.length === 1 ? 'song' : 'songs'}`;
+ 
+     playlistSongs.forEach((song, idx) => {
+         const row = document.createElement('tr');
+@@ -65,14 +60,14 @@
+         listBody.appendChild(row);
+     });
+ 
++    // Update play button hook
+     const actionPlayBtn = document.getElementById('playlist-play-btn-action');
+-    if (actionPlayBtn) {
+-        const newPlayBtn = actionPlayBtn.cloneNode(true);
+-        actionPlayBtn.replaceWith(newPlayBtn);
+-        newPlayBtn.addEventListener('click', () => {
+-            playPlaylist(playlistId);
+-        });
+-    }
++    // Clear old listeners
++    const newPlayBtn = actionPlayBtn.cloneNode(true);
++    actionPlayBtn.replaceWith(newPlayBtn);
++    newPlayBtn.addEventListener('click', () => {
++        playPlaylist(playlistId);
++    });
+ 
+-    if (typeof lucide !== 'undefined') lucide.createIcons();
++    lucide.createIcons();
+ }
+
+==================== renderSidebarPlaylists ====================
+--- app.js
++++ app1.js
+@@ -1,6 +1,5 @@
+ function renderSidebarPlaylists() {
+     const listDiv = document.getElementById('sidebar-playlists');
+-    if (!listDiv) return;
+     listDiv.innerHTML = '';
+ 
+     Object.keys(playlists).forEach(key => {
+@@ -10,7 +9,7 @@
+         btn.className = 'playlist-nav-item';
+         btn.setAttribute('data-playlist-id', key);
+         btn.textContent = pl.name;
+-        
++
+         btn.addEventListener('click', () => {
+             navigate('playlist', true, key);
+         });
+
+
+==================== showPlaylistModal ====================
+--- app.js
++++ app1.js
+@@ -6,44 +6,30 @@
+         const cancelBtn = document.getElementById('modal-cancel-btn');
+         const saveBtn = document.getElementById('modal-save-btn');
+ 
+-        if (!modal || !modalInput) {
+-            resolve(null);
+-            return;
+-        }
+-
+-        if (modalTitle) modalTitle.textContent = title;
++        modalTitle.textContent = title;
+         modalInput.value = defaultValue;
+         modal.style.display = 'flex';
+         setTimeout(() => modalInput.focus(), 50);
+ 
+         function cleanup() {
+             modal.style.display = 'none';
+-            if (cancelBtn) {
+-                const newCancel = cancelBtn.cloneNode(true);
+-                cancelBtn.replaceWith(newCancel);
+-            }
+-            if (saveBtn) {
+-                const newSave = saveBtn.cloneNode(true);
+-                saveBtn.replaceWith(newSave);
+-            }
++            // Remove listeners by cloning
++            const newCancel = cancelBtn.cloneNode(true);
++            const newSave = saveBtn.cloneNode(true);
++            cancelBtn.replaceWith(newCancel);
++            saveBtn.replaceWith(newSave);
+         }
+ 
+-        const cBtn = document.getElementById('modal-cancel-btn');
+-        if (cBtn) {
+-            cBtn.addEventListener('click', () => {
+-                cleanup();
+-                resolve(null);
+-            });
+-        }
++        document.getElementById('modal-cancel-btn').addEventListener('click', () => {
++            cleanup();
++            resolve(null);
++        });
+ 
+-        const sBtn = document.getElementById('modal-save-btn');
+-        if (sBtn) {
+-            sBtn.addEventListener('click', () => {
+-                const val = modalInput.value.trim();
+-                cleanup();
+-                resolve(val);
+-            });
+-        }
++        document.getElementById('modal-save-btn').addEventListener('click', () => {
++            const val = modalInput.value.trim();
++            cleanup();
++            resolve(val);
++        });
+ 
+         modalInput.addEventListener('keydown', (e) => {
+             if (e.key === 'Enter') {
+
+
+==================== showSongContextMenu ====================
+--- app.js
++++ app1.js
+@@ -2,7 +2,8 @@
+     const menu = document.getElementById('song-context-menu');
+     if (!menu) return;
+     menu.innerHTML = '';
+-    
++
++    // Header for Menu
+     const header = document.createElement('div');
+     header.style.padding = '8px 12px 4px 12px';
+     header.style.fontSize = '11px';
+@@ -13,12 +14,13 @@
+     header.textContent = "Add to playlist";
+     menu.appendChild(header);
+ 
++    // List available custom playlists
+     let countPlaylists = 0;
+     Object.keys(playlists).forEach(key => {
+         if (key === 'liked') return;
+         countPlaylists++;
+         const pl = playlists[key];
+-        
++
+         const item = document.createElement('button');
+         item.className = 'dropdown-item';
+         item.style.display = 'flex';
+@@ -57,6 +59,7 @@
+         menu.appendChild(noPlMsg);
+     }
+ 
++    // Add Remove option if inside a custom playlist page
+     if (currentView === 'playlist' && activePlaylistId && activePlaylistId !== 'liked') {
+         const separator = document.createElement('div');
+         separator.style.height = '1px';
+@@ -80,24 +83,24 @@
+ 
+         removeItem.addEventListener('click', () => {
+             const pl = playlists[activePlaylistId];
+-            if (pl) {
+-                pl.songs = pl.songs.filter(id => id !== songId);
+-                savePlaylists();
+-                renderPlaylistView(activePlaylistId);
+-            }
++            pl.songs = pl.songs.filter(id => id !== songId);
++            savePlaylists();
++            renderPlaylistView(activePlaylistId);
+             menu.style.display = 'none';
+         });
+ 
+         menu.appendChild(removeItem);
+     }
+ 
++    // Show menu first so offsetHeight is readable
+     menu.style.display = 'flex';
+     menu.style.flexDirection = 'column';
+-    if (typeof lucide !== 'undefined') lucide.createIcons();
++    lucide.createIcons();
+ 
++    // Adjust position to keep within screen bounds
+     const menuWidth = 200;
+     const menuHeight = menu.offsetHeight || 150;
+-    
++
+     let finalX = x;
+     let finalY = y;
+     if (x + menuWidth > window.innerWidth) {
+
+
+==================== syncLikeButtons ====================
+--- app.js
++++ app1.js
+@@ -1,8 +1,9 @@
+ function syncLikeButtons(songId) {
++    const isLiked = likedSongIds.includes(songId);
++
++    // Sync Bottom Player Like btn
+     const currentSong = currentQueue[currentSongIndex];
+-
+-    if (currentSong && currentSong.id === songId && elPlayerLikeBtn) {
+-        const isLiked = likedSongIds.includes(songId);
++    if (currentSong && currentSong.id === songId) {
+         if (isLiked) {
+             elPlayerLikeBtn.classList.add('liked');
+             const icon = elPlayerLikeBtn.querySelector('svg, i');
+@@ -14,8 +15,8 @@
+         }
+     }
+ 
++    // Sync any row action buttons on tables
+     document.querySelectorAll(`.row-action-btn[data-song-id="${songId}"]`).forEach(btn => {
+-        const isLiked = likedSongIds.includes(songId);
+         btn.classList.toggle('liked', isLiked);
+         const icon = btn.querySelector('svg, i');
+         if (icon) {
+@@ -31,5 +32,6 @@
+         }
+     });
+ 
+-    if (typeof lucide !== 'undefined') lucide.createIcons();
++    // Update Lucide SVG bindings
++    lucide.createIcons();
+ }
+
+==================== syncVolumeUI ====================
+--- app.js
++++ app1.js
+@@ -1,8 +1,9 @@
+ function syncVolumeUI() {
+     const percent = isMuted ? 0 : volume * 100;
+-    if (elVolumeFill) elVolumeFill.style.width = `${percent}%`;
+-    if (elVolumeThumb) elVolumeThumb.style.left = `${percent}%`;
+-    
++    elVolumeFill.style.width = `${percent}%`;
++    elVolumeThumb.style.left = `${percent}%`;
++
++    // Icon update
+     const volumeIcon = document.getElementById('volume-icon');
+     if (volumeIcon) {
+         if (isMuted || volume === 0) {
+@@ -15,5 +16,5 @@
+             volumeIcon.setAttribute('data-lucide', 'volume-2');
+         }
+     }
+-    if (typeof lucide !== 'undefined') lucide.createIcons();
++    lucide.createIcons();
+ }
+
+==================== toggleLikeSong ====================
+--- app.js
++++ app1.js
+@@ -8,8 +8,10 @@
+     playlists["liked"].songs = likedSongIds;
+     savePlaylists();
+ 
++    // Refresh UI views
+     syncLikeButtons(songId);
+-    
++
++    // Refresh lists dynamically
+     if (currentView === 'liked') {
+         renderLikedSongsView();
+     } else if (currentView === 'library') {
+
+
+==================== toggleRepeat ====================
+--- app.js
++++ app1.js
+@@ -1,26 +1,20 @@
+ function toggleRepeat() {
+     if (repeatMode === 'off') {
+         repeatMode = 'all';
+-        if (elRepeatBtn) {
+-            elRepeatBtn.classList.add('active');
+-            elRepeatBtn.title = "Repeat All";
+-        }
++        elRepeatBtn.classList.add('active');
++        elRepeatBtn.title = "Repeat All";
+     } else if (repeatMode === 'all') {
+         repeatMode = 'one';
+-        if (elRepeatBtn) {
+-            elRepeatBtn.classList.add('active');
+-            const icon = elRepeatBtn.querySelector('svg, i');
+-            if (icon) icon.setAttribute('data-lucide', 'repeat-1');
+-            elRepeatBtn.title = "Repeat One";
+-        }
++        elRepeatBtn.classList.add('active');
++        const icon = elRepeatBtn.querySelector('svg, i');
++        if (icon) icon.setAttribute('data-lucide', 'repeat-1');
++        elRepeatBtn.title = "Repeat One";
+     } else {
+         repeatMode = 'off';
+-        if (elRepeatBtn) {
+-            elRepeatBtn.classList.remove('active');
+-            const icon = elRepeatBtn.querySelector('svg, i');
+-            if (icon) icon.setAttribute('data-lucide', 'repeat');
+-            elRepeatBtn.title = "Repeat Off";
+-        }
++        elRepeatBtn.classList.remove('active');
++        const icon = elRepeatBtn.querySelector('svg, i');
++        if (icon) icon.setAttribute('data-lucide', 'repeat');
++        elRepeatBtn.title = "Repeat Off";
+     }
+-    if (typeof lucide !== 'undefined') lucide.createIcons();
++    lucide.createIcons();
+ }
+
+==================== toggleShuffle ====================
+--- app.js
++++ app1.js
+@@ -1,9 +1,10 @@
+ function toggleShuffle() {
+     isShuffle = !isShuffle;
+-    if (elShuffleBtn) elShuffleBtn.classList.toggle('active', isShuffle);
+-    
++    elShuffleBtn.classList.toggle('active', isShuffle);
++
++    // Clear history stack
+     playbackHistory = [];
+-    if (isShuffle && currentQueue[currentSongIndex]) {
++    if (isShuffle) {
+         playbackHistory.push(currentQueue[currentSongIndex].id);
+     }
+ }
+
+==================== updateActiveRowHighlight ====================
+--- app.js
++++ app1.js
+@@ -2,10 +2,12 @@
+     const currentSong = currentQueue[currentSongIndex];
+     if (!currentSong) return;
+ 
++    // Clear previous playing state
+     document.querySelectorAll('.songs-table tbody tr').forEach(row => {
+         row.classList.remove('active-playing');
+     });
+ 
++    // Add playing highlight to currently playing ID rows
+     document.querySelectorAll(`.songs-table tbody tr[data-song-id="${currentSong.id}"]`).forEach(row => {
+         row.classList.add('active-playing');
+     });
+
+
+==================== updateNavArrowStates ====================
+--- app.js
++++ app1.js
+@@ -1,8 +1,7 @@
+ function updateNavArrowStates() {
+-    if (!elNavBack || !elNavForward) return;
+     elNavBack.disabled = (historyIndex === 0);
+     elNavForward.disabled = (historyIndex === viewHistory.length - 1);
+-    
++
+     elNavBack.style.opacity = elNavBack.disabled ? '0.4' : '1';
+     elNavForward.style.opacity = elNavForward.disabled ? '0.4' : '1';
+ }
+
