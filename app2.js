@@ -1034,7 +1034,6 @@ const songs = [
         "id": "song-94",
         "title": "Vinnaithaandi Varuvaayaa",
         "artist": "A R Rahman",
-        "album": "Vinnaithaandi Varuvaayaa",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792918282/Vinnaithaandi_Varuvaayaa_iqghid.mp3",
         "duration": "03:12",
         "durationSec": "192",
@@ -1056,7 +1055,6 @@ const songs = [
         "id": "song-96",
         "title": "Pudhu Pudhu Arthangal",
         "artist": "A R Rahman,Karthik",
-        "album": "Vinnaithaandi Varuvaayaa",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792918283/Anbil_Avan_ygybgt.mp3",
         "duration": "01:08",
         "durationSec": "68",
@@ -1435,6 +1433,39 @@ const songs = [
         "duration": "03:55",
         "durationSec": "235",
         "cover": "https://www.masstamilan.dev/w/sathuranga-vettai-2014.webp",
+        "artistBio": ""
+    },
+    {
+        "id": "song-131",
+        "title": "Be My Baby",
+        "artist": "The Ronettes",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792938819/06._The_Ronettes_-_Be_My_Baby_uln59r.mp3",
+        "duration": "03:55",
+        "durationSec": "235",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZlihuSkNKTYQQcC4h9_-jqHbuay7xAnq4Xzy42SwouA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-132",
+        "title": "The Winner Takes It All",
+        "artist": "ABBA",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792938819/The_Winner_Takes_It_All_-_ABBA_rsoss4.mp3",
+        "duration": "03:55",
+        "durationSec": "235",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKJhBIjvFXSBs65hgQBmjsu-o0rZTGdiJ8MTU8XJCbMw&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-133",
+        "title": "Love Me Not",
+        "artist": "Ravyn Lenae",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792938821/Love_Me_Not_qizm46.m4a",
+        "duration": "03:55",
+        "durationSec": "235",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuKLyvGTTFTAztL4MttCeNvJnAhuJFT9CwmN_1pxgLAg&s=10",
         "artistBio": ""
     }
 ];
