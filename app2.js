@@ -6,7 +6,7 @@
  * local storage persistence, and cross-origin audio playback handling.
  */
 
-// --- 1. Database of Songs (22 Tracks) ---
+// --- 1. Database of Songs (129 Tracks) ---
 const songs = [
     {
         "id": "song-1",
@@ -514,7 +514,7 @@ const songs = [
         "artistBio": "Lady Gaga is an American singer, songwriter, and actress. Renowned for her versatility and reinvention, she has achieved immense global success with a career spanning music, film, and fashion. Gaga began her career in the late 2000s and quickly became a pop culture phenomenon with her boundary-pushing style and hit songs. She has sold tens of millions of records worldwide and is recognized as one of the best-selling music artists of all time. Beyond her music, Gaga is celebrated for her acting work, earning critical acclaim and an Academy Award nomination for her role in *A Star Is Born*. She is also a dedicated LGBTQ+ rights advocate and philanthropist, using her platform to support various social causes."
     },
     {
-        "id": "song=47",
+        "id": "song-47",
         "title": "Venaam Machan",
         "artist": "harris jayaraj",
         "album": "oru kal oru kannadi",
@@ -1029,6 +1029,411 @@ const songs = [
         "durationSec": "331",
         "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIt37r1fJJRz4r8eSKmdPb5eaWa9zlvkBt2fjH8It64Q&s",
         "artistBio": ""
+    },
+    {
+        "id": "song-94",
+        "title": "Vinnaithaandi Varuvaayaa",
+        "artist": "A R Rahman",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792918282/Vinnaithaandi_Varuvaayaa_iqghid.mp3",
+        "duration": "03:12",
+        "durationSec": "192",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm-hpRpHsvRwRgmu9kgeHygHVg4qjc03-SVmFIH0dvOA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-95",
+        "title": "Omana Penne",
+        "artist": "A R Rahman",
+        "album": "Vinnaithaandi Varuvaayaa",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792918282/Omana_Penne_vu5iwa.mp3",
+        "duration": "04:27",
+        "durationSec": "267",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm-hpRpHsvRwRgmu9kgeHygHVg4qjc03-SVmFIH0dvOA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-96",
+        "title": "Pudhu Pudhu Arthangal",
+        "artist": "A R Rahman,Karthik",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792918283/Anbil_Avan_ygybgt.mp3",
+        "duration": "01:08",
+        "durationSec": "68",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm-hpRpHsvRwRgmu9kgeHygHVg4qjc03-SVmFIH0dvOA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-97",
+        "title": "Mannipaaya",
+        "artist": "A R Rahman",
+        "album": "Vinnaithaandi Varuvaayaa",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792918284/Mannipaaya_hiru7f.mp3",
+        "duration": "06:56",
+        "durationSec": "416",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm-hpRpHsvRwRgmu9kgeHygHVg4qjc03-SVmFIH0dvOA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-98",
+        "title": "Aaromale",
+        "artist": "A R Rahman",
+        "album": "Vinnaithaandi Varuvaayaa",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792918285/Aaromale_qujpp6.mp3",
+        "duration": "05:25",
+        "durationSec": "325",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm-hpRpHsvRwRgmu9kgeHygHVg4qjc03-SVmFIH0dvOA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-99",
+        "title": "Kannukkul Kannai",
+        "artist": "A R Rahman",
+        "album": "Vinnaithaandi Varuvaayaa",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792918286/Kannukkul_Kannai_znykhj.mp3",
+        "duration": "02:00",
+        "durationSec": "120",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm-hpRpHsvRwRgmu9kgeHygHVg4qjc03-SVmFIH0dvOA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-100",
+        "title": "Hosanna",
+        "artist": "A R Rahman",
+        "album": "Vinnaithaandi Varuvaayaa",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792918292/Hosanna_buxqxj.mp3",
+        "duration": "05:11",
+        "durationSec": "311",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm-hpRpHsvRwRgmu9kgeHygHVg4qjc03-SVmFIH0dvOA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-101",
+        "title": "I Wanna Be Yours",
+        "artist": "Arctic Monkeys",
+        "album": "AM",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921109/I_Wanna_Be_Yours_Arctic_Monkeys_qrogm9.m4a",
+        "duration": "03:03",
+        "durationSec": "183",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHrclyAyu6G6Hy0EYQ5qntqNDozNu6cWeVuWGGd4Hvwg&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-102",
+        "title": "Do I Wanna Know?",
+        "artist": "Arctic Monkeys",
+        "album": "AM",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921128/Do_I_Wanna_Know_Arctic_Monkeys_nnq8x7.m4a",
+        "duration": "04:55",
+        "durationSec": "295",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHrclyAyu6G6Hy0EYQ5qntqNDozNu6cWeVuWGGd4Hvwg&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-103",
+        "title": "Hypnotize",
+        "artist": "The Benji Banditz",
+        "album": "Road house",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921109/Hypnotize_The_Benji_Banditz_upp9rw.webm",
+        "duration": "01:36",
+        "durationSec": "96",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRY5veXxdqgNR_FJj02dgVgHg7qNvMSeUP06oa0egF_PQ&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-104",
+        "title": "Telepatia",
+        "artist": "Kali Uchis",
+        "album": "Sin miedo",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921111/Kali_Uchis_telepat%C3%ADa_Official_Music_Video_Kali_Uchis_wbybbu.m4a",
+        "duration": "02:43",
+        "durationSec": "163",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2ztK8VrfhmdCr5d3TIEgFXBMqjsrgky4_VGp6uXpv-A&s",
+        "artistBio": ""
+    },
+    {
+        "id": "song-105",
+        "title": "In Da Club",
+        "artist": "50 Cent",
+        "album": "Divide",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921111/In_Da_Club_50_Cent_ivcmel.m4a",
+        "duration": "03:26",
+        "durationSec": "206",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHcrZhXChmNF1TtG7YMMJVKfGOCHdV5H8Nzue4h4LpNA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-106",
+        "title": "Loser",
+        "artist": "Tame Impala",
+        "album": "The Slow Rush",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921111/Loser_jhycqp.m4a",
+        "duration": "03:51",
+        "durationSec": "231",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNRAOa7mLKLzQttKxYwt-Ubx_DperZoOSyPqda_IFRVQ&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-107",
+        "title": "My Way",
+        "artist": "Frank Sinatra",
+        "album": "My Way (2008 Remaster)",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921113/My_Way_2008_Remastered_Frank_Sinatra_iwayuz.m4a",
+        "duration": "04:35",
+        "durationSec": "275",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREdqfIpTGvKE0kYMIg1Hj3vbUb9kkrS9Bs5c8jihkKoA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-108",
+        "title": "Perfect",
+        "artist": "Sam i",
+        "album": "÷ (Deluxe)",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921114/Perfect_feat._MC_Pikachu_ojusjj.m4a",
+        "duration": "04:35",
+        "durationSec": "275",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzJ-z7TLMixmuw2pid1MEEFS9h1I1j1-nsnNZcQHyiVA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-109",
+        "title": "Not Like Us",
+        "artist": "Kendrick Lamar",
+        "album": "like that",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921115/Not_Like_Us_z4fqdi.m4a",
+        "duration": "04:35",
+        "durationSec": "275",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmJ_b_6XmhMFgPsGeC8by_7sHKnvkdTHmc4-K0r57r2Q&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-110",
+        "title": "Snowman",
+        "artist": "Sia",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921116/Snowman_Sia_oboir2.m4a",
+        "duration": "02:47",
+        "durationSec": "167",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv459k--BNnXQWaekN1Fp3lVkx1_JkX5wC6zpx3m9BTw&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-111",
+        "title": "Somebody That I Used To Know",
+        "artist": "Gotye",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921116/Somebody_That_I_Used_To_Know_feat_Kimbra_Official_Music_Vide_hpug35.m4a",
+        "duration": "04:04",
+        "durationSec": "244",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5BoWd9n8pIueCeUvrJoac3OdZeDBS2rFej9NhHyXbmA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-112",
+        "title": "Sway",
+        "artist": "Michael Bubl",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921118/Sway_Michael_Bubl%C3%A9_dfwshn.m4a",
+        "duration": "03:12",
+        "durationSec": "192",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxwGpYKrCQxyEOZ0g3LMyytmO-x6CnOGbVT7HJCcdzwQ&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-113",
+        "title": "La Maritza",
+        "artist": "Sylvie Vartan",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921119/Sylvie_Vartan_Cover_by_Tinalei_La_Maritza_iscsaz.m4a",
+        "duration": "02:15",
+        "durationSec": "135",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlhoV1nDvH8QrQM4jRHbHN0hxHEJSlNQuLI9s6EPYbdg&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-114",
+        "title": "Thank You",
+        "artist": "Dido",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921119/Thank_You_Dido_mlkycr.m4a",
+        "duration": "03:30",
+        "durationSec": "210",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQErZdHbmULKkAiXuw0o8px1xUtEOsv-bEBCIlC5y9QBg&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-115",
+        "title": "Raindrops Keep Fallin' on My Head",
+        "artist": "BJ Thomas",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921119/Raindrops_Keep_Falling_on_My_Head_BJ_Thomas_cpdukk.m4a",
+        "duration": "02:43",
+        "durationSec": "163",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdkx6J6kT0H7-f7bnareNtVDiFRAMijbL9yEPoC0kbBA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-116",
+        "title": "The Less I Know The Better",
+        "artist": "Tame Impala",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921121/The_Less_I_Know_The_Better_Tame_Impala_np8vmt.m4a",
+        "duration": "03:36",
+        "durationSec": "216",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR26sqTIGxtj3J5-scWh-6aKPnY2rOGYMclqEUaXQHGqw&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-117",
+        "title": "A Thousand Miles",
+        "artist": "Vanessa Carlton",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921121/A_Thousand_Miles_Vanessa_Carlton_ou2ll4.m4a",
+        "duration": "04:27",
+        "durationSec": "267",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRij0FqnsYoYasyU7EQ_E0l0LXUTToCmhm4sstEfe5Taw&s",
+        "artistBio": ""
+    },
+    {
+        "id": "song-118",
+        "title": "Babydoll",
+        "artist": "Dominic Fike",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921123/Babydoll_Dominic_Fike_a9h2qp.mp3",
+        "duration": "01:38",
+        "durationSec": "98",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPSLI2aXCQtR151H_09jEo8yZsvaAOzzIuip5-Ly2O6Q&s",
+        "artistBio": ""
+    },
+    {
+        "id": "song-119",
+        "title": "Nothing's New",
+        "artist": "Rio Romeo",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921124/Nothing_s_New_Rio_Romeo_qb6sjc.m4a",
+        "duration": "03:53",
+        "durationSec": "233",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQim4psAHSsVcnbv5-xwQ9NKSZe9dRbdW6l-4iRiy5mKA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-120",
+        "title": "Come and Get Your Love",
+        "artist": "Redbone",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921124/Come_and_Get_Your_Love_Single_Version_Redbone_ln6cga.m4a",
+        "duration": "05:26",
+        "durationSec": "326",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1wVrHC8mBu_EKgICHNK04QAL_szlYnTZsMJsIz0Hnqg&s",
+        "artistBio": ""
+    },
+    {
+        "id": "song-121",
+        "title": "Unholy",
+        "artist": "Sam Smith",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921124/Unholy_feat._Kim_Petras_-_Sam_Smith_akxkal.mp3",
+        "duration": "02:36",
+        "durationSec": "156",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLWlvPmuIfhSGqrRZI66AXd--Wg9MJWTTcGikv3U4T7g&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-122",
+        "title": "Let It Happen",
+        "artist": "Tame Impala",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921124/Let_It_Happen_Tame_Impala_nzt427.m4a",
+        "duration": "03:50",
+        "durationSec": "230",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR26sqTIGxtj3J5-scWh-6aKPnY2rOGYMclqEUaXQHGqw&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-123",
+        "title": "Die With A Smile",
+        "artist": "Lady Gaga, Bruno Mars",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921127/Die_With_A_Smile_Lady_Gaga_Bruno_Mars_wojwjz.m4a",
+        "duration": "03:50",
+        "durationSec": "230",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUZpE4ta2Ux_tibvj7CuVo0ulI57BM84s9K7_GB2C_9Q&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-124",
+        "title": "One Dance",
+        "artist": "Drake, WizKid, Kyla",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921127/Drake_One_Dance_feat._WizKid_Kyla_oqzczk.m4a",
+        "duration": "02:54",
+        "durationSec": "174",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCbSfVoRYJc9soa5yggaUkUNhHqSBqoWD3hkTLMo5CzQ&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-125",
+        "title": "All The Stars",
+        "artist": "Kendrick Lamar, SZA",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921127/All_The_Stars_Kendrick_Lamar_SZA_hak21k.webm",
+        "duration": "03:53",
+        "durationSec": "233",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9Q0_1IYWSqQ6tTzh6rRy0op60-IwHGuAIFRJcxUaupw&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-126",
+        "title": "APT",
+        "artist": "Bruno Mars, Rose",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921128/file_51592_nq2rju.m4a",
+        "duration": "03:53",
+        "durationSec": "233",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRwbWPJ4BAN3tiuuy9vBeHhgd0FvjHiyDb6ztoS5PMiw&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-127",
+        "title": "Gasolina",
+        "artist": "Daddy Yankee",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921129/Gasolina_Daddy_Yankee_znjj5h.m4a",
+        "duration": "03:32",
+        "durationSec": "212",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6dJK9CPjN3JeGBMEmIeVnksxGYnlikKnCCwsc2jAbRA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-128",
+        "title": "Happy Nation",
+        "artist": "Ace of Base",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921131/Happy_Nation_Ace_of_Base_y0re9d.webm",
+        "duration": "03:33",
+        "durationSec": "213",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZm2--z9MV59iLwRK6FBfrV_1Odw5Doez6zvBnw0BWdA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-129",
+        "title": "From The Start",
+        "artist": "Laufey",
+        "album": "",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921132/From_The_Start_Laufey_ag4cmd.m4a",
+        "duration": "02:48",
+        "durationSec": "168",
+        "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBEzsB5qDnHLbAJYUBGRlVxR6yP3hkGn-tlXuJQbmTSA&s=10",
+        "artistBio": ""
+    },
+    {
+        "id": "song-130",
+        "title": "Munne Yen Munne",
+        "artist": "Sean Roldan",
+        "album": "Sathuranga Vettai",
+        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792933544/Munne-Yen-Munne-MassTamilan.com_wjpkje.mp3",
+        "duration": "03:55",
+        "durationSec": "235",
+        "cover": "https://www.masstamilan.dev/w/sathuranga-vettai-2014.webp",
+        "artistBio": ""
     }
 ];
 
@@ -1040,6 +1445,14 @@ try {
     songPlayCounts = JSON.parse(localStorage.getItem('mucify_play_counts')) || {};
 } catch (e) {
     songPlayCounts = {};
+}
+
+// Migrate any legacy/typo song ID stored in user localStorage (e.g. song=47)
+likedSongIds = likedSongIds.map(id => id === 'song=47' ? 'song-47' : id);
+listeningHistory = listeningHistory.map(id => id === 'song=47' ? 'song-47' : id);
+if (songPlayCounts['song=47']) {
+    songPlayCounts['song-47'] = (songPlayCounts['song-47'] || 0) + songPlayCounts['song=47'];
+    delete songPlayCounts['song=47'];
 }
 
 // Bootstrap play counts from listeningHistory if none recorded yet
