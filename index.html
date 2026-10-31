@@ -297,7 +297,7 @@
                                 <h2>Your Top Tracks</h2>
                             </div>
                             <div class="card-grid" id="home-top-tracks-grid">
-                                <div class="music-card" data-song-id="song-8" data-song-index="7">
+                                <div class="music-card" data-song-id="song-29" data-song-index="28">
                                     <div class="card-art-wrapper">
                                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsDPCyCJed98bLM8sVg51Xl09C7LWTSlQQxvRmOrNDSA&s=10"
                                             alt="Espresso" class="card-img">
@@ -310,7 +310,7 @@
                                     </div>
                                 </div>
 
-                                <div class="music-card" data-song-id="song-12" data-song-index="11">
+                                <div class="music-card" data-song-id="song-2" data-song-index="1">
                                     <div class="card-art-wrapper">
                                         <img src="https://m.media-amazon.com/images/M/MV5BM2M2NjRjNGUtN2IwYy00MThmLTgxZTgtMzNhZDY0MDhhZTM0XkEyXkFqcGc@._V1_.jpg"
                                             alt="Aura 10-10" class="card-img">
@@ -953,8 +953,7 @@
             <!-- Left: Track Details -->
             <div class="player-track-info" id="player-track-info">
                 <div class="current-track-art">
-                    <img src="Song Cover" alt="Album artwork for Aura 10-10 by Aura, displayed in the music player"
-                        id="player-art">
+                    <img src="assets/icons/icon-192.png" alt="Album artwork" id="player-art">
                 </div>
                 <div class="current-track-meta">
                     <div class="track-title-container">
@@ -1042,7 +1041,7 @@
     </div>
 
     <!-- Hidden HTML5 Audio Element -->
-    <audio id="audio-player" preload="auto"></audio>
+    <audio id="audio-player" preload="auto" playsinline webkit-playsinline></audio>
 
     <!-- Custom Modal for Adding Songs to Queue -->
     <div id="queue-add-modal"
@@ -1124,7 +1123,7 @@
 
         <div class="mobile-player-art-section">
             <div class="mobile-player-art-wrapper">
-                <img src="Song Cover" alt="Album artwork" id="mobile-player-art">
+                <img src="assets/icons/icon-192.png" alt="Album artwork" id="mobile-player-art">
             </div>
         </div>
 
@@ -1234,8 +1233,8 @@
         <button class="sheet-cancel-btn" id="mobile-sheet-cancel-btn">Close</button>
     </div>
 
-    <script src="app2.js?v=4.0"></script>
-    <script src="state-sync.js?v=1.0"></script>
+    <script src="app2.js?v=4.1"></script>
+    <script src="state-sync.js?v=1.1"></script>
     <script>
         // Initialize Lucide Icons
         lucide.createIcons();

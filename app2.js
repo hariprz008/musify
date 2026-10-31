@@ -14,6 +14,7 @@ const songs = [
         "artist": "A.R. Rahman",
         "album": "Ambikapathy",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250152/Ambikapathy_spotdown.org_hlavlt.mp3",
+        "localUrl": "songs/Ambikapathy_spotdown.org.mp3",
         "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7iLO5aPkU5OPzoPXnA8VACRtVtxqg3jnDrcgWMr5cwOibCBQeHBkkkNqaY_sBG-OREjeTxw&s=10",
         "duration": "4:16",
         "durationSec": 240,
@@ -25,6 +26,7 @@ const songs = [
         "artist": "hiphop tamizha",
         "album": "meesaiya murukku 2",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783244820/Aura_10-10_bkjowp.mp3",
+        "localUrl": "songs/Aura 10-10.mp3",
         "cover": "https://m.media-amazon.com/images/M/MV5BM2M2NjRjNGUtN2IwYy00MThmLTgxZTgtMzNhZDY0MDhhZTM0XkEyXkFqcGc@._V1_.jpg",
         "duration": "3:01",
         "durationSec": 181,
@@ -36,6 +38,7 @@ const songs = [
         "artist": "harris jayaraj",
         "album": "Oru Kal Oru Kannadi",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250173/Azhage-Azhage_h644br.mp3",
+        "localUrl": "songs/Azhage-Azhage.mp3",
         "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/e0/cc/d4/e0ccd4db-e143-52c8-a402-7027a54224ae/886443553750.jpg/316x316bb.webp",
         "duration": "5:55",
         "durationSec": 355,
@@ -46,7 +49,9 @@ const songs = [
         "title": "Beer Song",
         "artist": "Sam cs",
         "album": "Disel",
-        "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250270/Beer_Song_g0x7pd.mp3",
+        "url": "songs/Beer Song.mp3",
+        "localUrl": "songs/Beer Song.mp3",
+        "localUrl": "songs/Beer Song.mp3",
         "cover": "https://cdn.district.in/movies-assets/images/cinema/Diesel--Gallery-6588faa0-edc9-11ef-8cb3-05c6c7d276fb.jpg",
         "duration": "3:36",
         "durationSec": 216,
@@ -58,6 +63,7 @@ const songs = [
         "artist": "santhosh narayanan",
         "album": "power house",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783244815/Cook_Cook_mi8dq3.mp3",
+        "localUrl": "songs/Cook Cook.mp3",
         "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxL3ezC6kiJKFxGYexWBEh10Ax1_hYptsjjbTxdQoVVQ&s=10",
         "duration": "1:54",
         "durationSec": 114,
@@ -69,6 +75,7 @@ const songs = [
         "artist": "FIFTY FIFTY",
         "album": "The Beginning: Cupid",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250133/Cupid_-_Twin_Version_spotdown.org_f3qvva.mp3",
+        "localUrl": "songs/Cupid - Twin Version_spotdown.org.mp3",
         "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/39/3f/c5/393fc5e1-e89f-b94f-7c24-fed819442a57/196872363197.jpg/300x300bb.webp",
         "duration": "3:06",
         "durationSec": 186,
@@ -80,6 +87,7 @@ const songs = [
         "artist": "harris jayaraj",
         "album": "bheema",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250155/Enadhuyirae_kuhkg8.mp3",
+        "localUrl": "songs/Enadhuyirae.mp3",
         "cover": "https://imgs.search.brave.com/z1MVtpC82VH7aoluSmSEoX4ZekZ29UU9Tc7DBLT8bCA/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL00v/TVY1Qll6YzNaVEl4/TkRZdFlqQTBOaTAw/WmpObExXRXlZamd0/TXpFeFlUSXhZbVZp/Wm1NeFhrRXlYa0Zx/Y0djQC5fVjFfLmpw/Zw",
         "duration": "6:00",
         "durationSec": 360,
@@ -91,6 +99,7 @@ const songs = [
         "artist": "Rockstar Games",
         "album": "GTA Soundtrack",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250130/GTA_s7mtue.mp3",
+        "localUrl": "songs/GTA .mp3",
         "cover": "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=300&q=80",
         "duration": "3:43",
         "durationSec": 223,
@@ -102,6 +111,7 @@ const songs = [
         "artist": "sai abhyankar",
         "album": "karuppu",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783244817/God_Mode_gm64ej.mp3",
+        "localUrl": "songs/God Mode.mp3",
         "cover": "https://m.media-amazon.com/images/M/MV5BNGE3NmY3N2ItYTYyYi00MmNmLThhMDUtYWYxYjgxYjhjZDU5XkEyXkFqcGc@._V1_QL75_UX164_.jpg",
         "duration": "4:40",
         "durationSec": 280,
@@ -113,6 +123,7 @@ const songs = [
         "artist": "INNXCENCE",
         "album": "phonk",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250135/HEAVENLY_JUMPSTYLE_q1zcbp.mp3",
+        "localUrl": "songs/HEAVENLY JUMPSTYLE.mp3",
         "cover": "assets/aura.png",
         "duration": "3:23",
         "durationSec": 203,
@@ -124,6 +135,7 @@ const songs = [
         "artist": "she and him",
         "album": "she and him",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250129/I_Thought_I_Saw_Your_Face_Today_spotdown.org_e0cnqn.mp3",
+        "localUrl": "songs/I Thought I Saw Your Face Today_spotdown.org.mp3",
         "cover": "https://imgs.search.brave.com/nLljDj1z68NnJQPnIthcsbudE3xdeaAUgs4EgtEZruY/rs:fit:200:200:1:0/g:ce/aHR0cDovL2ltYWdl/cy5nZW5pdXMuY29t/LzAyNTM2Y2ZkODUy/MDQ2ZGE1MzYyMTgz/NWU1MTBmNTU5LjEw/MDB4MTAwMHgxLmpw/Zw",
         "duration": "3:41",
         "durationSec": 221,
@@ -135,6 +147,7 @@ const songs = [
         "artist": "JMSN",
         "album": "Love Me",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250130/JMSN_-_Love_Me__mp3.pm_eqyel5.mp3",
+        "localUrl": "songs/JMSN_-_Love_Me_(mp3.pm).mp3",
         "cover": "https://imgs.search.brave.com/0mR7-PgVGRcYH5psX2IkTHAeImdrTnPeBiySnbAqL_g/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMuZ2VuaXVzLmNv/bS9mMzA2MzgxNjJl/Njg3OTczOGU3ODhk/Mjg0YzI1OGQ3NS4x/MDAweDEwMDB4MS5q/cGc",
         "duration": "4:34",
         "durationSec": 274,
@@ -146,6 +159,7 @@ const songs = [
         "artist": "sai abhyankar",
         "album": "karuppu",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250155/Karuppa_Kooda_Va_oijnvt.mp3",
+        "localUrl": "songs/Karuppa Kooda Va.mp3",
         "cover": "https://m.media-amazon.com/images/M/MV5BNGE3NmY3N2ItYTYyYi00MmNmLThhMDUtYWYxYjgxYjhjZDU5XkEyXkFqcGc@._V1_QL75_UX164_.jpg",
         "duration": "4:33",
         "durationSec": 273,
@@ -157,6 +171,7 @@ const songs = [
         "artist": "anirudh",
         "album": "king",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250125/King-Theme-Ringtone_qx9asc.mp3",
+        "localUrl": "songs/King-Theme-Ringtone.mp3",
         "cover": "https://imgs.search.brave.com/g_QcPztwyKrDtRT9wbOA61IOEabCSy6yR0vsJs1XCkQ/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9pczEt/c3NsLm16c3RhdGlj/LmNvbS9pbWFnZS90/aHVtYi9NdXNpYzIy/MS92NC83Ny9hMi9k/YS83N2EyZGEzNy1m/OTZmLTJkOTUtZTk1/MS1mOWViNWEwZjY4/NjEvODkwMzQzMTE0/ODk2NF9jb3Zlci5q/cGcvMTIwMHg2MzBi/Yi5qcGc",
         "duration": "1:31",
         "durationSec": 91,
@@ -168,6 +183,7 @@ const songs = [
         "artist": "a r rahman",
         "album": "may madham",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250160/Minnale-Nee-Vanthathenadi_ymbmla.mp3",
+        "localUrl": "songs/Minnale-Nee-Vanthathenadi.mp3",
         "cover": "https://imgs.search.brave.com/5Gi-4iLp53k_XFeHVtnBIFn_af-spOKNw_p8jt5zi-w/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL00v/TVY1Qk5tWmpNRGN3/TXpJdE9UQTFPQzAw/TnpVM0xXRTVPVFl0/TURSbE1UTTFNalV4/WXpjMFhrRXlYa0Zx/Y0djQC5fVjFfLmpw/Zw",
         "duration": "4:16",
         "durationSec": 256,
@@ -179,6 +195,7 @@ const songs = [
         "artist": "a.r. rahman",
         "album": "Linga",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250166/Mona-Gasolina_tpusjo.mp3",
+        "localUrl": "songs/Mona-Gasolina.mp3",
         "cover": "https://imgs.search.brave.com/ev-THFbsqWG9jd4hVRhJnhiPqz74SIQ3J9K432qqmSY/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvZW4vZS9lMy9M/aW5nYWEuanBnP3V0/bV9zb3VyY2U9ZW4u/d2lraXBlZGlhLm9y/ZyZhbXA7dXRtX2Nh/bXBhaWduPWluZGV4/JmFtcDt1dG1fY29u/dGVudD10aHVtYm5h/aWxfdW5zY2FsZWQ",
         "duration": "5:17",
         "durationSec": 317,
@@ -190,6 +207,7 @@ const songs = [
         "artist": "ilayaraja",
         "album": "chinna thaiyee",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250132/Naan_Erikkarri_spotdown.org_nzf9bh.mp3",
+        "localUrl": "songs/Naan Erikkarri_spotdown.org.mp3",
         "cover": "https://imgs.search.brave.com/qdTbwvtB7gxgws3tEAIKglo7JkYd6v_UHbjH4083oTQ/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9tYXNz/dGFtaWxhbi5jb20u/c2UvdXBsb2FkX2Zp/bGUvMy8xMi82Mjcv/MjMweDIzMC90aHVt/Yl82ODc4ODhiODI3/ZmZhLndlYnA",
         "duration": "4:59",
         "durationSec": 299,
@@ -201,6 +219,7 @@ const songs = [
         "artist": "sai abhyankar",
         "album": "karuppu",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250137/Naanga_Naalu_Peru_trlzhu.mp3",
+        "localUrl": "songs/Naanga Naalu Peru.mp3",
         "cover": "https://www.tamil2lyrics.com/wp-content/uploads/2026/03/Naanga-Naalu-Peru-Song.jpg",
         "duration": "4:49",
         "durationSec": 289,
@@ -212,6 +231,7 @@ const songs = [
         "artist": "sai abhyankar",
         "album": "DUDE",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250145/Nallaru_Po_-_From_Dude_swkipw.mp3",
+        "localUrl": "songs/Nallaru Po - From Dude.mp3",
         "cover": "https://imgs.search.brave.com/ImVVqBcWI3YI_Z710n_0SHKqhaHAHSBV9dNZm043T34/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly93d3cu/dGFtaWwybHlyaWNz/LmNvbS93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNS8wOS9OYWxs/YXJ1LVBvLVNvbmcu/anBn",
         "duration": "3:59",
         "durationSec": 239,
@@ -223,6 +243,7 @@ const songs = [
         "artist": "Ajaneesh Loknath",
         "album": "Nimir",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250145/Nenjil-Mamazhai-Thanthu-MassTamilan.com_vlbe8t.mp3",
+        "localUrl": "songs/Nenjil-Mamazhai-Thanthu-MassTamilan.com.mp3",
         "cover": "https://imgs.search.brave.com/HUxViwFwuuQu3TQoBlyS-NHU1aNev2fk0kNRaXnvX-s/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvZW4vNi82YS9O/aW1pcl9wb3N0ZXIu/anBnP3V0bV9zb3Vy/Y2U9ZW4ud2lraXBl/ZGlhLm9yZyZ1dG1f/Y2FtcGFpZ249cGFy/c2VyJnV0bV9jb250/ZW50PXRodW1ibmFp/bF91bnNjYWxlZA",
         "duration": "4:58",
         "durationSec": 298,
@@ -234,6 +255,7 @@ const songs = [
         "artist": "Le Castle Vania",
         "album": "John Wick Chapter 2",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1783250124/le-castle-vania-john-wick-mode-_john-wick-chapter-2-club-scene-made-with-Voicemod_exymiw.mp3",
+        "localUrl": "songs/le-castle-vania-john-wick-mode-(john-wick-chapter-2-club-scene-made-with-Voicemod.mp3",
         "cover": "https://imgs.search.brave.com/KyZcdRx69aW7txN-LfTBMmF45heZr0ob_c09ESEd4aE/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL00v/TVY1Qk1UVTJOakEx/T0Rnek1GNUJNbDVC/YW5CblhrRnRaVGd3/TVRNMk1USTRNakVA/Ll9WMV8uanBn",
         "duration": "0:45",
         "durationSec": 45,
@@ -245,6 +267,7 @@ const songs = [
         "artist": "Yuvan Shankar Raja",
         "album": "Anjaan",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1791636906/Kadhal_Aasai_-_Yuvan_Shankar_Raja_u08rmg.mp3",
+        "localUrl": "songs/Kadhal Aasai - Yuvan Shankar Raja.mp3",
         "cover": "https://c.saavncdn.com/451/Anjaan-Tamil-2014-20190822151819-500x500.jpg",
         "duration": "5:40",
         "durationSec": 340,
@@ -322,6 +345,7 @@ const songs = [
         "artist": "sabrina carpenter",
         "album": "Espresso",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1791647321/Espresso_-_Sabrina_Carpenter_fnim7i.mp3",
+        "localUrl": "songs/Espresso - Sabrina Carpenter.mp3",
         "duration": "3:12",
         "durationSec": "192",
         "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsDPCyCJed98bLM8sVg51Xl09C7LWTSlQQxvRmOrNDSA&s=10",
@@ -1386,6 +1410,7 @@ const songs = [
         "artist": "Bruno Mars, Rose",
         "album": "",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921128/file_51592_nq2rju.m4a",
+        "localUrl": "songs/le-castle-vania-john-wick-mode-(john-wick-chapter-2-club-scene-made-with-Voicemod.mp3",
         "duration": "03:53",
         "durationSec": "233",
         "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRwbWPJ4BAN3tiuuy9vBeHhgd0FvjHiyDb6ztoS5PMiw&s=10",
@@ -1397,6 +1422,7 @@ const songs = [
         "artist": "Daddy Yankee",
         "album": "",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792921129/Gasolina_Daddy_Yankee_znjj5h.m4a",
+        "localUrl": "songs/Mona-Gasolina.mp3",
         "duration": "03:32",
         "durationSec": "212",
         "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6dJK9CPjN3JeGBMEmIeVnksxGYnlikKnCCwsc2jAbRA&s=10",
@@ -1553,6 +1579,7 @@ function savePlaylists() {
 // --- 3. Audio & Player Variables ---
 const audio = document.getElementById('audio-player');
 let currentQueue = [...songs];
+let userQueue = []; // Explicitly queued songs ("Play Next", "Add to Queue")
 let currentSongIndex = 0;
 let isPlaying = false;
 let isShuffle = false;
@@ -1562,6 +1589,34 @@ let isMuted = false;
 let previousVolume = volume;
 let isDraggingProgress = false;
 let playbackHistory = [];
+
+// Screen Wake Lock helper for uninterrupted playback in background & mobile
+let screenWakeLock = null;
+async function requestScreenWakeLock() {
+    if ('wakeLock' in navigator && !screenWakeLock) {
+        try {
+            screenWakeLock = await navigator.wakeLock.request('screen');
+            screenWakeLock.addEventListener('release', () => {
+                screenWakeLock = null;
+            });
+        } catch (e) { }
+    }
+}
+
+function releaseScreenWakeLock() {
+    if (screenWakeLock) {
+        try {
+            screenWakeLock.release();
+        } catch (e) { }
+        screenWakeLock = null;
+    }
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && isPlaying) {
+        requestScreenWakeLock();
+    }
+});
 
 // ============================================================================
 // STARTUP CONFIGURATION & PERSISTENCE KEYS
@@ -1582,6 +1637,7 @@ window.ENABLE_RANDOM_START = ENABLE_RANDOM_START;
 window.songs = songs;
 window.currentSongIndex = currentSongIndex;
 window.currentQueue = currentQueue;
+window.userQueue = userQueue;
 
 /**
  * Programmatic toggle helper for Random Start on startup.
@@ -1887,14 +1943,16 @@ function initAudio() {
         stopUIAnimations();
     });
 
-    // 3. Ended Event: Reset animations and move to the next song
+    // 3. Ended Event: Smoothly transition to next track without pausing background mediaSession
     audio.addEventListener('ended', () => {
-        resetUIAnimations();
+        // Do NOT call resetUIAnimations() / stopUIAnimations() here because that sets
+        // mediaSession.playbackState to 'paused' and stops background play on mobile!
+        resetSpinningCovers();
         if (repeatMode === 'one') {
             audio.currentTime = 0;
             playAudio();
         } else {
-            nextSong();
+            nextSong(true);
         }
     });
 
@@ -1991,14 +2049,29 @@ function initAudio() {
     });
 
     audio.addEventListener('error', (e) => {
-        const currentSong = currentQueue[currentSongIndex];
+        const currentSong = currentQueue[currentSongIndex] || window.currentSong;
         if (!currentSong) return;
 
-        console.error(`Audio loading failed for "${currentSong.title}" (${currentSong.url}):`, e);
-        if (typeof showToast === 'function') {
-            showToast(`Could not play "${currentSong.title}". Check network or audio link.`);
+        console.warn(`[Audio] Audio loading error for "${currentSong.title}" (${audio.src}):`, e);
+
+        // 1. Try local asset fallback if available and not yet tried
+        if (!audio._hasTriedLocalFallback && currentSong.localUrl) {
+            audio._hasTriedLocalFallback = true;
+            console.log(`[Audio] Trying local fallback for "${currentSong.title}": ${currentSong.localUrl}`);
+            audio.src = resolveAudioUrl(currentSong.localUrl);
+            audio.load();
+            playAudio();
+            return;
         }
-        pauseAudio();
+
+        // 2. Local fallback either failed or does not exist: auto-advance to next song so music does not halt
+        audio._hasTriedLocalFallback = false;
+        if (typeof showToast === 'function') {
+            showToast(`Could not play "${currentSong.title}". Skipping to next track...`);
+        }
+        setTimeout(() => {
+            nextSong(true);
+        }, 400);
     });
 }
 
@@ -2028,20 +2101,27 @@ function resolveAudioUrl(url) {
 function loadSong(song, shouldPlay = true) {
     if (!song || !audio) return;
 
-    // 1. Synchronize currentSongIndex with the loaded song
-    const queueIdx = currentQueue.findIndex(s => s.id === song.id);
-    if (queueIdx !== -1) {
-        currentSongIndex = queueIdx;
+    audio._hasTriedLocalFallback = false;
+    window.currentSong = song;
+
+    // 1. Synchronize currentSongIndex with the loaded song without corrupting queue position
+    if (currentQueue[currentSongIndex] && currentQueue[currentSongIndex].id === song.id) {
+        // currentSongIndex is already pointing accurately to this track in currentQueue
     } else {
-        const masterIdx = songs.findIndex(s => s.id === song.id);
-        if (masterIdx !== -1) {
-            currentSongIndex = masterIdx;
+        const queueIdx = currentQueue.findIndex(s => s.id === song.id);
+        if (queueIdx !== -1) {
+            currentSongIndex = queueIdx;
+        } else {
+            // Song is not in currentQueue (e.g. played via context menu, search, etc.)
+            // Insert it at current position so currentQueue remains coherent
+            currentQueue.splice(currentSongIndex, 0, song);
         }
     }
     window.currentSongIndex = currentSongIndex;
     window.currentQueue = currentQueue;
+    window.userQueue = userQueue;
 
-    // 2. Feature 1: Persist current song index and ID to localStorage
+    // 2. Persist current song index and ID to localStorage
     try {
         const masterIdx = songs.findIndex(s => s.id === song.id);
         const indexToSave = masterIdx !== -1 ? masterIdx : currentSongIndex;
@@ -2054,6 +2134,7 @@ function loadSong(song, shouldPlay = true) {
     }
 
     audio.src = resolveAudioUrl(song.url);
+    audio.load();
 
     // Initialize progress bar values and timestamps immediately
     if (elTimeCurrent) elTimeCurrent.textContent = '0:00';
@@ -2112,16 +2193,31 @@ window.loadSong = loadSong;
 function playAudio() {
     if (!audio) return;
 
-    const currentSong = currentQueue[currentSongIndex];
+    const currentSong = currentQueue[currentSongIndex] || window.currentSong;
     if (currentSong && currentSong.id && lastRecordedSongPlayId !== currentSong.id) {
         recordSongPlay(currentSong.id);
+    }
+
+    // Acquire WakeLock to keep audio processing continuous on mobile & desktop
+    requestScreenWakeLock();
+
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'playing';
     }
 
     const playPromise = audio.play();
     if (playPromise !== undefined) {
         playPromise.catch(err => {
-            console.log("Autoplay or playback was prevented by browser:", err);
-            stopUIAnimations();
+            console.warn("[Audio] Play promise warning (handled for background/autoplay):", err);
+            // On mobile / background tabs, retry when audio canplay fires
+            const onCanPlay = () => {
+                audio.removeEventListener('canplay', onCanPlay);
+                audio.play().catch(e => {
+                    console.log("[Audio] Canplay retry prevented:", e);
+                    stopUIAnimations();
+                });
+            };
+            audio.addEventListener('canplay', onCanPlay, { once: true });
         });
     }
 }
@@ -2129,13 +2225,13 @@ function playAudio() {
 function pauseAudio() {
     if (!audio) return;
     audio.pause();
-    // Native 'pause' event listener on audio automatically handles stopUIAnimations()
+    releaseScreenWakeLock();
+    stopUIAnimations();
 }
 
 function togglePlay() {
     if (!audio) return;
 
-    // Check native media property audio.paused instead of custom boolean
     if (audio.paused) {
         playAudio();
     } else {
@@ -2163,31 +2259,49 @@ function prevSong() {
         currentSongIndex = (currentSongIndex - 1 + currentQueue.length) % currentQueue.length;
     }
 
-    loadSong(currentQueue[currentSongIndex]);
+    loadSong(currentQueue[currentSongIndex], true);
 }
 
-function nextSong() {
-    if (currentQueue.length === 0) return;
+function nextSong(isAutoAdvance = false) {
+    // 1. High Priority: Play explicitly user-queued songs first
+    if (userQueue.length > 0) {
+        const nextTrack = userQueue.shift();
+        window.userQueue = userQueue;
+        loadSong(nextTrack, true);
+        if (currentView === 'queue') renderQueueView();
+        return;
+    }
 
+    if (currentQueue.length === 0) {
+        currentQueue = [...songs];
+        currentSongIndex = 0;
+        loadSong(currentQueue[0], true);
+        return;
+    }
+
+    // 2. Play next track from current playback context (playlist, album, search, library)
     if (isShuffle) {
         let randomIndex = currentSongIndex;
         if (currentQueue.length > 1) {
-            while (randomIndex === currentSongIndex) {
+            let attempts = 0;
+            while (randomIndex === currentSongIndex && attempts < 15) {
                 randomIndex = Math.floor(Math.random() * currentQueue.length);
+                attempts++;
             }
         }
         currentSongIndex = randomIndex;
         playbackHistory.push(currentQueue[currentSongIndex].id);
     } else {
-        if (currentSongIndex === currentQueue.length - 1 && repeatMode === 'off') {
-            pauseAudio();
-            if (audio) audio.currentTime = 0;
-            return;
+        if (currentSongIndex >= currentQueue.length - 1) {
+            // Reached the end of the current queue/playlist
+            // Loop back to track 0 so music never abruptly dies
+            currentSongIndex = 0;
+        } else {
+            currentSongIndex++;
         }
-        currentSongIndex = (currentSongIndex + 1) % currentQueue.length;
     }
 
-    loadSong(currentQueue[currentSongIndex]);
+    loadSong(currentQueue[currentSongIndex], true);
 }
 
 function toggleShuffle() {
@@ -2355,8 +2469,12 @@ function playSongFromContext(index, customQueue = null) {
     if (customQueue) {
         currentQueue = [...customQueue];
     }
-    currentSongIndex = index;
-    loadSong(currentQueue[currentSongIndex]);
+    userQueue = []; // Reset explicit user queue on new album/playlist selection
+    currentSongIndex = Math.max(0, Math.min(index, currentQueue.length - 1));
+    window.currentQueue = currentQueue;
+    window.userQueue = userQueue;
+    window.currentSongIndex = currentSongIndex;
+    loadSong(currentQueue[currentSongIndex], true);
 }
 
 function playPlaylist(playlistId) {
@@ -3010,42 +3128,69 @@ function formatTotalDuration(songList) {
     return `${mins} min${secs > 0 ? ' ' + secs + 's' : ''}`;
 }
 
+function getUpcomingQueue() {
+    const list = [];
+    userQueue.forEach((s, idx) => {
+        list.push({ song: s, isUserQueued: true, userIdx: idx });
+    });
+    const upcomingContext = currentQueue.slice(currentSongIndex + 1);
+    upcomingContext.forEach((s, idx) => {
+        list.push({ song: s, isUserQueued: false, contextIdx: currentSongIndex + 1 + idx });
+    });
+    return list;
+}
+
 function reorderUpcomingQueue(fromIdx, toIdx) {
-    const upcomingCount = currentQueue.length - (currentSongIndex + 1);
-    if (upcomingCount <= 0) return;
-    if (fromIdx < 0 || fromIdx >= upcomingCount || toIdx < 0 || toIdx >= upcomingCount) return;
+    const upcoming = getUpcomingQueue();
+    if (fromIdx < 0 || fromIdx >= upcoming.length || toIdx < 0 || toIdx >= upcoming.length) return;
     if (fromIdx === toIdx) return;
 
-    const fromAbs = currentSongIndex + 1 + fromIdx;
-    const toAbs = currentSongIndex + 1 + toIdx;
+    const movedSong = upcoming[fromIdx].song;
 
-    const [movedSong] = currentQueue.splice(fromAbs, 1);
-    currentQueue.splice(toAbs, 0, movedSong);
+    // Moving strictly within user-queued section
+    if (fromIdx < userQueue.length && toIdx < userQueue.length) {
+        const [moved] = userQueue.splice(fromIdx, 1);
+        userQueue.splice(toIdx, 0, moved);
+    } else {
+        // Flatten upcoming items into userQueue to guarantee user's exact customized order
+        const songsInOrder = upcoming.map(item => item.song);
+        const [moved] = songsInOrder.splice(fromIdx, 1);
+        songsInOrder.splice(toIdx, 0, moved);
 
+        userQueue = songsInOrder;
+        currentQueue = currentQueue.slice(0, currentSongIndex + 1);
+    }
+
+    window.userQueue = userQueue;
+    window.currentQueue = currentQueue;
     renderQueueView();
     showToast(`Moved "${movedSong.title}" to position #${toIdx + 1}`);
 }
 
 function shuffleUpcomingQueue() {
-    const upcomingCount = currentQueue.length - (currentSongIndex + 1);
-    if (upcomingCount <= 1) {
+    const upcoming = getUpcomingQueue();
+    if (upcoming.length <= 1) {
         showToast("Add more songs to queue to shuffle");
         return;
     }
-    const upcoming = currentQueue.slice(currentSongIndex + 1);
-    for (let i = upcoming.length - 1; i > 0; i--) {
+    const songsInOrder = upcoming.map(item => item.song);
+    for (let i = songsInOrder.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [upcoming[i], upcoming[j]] = [upcoming[j], upcoming[i]];
+        [songsInOrder[i], songsInOrder[j]] = [songsInOrder[j], songsInOrder[i]];
     }
-    currentQueue.splice(currentSongIndex + 1, upcomingCount, ...upcoming);
+    userQueue = songsInOrder;
+    currentQueue = currentQueue.slice(0, currentSongIndex + 1);
+    window.userQueue = userQueue;
+    window.currentQueue = currentQueue;
     renderQueueView();
     showToast("Upcoming queue randomized");
 }
 
 function clearUpcomingQueue() {
-    const upcomingCount = currentQueue.length - (currentSongIndex + 1);
-    if (upcomingCount === 0) return;
+    userQueue = [];
     currentQueue = currentQueue.slice(0, currentSongIndex + 1);
+    window.userQueue = userQueue;
+    window.currentQueue = currentQueue;
     renderQueueView();
     showToast("Upcoming queue cleared");
 }
@@ -3085,7 +3230,7 @@ function renderQueueAddModalList(query = '') {
         return;
     }
 
-    const upcomingIds = currentQueue.slice(currentSongIndex + 1).map(s => s.id);
+    const upcomingIds = getUpcomingQueue().map(item => item.song.id);
 
     filteredSongs.forEach(song => {
         const item = document.createElement('div');
@@ -3106,7 +3251,7 @@ function renderQueueAddModalList(query = '') {
                 <button class="queue-modal-btn play-next" data-song-id="${song.id}" title="Play right after current song">
                     <i data-lucide="corner-down-right" style="width: 13px; height: 13px;"></i> Play Next
                 </button>
-                <button class="queue-modal-btn add-queue" data-song-id="${song.id}" title="Add to end of queue">
+                <button class="queue-modal-btn add-queue" data-song-id="${song.id}" title="Add to queue">
                     <i data-lucide="plus" style="width: 13px; height: 13px;"></i> Add
                 </button>
             </div>
@@ -3114,7 +3259,8 @@ function renderQueueAddModalList(query = '') {
 
         item.querySelector('.play-next').addEventListener('click', (e) => {
             e.stopPropagation();
-            currentQueue.splice(currentSongIndex + 1, 0, song);
+            userQueue.unshift(song);
+            window.userQueue = userQueue;
             if (currentView === 'queue') renderQueueView();
             renderQueueAddModalList(document.getElementById('queue-add-search-input')?.value || '');
             showToast(`"${song.title}" set to play next`);
@@ -3122,7 +3268,8 @@ function renderQueueAddModalList(query = '') {
 
         item.querySelector('.add-queue').addEventListener('click', (e) => {
             e.stopPropagation();
-            currentQueue.push(song);
+            userQueue.push(song);
+            window.userQueue = userQueue;
             if (currentView === 'queue') renderQueueView();
             renderQueueAddModalList(document.getElementById('queue-add-search-input')?.value || '');
             showToast(`Added "${song.title}" to queue`);
@@ -3146,7 +3293,7 @@ function renderQueueView() {
     if (!nowPlayingContainer || !nextUpBody) return;
 
     // 1. Now Playing Section
-    const currentSong = currentQueue[currentSongIndex];
+    const currentSong = currentQueue[currentSongIndex] || window.currentSong;
     if (currentSong) {
         const isLiked = likedSongIds.includes(currentSong.id);
         nowPlayingContainer.innerHTML = `
@@ -3194,7 +3341,8 @@ function renderQueueView() {
 
     // 2. Next Up Section
     nextUpBody.innerHTML = '';
-    const upcomingSongs = currentQueue.slice(currentSongIndex + 1);
+    const upcomingList = getUpcomingQueue();
+    const upcomingSongs = upcomingList.map(item => item.song);
 
     if (summaryBadge) {
         summaryBadge.textContent = `${upcomingSongs.length} ${upcomingSongs.length === 1 ? 'song' : 'songs'}${upcomingSongs.length > 0 ? ' • ' + formatTotalDuration(upcomingSongs) : ''}`;
@@ -3216,11 +3364,11 @@ function renderQueueView() {
         if (queueTable) queueTable.style.display = 'table';
         if (emptyMsg) emptyMsg.style.display = 'none';
 
-        upcomingSongs.forEach((song, idx) => {
-            const actualIndex = currentSongIndex + 1 + idx;
+        upcomingList.forEach((item, idx) => {
+            const song = item.song;
             const isLiked = likedSongIds.includes(song.id);
             const isFirst = idx === 0;
-            const isLast = idx === upcomingSongs.length - 1;
+            const isLast = idx === upcomingList.length - 1;
 
             const row = document.createElement('tr');
             row.className = 'queue-table-row';
@@ -3241,7 +3389,10 @@ function renderQueueView() {
                 <td class="col-title">
                     <img src="${song.cover}" alt="${escapeHTML(song.title)}" draggable="false">
                     <div class="title-info">
-                        <span class="song-name-cell">${escapeHTML(song.title)}</span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span class="song-name-cell">${escapeHTML(song.title)}</span>
+                            ${item.isUserQueued ? '<span class="in-queue-badge" style="font-size: 10px; padding: 2px 6px;">Queued</span>' : ''}
+                        </div>
                         <span class="song-artist-cell">${escapeHTML(song.artist)}</span>
                     </div>
                 </td>
@@ -3340,9 +3491,15 @@ function renderQueueView() {
                     if (!isLast) reorderUpcomingQueue(idx, idx + 1);
                 } else if (removeBtn) {
                     e.stopPropagation();
-                    const removed = currentQueue.splice(actualIndex, 1)[0];
+                    if (item.isUserQueued) {
+                        userQueue.splice(item.userIdx, 1);
+                    } else {
+                        currentQueue.splice(item.contextIdx, 1);
+                    }
+                    window.userQueue = userQueue;
+                    window.currentQueue = currentQueue;
                     renderQueueView();
-                    showToast(`Removed "${removed ? removed.title : song.title}" from queue`);
+                    showToast(`Removed "${song.title}" from queue`);
                 } else if (likeBtn) {
                     e.stopPropagation();
                     toggleLikeSong(song.id);
@@ -3351,11 +3508,22 @@ function renderQueueView() {
                     showSongContextMenu(song.id, e.clientX, e.clientY, {
                         fromQueue: true,
                         upcomingIndex: idx,
-                        actualIndex: actualIndex,
-                        totalUpcoming: upcomingSongs.length
+                        isUserQueued: item.isUserQueued,
+                        userIdx: item.userIdx,
+                        contextIdx: item.contextIdx,
+                        totalUpcoming: upcomingList.length
                     });
                 } else {
-                    playSongFromContext(actualIndex, currentQueue);
+                    // Click row to play
+                    if (item.isUserQueued) {
+                        userQueue.splice(0, item.userIdx + 1);
+                        window.userQueue = userQueue;
+                        loadSong(song, true);
+                    } else {
+                        currentSongIndex = item.contextIdx;
+                        window.currentSongIndex = currentSongIndex;
+                        loadSong(currentQueue[currentSongIndex], true);
+                    }
                     renderQueueView();
                 }
             });
@@ -3366,8 +3534,10 @@ function renderQueueView() {
                 showSongContextMenu(song.id, e.clientX, e.clientY, {
                     fromQueue: true,
                     upcomingIndex: idx,
-                    actualIndex: actualIndex,
-                    totalUpcoming: upcomingSongs.length
+                    isUserQueued: item.isUserQueued,
+                    userIdx: item.userIdx,
+                    contextIdx: item.contextIdx,
+                    totalUpcoming: upcomingList.length
                 });
             });
 
@@ -4460,7 +4630,8 @@ function openMobileActionSheetForSong(songId, context = null) {
     itemPlayNext.className = 'sheet-action-item';
     itemPlayNext.innerHTML = `<i data-lucide="corner-down-right"></i> <span>Play Next</span>`;
     itemPlayNext.onclick = () => {
-        currentQueue.splice(currentSongIndex + 1, 0, song);
+        userQueue.unshift(song);
+        window.userQueue = userQueue;
         if (currentView === 'queue') renderQueueView();
         showToast(`"${song.title}" will play next`);
         closeMobileActionSheet();
@@ -4472,7 +4643,8 @@ function openMobileActionSheetForSong(songId, context = null) {
     itemAddQueue.className = 'sheet-action-item';
     itemAddQueue.innerHTML = `<i data-lucide="list-plus"></i> <span>Add to Queue</span>`;
     itemAddQueue.onclick = () => {
-        currentQueue.push(song);
+        userQueue.push(song);
+        window.userQueue = userQueue;
         if (currentView === 'queue') renderQueueView();
         showToast(`Added "${song.title}" to queue`);
         closeMobileActionSheet();
@@ -4569,9 +4741,17 @@ function openMobileActionSheetForSong(songId, context = null) {
         itemRemoveQueue.className = 'sheet-action-item danger';
         itemRemoveQueue.innerHTML = `<i data-lucide="trash-2"></i> <span>Remove from Queue</span>`;
         itemRemoveQueue.onclick = () => {
-            const removed = currentQueue.splice(context.actualIndex, 1)[0];
+            if (context.isUserQueued && typeof context.userIdx === 'number') {
+                userQueue.splice(context.userIdx, 1);
+            } else if (typeof context.contextIdx === 'number') {
+                currentQueue.splice(context.contextIdx, 1);
+            } else {
+                userQueue = userQueue.filter(s => s.id !== song.id);
+            }
+            window.userQueue = userQueue;
+            window.currentQueue = currentQueue;
             renderQueueView();
-            showToast(`Removed "${removed ? removed.title : song.title}" from queue`);
+            showToast(`Removed "${song.title}" from queue`);
             closeMobileActionSheet();
         };
         actionsList.appendChild(itemRemoveQueue);
@@ -4809,9 +4989,17 @@ function showSongContextMenu(songId, x, y, context = null) {
         itemRemoveQueue.className = 'context-menu-item danger';
         itemRemoveQueue.innerHTML = `<i data-lucide="trash-2" style="width: 14px; height: 14px;"></i> <span>Remove from Queue</span>`;
         itemRemoveQueue.addEventListener('click', () => {
-            const removed = currentQueue.splice(context.actualIndex, 1)[0];
+            if (context.isUserQueued && typeof context.userIdx === 'number') {
+                userQueue.splice(context.userIdx, 1);
+            } else if (typeof context.contextIdx === 'number') {
+                currentQueue.splice(context.contextIdx, 1);
+            } else {
+                userQueue = userQueue.filter(s => s.id !== song.id);
+            }
+            window.userQueue = userQueue;
+            window.currentQueue = currentQueue;
             renderQueueView();
-            showToast(`Removed "${removed ? removed.title : song.title}" from queue`);
+            showToast(`Removed "${song.title}" from queue`);
             menu.style.display = 'none';
         });
         menu.appendChild(itemRemoveQueue);
@@ -4839,7 +5027,8 @@ function showSongContextMenu(songId, x, y, context = null) {
             menu.style.display = 'none';
             const targetSong = songs.find(s => s.id === songId);
             if (targetSong) {
-                currentQueue.splice(currentSongIndex + 1, 0, targetSong);
+                userQueue.unshift(targetSong);
+                window.userQueue = userQueue;
                 if (currentView === 'queue') {
                     renderQueueView();
                 }
@@ -4856,7 +5045,8 @@ function showSongContextMenu(songId, x, y, context = null) {
             menu.style.display = 'none';
             const targetSong = songs.find(s => s.id === songId);
             if (targetSong) {
-                currentQueue.push(targetSong);
+                userQueue.push(targetSong);
+                window.userQueue = userQueue;
                 if (currentView === 'queue') {
                     renderQueueView();
                 }
@@ -6097,22 +6287,32 @@ function triggerHaptic(type = 'light') {
     }
 }
 
+function getAbsoluteArtworkUrl(coverUrl) {
+    if (!coverUrl) return new URL('assets/icons/icon-512.png', window.location.href).href;
+    if (/^https?:\/\//i.test(coverUrl)) return coverUrl;
+    try {
+        return new URL(coverUrl, window.location.href).href;
+    } catch (e) {
+        return coverUrl;
+    }
+}
+
 function syncMediaSession(song) {
     if (!('mediaSession' in navigator) || !song) return;
 
     try {
-        const coverUrl = song.cover || 'assets/icons/icon-512.png';
+        const absCover = getAbsoluteArtworkUrl(song.cover);
         navigator.mediaSession.metadata = new MediaMetadata({
             title: song.title || 'Mucify Track',
             artist: song.artist || 'Unknown Artist',
             album: song.album || 'Mucify Music',
             artwork: [
-                { src: coverUrl, sizes: '96x96', type: 'image/png' },
-                { src: coverUrl, sizes: '128x128', type: 'image/png' },
-                { src: coverUrl, sizes: '192x192', type: 'image/png' },
-                { src: coverUrl, sizes: '256x256', type: 'image/png' },
-                { src: coverUrl, sizes: '384x384', type: 'image/png' },
-                { src: coverUrl, sizes: '512x512', type: 'image/png' }
+                { src: absCover, sizes: '96x96' },
+                { src: absCover, sizes: '128x128' },
+                { src: absCover, sizes: '192x192' },
+                { src: absCover, sizes: '256x256' },
+                { src: absCover, sizes: '384x384' },
+                { src: absCover, sizes: '512x512' }
             ]
         });
 
@@ -6133,7 +6333,7 @@ function syncMediaSession(song) {
                 triggerHaptic('light');
             });
             navigator.mediaSession.setActionHandler('nexttrack', () => {
-                nextSong();
+                nextSong(false);
                 triggerHaptic('light');
             });
             navigator.mediaSession.setActionHandler('seekto', (details) => {
@@ -6151,8 +6351,14 @@ function syncMediaSession(song) {
             });
             navigator.mediaSession.setActionHandler('seekforward', (details) => {
                 const skip = details.seekOffset || 10;
-                audio.currentTime = Math.min(audio.currentTime + skip, audio.duration);
+                audio.currentTime = Math.min(audio.currentTime + skip, audio.duration || audio.currentTime + skip);
             });
+            try {
+                navigator.mediaSession.setActionHandler('stop', () => {
+                    pauseAudio();
+                    if (audio) audio.currentTime = 0;
+                });
+            } catch (e) { }
         }
     } catch (err) {
         console.warn('[MediaSession] Metadata update error:', err);
@@ -6200,7 +6406,7 @@ function initPwaAndMobileApp() {
     const iosModal = document.getElementById('ios-install-modal');
     const iosBackdrop = document.getElementById('ios-install-modal-backdrop');
     const iosCloseBtn = document.getElementById('ios-modal-close-btn');
-    const iosGotItBtn = document.getElementById('ios-modal-gotit-btn');
+    const iosGotItBtn = document.getElementById('ios-modal-gotit-btn') || document.getElementById('modal-direct-download-btn') || document.querySelector('.ios-modal-gotit-btn');
     const modalStepsContainer = document.getElementById('install-modal-steps') || document.querySelector('.ios-modal-body');
 
     const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -6352,7 +6558,7 @@ function initPwaAndMobileApp() {
         const fullPlayer = document.getElementById('mobile-full-player');
         const drawer = document.getElementById('mobile-drawer');
         const actionSheet = document.getElementById('mobile-action-sheet');
-        const addSongsModal = document.getElementById('queue-add-songs-modal');
+        const addSongsModal = document.getElementById('queue-add-modal') || document.getElementById('queue-add-songs-modal');
 
         if (actionSheet && actionSheet.classList.contains('open')) {
             closeMobileActionSheet();
