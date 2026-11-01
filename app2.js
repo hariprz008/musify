@@ -1057,6 +1057,7 @@ const songs = [
         "id": "song-94",
         "title": "Vinnaithaandi Varuvaayaa",
         "artist": "A R Rahman",
+        "album": "Vinnaithaandi Varuvaayaa",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792918282/Vinnaithaandi_Varuvaayaa_iqghid.mp3",
         "duration": "03:12",
         "durationSec": "192",
@@ -1076,8 +1077,9 @@ const songs = [
     },
     {
         "id": "song-96",
-        "title": "Pudhu Pudhu Arthangal",
+        "title": "Vinnaithaandi Varuvaayaa",
         "artist": "A R Rahman,Karthik",
+        "album": "Vinnaithaandi Varuvaayaa",
         "url": "https://res.cloudinary.com/dxvguv2vw/video/upload/v1792918283/Anbil_Avan_ygybgt.mp3",
         "duration": "01:08",
         "durationSec": "68",
@@ -1659,6 +1661,41 @@ let historyIndex = 0;
 let currentView = 'home';
 let activePlaylistId = null;
 
+// --- Picture-in-Picture & Mini-Player Global State & Helpers ---
+let pipWindow = null;
+let miniPlayerNode = null;
+
+function getMiniEl(id) {
+    if (!miniPlayerNode) {
+        miniPlayerNode = document.getElementById('floating-mini-player') ||
+            (pipWindow && pipWindow.document ? pipWindow.document.getElementById('floating-mini-player') : null);
+    }
+    if (id === 'floating-mini-player') return miniPlayerNode;
+    if (miniPlayerNode) {
+        const found = miniPlayerNode.querySelector('#' + id);
+        if (found) return found;
+    }
+    if (pipWindow && pipWindow.document) {
+        const pipFound = pipWindow.document.getElementById(id);
+        if (pipFound) return pipFound;
+    }
+    return document.getElementById(id);
+}
+
+function refreshIcons(container) {
+    if (typeof lucide === 'undefined') return;
+    try {
+        if (container) {
+            lucide.createIcons({ root: container });
+        } else {
+            lucide.createIcons();
+            if (pipWindow && pipWindow.document) {
+                lucide.createIcons({ root: pipWindow.document });
+            }
+        }
+    } catch (_) { }
+}
+
 // --- 4. DOM Elements Cache ---
 const elPlayPauseBtn = document.getElementById('btn-play-pause');
 const elPlayPauseIcon = document.getElementById('play-pause-icon');
@@ -1709,6 +1746,12 @@ function updatePlayPauseUI(playing) {
             mobilePlayBtn.setAttribute('title', 'Play');
             mobilePlayBtn.innerHTML = PLAY_TRIANGLE_SVG;
         }
+    }
+
+    const miniPlayBtn = getMiniEl('mini-btn-play');
+    if (miniPlayBtn) {
+        miniPlayBtn.setAttribute('title', isActuallyPlaying ? 'Pause' : 'Play');
+        miniPlayBtn.innerHTML = isActuallyPlaying ? PAUSE_LINES_SVG : PLAY_TRIANGLE_SVG;
     }
 }
 const elPrevBtn = document.getElementById('btn-prev');
@@ -1784,6 +1827,7 @@ document.addEventListener('DOMContentLoaded', () => {
     syncVolumeUI();
     setGreeting();
     initPwaAndMobileApp();
+    initMiniPlayer();
 
     if (songs.length > 0) {
         let initialIndex = 0;
@@ -1999,6 +2043,9 @@ function initAudio() {
 
     // 5. timeupdate Event: Format currentTime into min/sec, update current time label, update seek bar slider
     audio.addEventListener('timeupdate', () => {
+        if (typeof updateMiniPlayerProgress === 'function') {
+            updateMiniPlayerProgress();
+        }
         const currentTime = audio.currentTime || 0;
         const duration = audio.duration || (currentQueue[currentSongIndex] && currentQueue[currentSongIndex].durationSec) || 0;
 
@@ -2166,6 +2213,9 @@ function loadSong(song, shouldPlay = true) {
     updateNowPlayingPanel(song);
     updateActiveRowHighlight();
     syncMediaSession(song);
+    if (typeof syncMiniPlayerCurrentTrack === 'function') {
+        syncMiniPlayerCurrentTrack();
+    }
 
     if (song && song.id) {
         if (shouldPlay) {
@@ -2229,7 +2279,22 @@ function pauseAudio() {
 }
 
 function togglePlay() {
+    if (!audio) {
+        if (typeof initAudio === 'function') initAudio();
+    }
     if (!audio) return;
+
+    if (!audio.src || audio.src === '' || audio.src === window.location.href) {
+        if (currentQueue && currentQueue.length > 0) {
+            loadSong(currentQueue[currentSongIndex || 0], true);
+            return;
+        } else if (songs && songs.length > 0) {
+            currentQueue = [...songs];
+            currentSongIndex = 0;
+            loadSong(currentQueue[0], true);
+            return;
+        }
+    }
 
     if (audio.paused) {
         playAudio();
@@ -2237,6 +2302,12 @@ function togglePlay() {
         pauseAudio();
     }
 }
+
+function togglePlayPause() {
+    togglePlay();
+}
+window.togglePlay = togglePlay;
+window.togglePlayPause = togglePlayPause;
 
 function prevSong() {
     if (!audio) return;
@@ -2305,7 +2376,7 @@ function nextSong(isAutoAdvance = false) {
 
 function toggleShuffle() {
     isShuffle = !isShuffle;
-    [elShuffleBtn, document.getElementById('mobile-btn-shuffle')].forEach(btn => {
+    [elShuffleBtn, document.getElementById('mobile-btn-shuffle'), getMiniEl('mini-btn-shuffle')].forEach(btn => {
         if (!btn) return;
         btn.classList.toggle('active', isShuffle);
         const icon = btn.querySelector('svg, i');
@@ -2328,11 +2399,12 @@ function toggleRepeat() {
     }
 
     const isActive = (repeatMode !== 'off');
-    const buttons = [elRepeatBtn, document.getElementById('mobile-btn-repeat')];
+    const buttons = [elRepeatBtn, document.getElementById('mobile-btn-repeat'), getMiniEl('mini-btn-repeat')];
 
     buttons.forEach(btn => {
         if (!btn) return;
         btn.classList.toggle('active', isActive);
+        btn.classList.toggle('repeat-one', repeatMode === 'one');
         const icon = btn.querySelector('svg, i');
         if (icon) icon.style.color = isActive ? 'var(--primary-green)' : '';
 
@@ -2399,6 +2471,14 @@ function syncLikeButtons(songId) {
         }
     }
 
+    // Mini-player Like button
+    const miniLikeBtn = getMiniEl('mini-btn-like');
+    if (currentSong && currentSong.id === songId && miniLikeBtn) {
+        miniLikeBtn.classList.toggle('liked', isLiked);
+        miniLikeBtn.innerHTML = `<i data-lucide="heart" ${isLiked ? 'fill="var(--primary-green)" color="var(--primary-green)"' : ''} class="small-icon"></i>`;
+        refreshIcons(miniLikeBtn);
+    }
+
     // 2. Mobile Full Player Like button
     const mLikeBtn = document.getElementById('mobile-player-like-btn');
     if (currentSong && currentSong.id === songId && mLikeBtn) {
@@ -2444,7 +2524,7 @@ function syncLikeButtons(songId) {
             sheetActionLike.innerHTML = isLiked ?
                 `<i data-lucide="heart" fill="var(--primary-green)" color="var(--primary-green)"></i> <span>Remove from Liked Songs</span>` :
                 `<i data-lucide="heart"></i> <span>Save to Liked Songs</span>`;
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            refreshIcons(miniLikeBtn);
         }
     }
 
@@ -2603,9 +2683,12 @@ function navigate(viewName, addToHistory = true, playlistId = null) {
     } else if (viewName === 'search') {
         const searchView = document.getElementById('search-view');
         if (searchView) searchView.style.display = 'block';
-        if (elHeaderSearchBar) elHeaderSearchBar.style.display = 'block';
-        if (elSearchInput) setTimeout(() => elSearchInput.focus(), 50);
-        handleSearch();
+        if (elHeaderSearchBar) elHeaderSearchBar.style.display = 'none';
+        const inViewInput = document.getElementById('search-view-input');
+        setTimeout(() => {
+            if (inViewInput) inViewInput.focus();
+        }, 50);
+        handleSearch(null, true);
     } else if (viewName === 'library') {
         const libView = document.getElementById('library-view');
         if (libView) libView.style.display = 'block';
@@ -3217,15 +3300,17 @@ function renderQueueAddModalList(query = '') {
     listContainer.innerHTML = '';
 
     const q = (query || '').toLowerCase().trim();
-    const filteredSongs = songs.filter(s => {
+    const filteredSongs = Array.isArray(songs) ? songs.filter(s => {
+        if (!s || typeof s !== 'object') return false;
         if (!q) return true;
-        return s.title.toLowerCase().includes(q) ||
-            s.artist.toLowerCase().includes(q) ||
-            s.album.toLowerCase().includes(q);
-    });
+        const titleMatch = (s.title || '').toLowerCase().includes(q);
+        const artistMatch = (s.artist || '').toLowerCase().includes(q);
+        const albumMatch = (s.album || '').toLowerCase().includes(q);
+        return titleMatch || artistMatch || albumMatch;
+    }) : [];
 
     if (filteredSongs.length === 0) {
-        listContainer.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 28px; font-size: 13px;">No matching songs found</div>';
+        listContainer.innerHTML = `<div style="color: var(--text-muted); text-align: center; padding: 28px; font-size: 13px;">No matching songs found${q ? ` for "${escapeHTML(q)}"` : ''}</div>`;
         return;
     }
 
@@ -3881,7 +3966,7 @@ function renderAlbumsView(resetDetail = false) {
                 renderAlbumsView();
             });
         }
-        if (typeof lucide !== 'undefined') lucide.createIcons();
+        refreshIcons(miniLikeBtn);
         return;
     }
 
@@ -4337,12 +4422,213 @@ function renderSearchHistory() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-function handleSearch() {
-    if (!elSearchInput) return;
-    const query = elSearchInput.value.trim().toLowerCase();
-    if (elClearSearchBtn) {
-        elClearSearchBtn.style.display = query.length > 0 ? 'block' : 'none';
+// --- 11A. Search Scoring, Normalization & Debounce ---
+// Generic debounce utility with cancel() and flush() capabilities
+function debounce(fn, delay = 300) {
+    let timer = null;
+    let lastArgs = null;
+    let lastThis = null;
+
+    const debounced = function (...args) {
+        lastArgs = args;
+        lastThis = this;
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+            timer = null;
+            fn.apply(lastThis, lastArgs);
+        }, delay);
+    };
+
+    debounced.cancel = function () {
+        if (timer) {
+            clearTimeout(timer);
+            timer = null;
+        }
+    };
+
+    debounced.flush = function () {
+        if (timer) {
+            clearTimeout(timer);
+            timer = null;
+            if (lastArgs) {
+                fn.apply(lastThis, lastArgs);
+            }
+        }
+    };
+
+    return debounced;
+}
+
+function normalizeSearchString(str) {
+    if (str == null) return '';
+    let s = String(str).trim();
+    if (!s) return '';
+
+    // Decompose diacritics and strip combining accent marks safely
+    try {
+        s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    } catch (e) {
+        // Fallback if normalize is unsupported
     }
+
+    s = s.toLowerCase();
+
+    // Replace non-alphanumeric and punctuation with space (Unicode-aware letter & number support)
+    try {
+        s = s.replace(/[^\p{L}\p{N}\s]/gu, ' ');
+    } catch (e) {
+        s = s.replace(/[^a-z0-9\s]/g, ' ');
+    }
+
+    return s.replace(/\s+/g, ' ').trim();
+}
+
+function calculateSongMatchScore(song, rawQuery, normQuery, tokens) {
+    if (!song || typeof song !== 'object') return 0;
+
+    const title = typeof song.title === 'string' ? song.title : '';
+    const artist = typeof song.artist === 'string' ? song.artist : '';
+    const album = typeof song.album === 'string' ? song.album : '';
+
+    const normTitle = normalizeSearchString(title);
+    const normArtist = normalizeSearchString(artist);
+    const normAlbum = normalizeSearchString(album);
+
+    const titleLower = title.toLowerCase();
+    const artistLower = artist.toLowerCase();
+    const albumLower = album.toLowerCase();
+    const rawLower = typeof rawQuery === 'string' ? rawQuery.toLowerCase().trim() : '';
+
+    // Guard: If normalized query is empty, only match if raw query matches exact text/punctuation in fields
+    if (!normQuery) {
+        if (rawLower.length > 0 && (titleLower.includes(rawLower) || artistLower.includes(rawLower) || albumLower.includes(rawLower))) {
+            return 100;
+        }
+        return 0;
+    }
+
+    // 1. Direct / Exact Matches (highest priority)
+    if (normTitle === normQuery) return 2000;
+    if (rawLower && titleLower === rawLower) return 1950;
+    if (normArtist === normQuery) return 1500;
+    if (rawLower && artistLower === rawLower) return 1450;
+    if (normAlbum === normQuery) return 1200;
+
+    let score = 0;
+
+    // 2. Starts-with Matches (Title, Artist, Album)
+    if (normTitle.startsWith(normQuery)) {
+        score += 1000;
+    } else if (rawLower && titleLower.startsWith(rawLower)) {
+        score += 900;
+    }
+
+    if (normArtist.startsWith(normQuery)) {
+        score += 700;
+    } else if (rawLower && artistLower.startsWith(rawLower)) {
+        score += 650;
+    }
+
+    if (normAlbum.startsWith(normQuery)) {
+        score += 500;
+    }
+
+    // 3. Word starts-with (Boundary Matches)
+    const titleWords = normTitle.split(' ').filter(Boolean);
+    if (titleWords.some(w => w.startsWith(normQuery))) {
+        score += 600;
+    }
+
+    const artistWords = normArtist.split(' ').filter(Boolean);
+    if (artistWords.some(w => w.startsWith(normQuery))) {
+        score += 450;
+    }
+
+    // 4. Substring Contains Matches
+    if (normTitle.includes(normQuery)) {
+        score += 400;
+    } else if (rawLower && titleLower.includes(rawLower)) {
+        score += 350;
+    }
+
+    if (normArtist.includes(normQuery)) {
+        score += 300;
+    } else if (rawLower && artistLower.includes(rawLower)) {
+        score += 250;
+    }
+
+    if (normAlbum.includes(normQuery)) {
+        score += 200;
+    }
+
+    // 5. Multi-token match across all fields
+    if (tokens && tokens.length > 0) {
+        const combined = `${normTitle} ${normArtist} ${normAlbum}`;
+        const combinedWords = new Set(combined.split(' ').filter(Boolean));
+
+        const significantTokens = tokens.filter(t => t.length > 1);
+        const singleCharTokens = tokens.filter(t => t.length === 1);
+        // Single characters must match as distinct standalone words (e.g. 'A' in 'A.R. Rahman')
+        const singleCharsMatched = singleCharTokens.every(c => combinedWords.has(c));
+
+        if (significantTokens.length > 0) {
+            const allSigMatched = significantTokens.every(t => combined.includes(t));
+            if (allSigMatched && singleCharsMatched) {
+                score += 300 + (significantTokens.length * 60);
+                const wordMatches = significantTokens.filter(t => combinedWords.has(t));
+                score += wordMatches.length * 40;
+            } else {
+                const matchedSig = significantTokens.filter(t => combined.includes(t));
+                if (matchedSig.length >= Math.ceil(significantTokens.length * 0.5) && matchedSig.length > 0) {
+                    score += matchedSig.length * 40;
+                }
+            }
+        } else if (singleCharTokens.length > 0 && singleCharsMatched) {
+            score += 200;
+        }
+    }
+
+    return score;
+}
+
+const debouncedSearch = debounce((source) => {
+    executeSearch(source);
+}, 300);
+
+function handleSearch(source = null, immediate = true) {
+    if (immediate) {
+        debouncedSearch.cancel();
+        executeSearch(source);
+    } else {
+        debouncedSearch(source);
+    }
+}
+
+function executeSearch(source = null) {
+    const inViewInput = document.getElementById('search-view-input');
+    const inViewClearBtn = document.getElementById('search-view-clear');
+
+    let rawQuery = '';
+    if (source === 'inview' && inViewInput) {
+        rawQuery = inViewInput.value;
+        if (elSearchInput && elSearchInput.value !== rawQuery) elSearchInput.value = rawQuery;
+    } else if (source === 'header' && elSearchInput) {
+        rawQuery = elSearchInput.value;
+        if (inViewInput && inViewInput.value !== rawQuery) inViewInput.value = rawQuery;
+    } else {
+        rawQuery = (elSearchInput ? elSearchInput.value : '') || (inViewInput ? inViewInput.value : '');
+        if (elSearchInput && elSearchInput.value !== rawQuery) elSearchInput.value = rawQuery;
+        if (inViewInput && inViewInput.value !== rawQuery) inViewInput.value = rawQuery;
+    }
+
+    const trimmed = (rawQuery || '').trim();
+    const query = trimmed.toLowerCase();
+    const normQuery = normalizeSearchString(trimmed);
+    const tokens = normQuery ? normQuery.split(' ').filter(Boolean) : [];
+
+    const hasQuery = trimmed.length > 0;
+    if (elClearSearchBtn) elClearSearchBtn.style.display = hasQuery ? 'block' : 'none';
+    if (inViewClearBtn) inViewClearBtn.style.display = hasQuery ? 'flex' : 'none';
 
     const resultsSection = document.getElementById('search-results-section');
     const topResultCard = document.getElementById('top-result-card');
@@ -4351,50 +4637,100 @@ function handleSearch() {
     const searchHeaderTitle = document.getElementById('search-results-title');
     const historySection = document.getElementById('search-history-section');
 
-    if (!query) {
+    // Case 1: Search bar cleared -> return to default Spotify-style history view
+    if (!hasQuery) {
         if (resultsSection) resultsSection.style.display = 'none';
         if (historySection) {
             historySection.style.display = 'block';
             renderSearchHistory();
         }
+        if (topResultCard) {
+            topResultCard.onclick = null;
+            topResultCard.oncontextmenu = null;
+            topResultCard.innerHTML = '';
+        }
+        if (topSongsList) topSongsList.innerHTML = '';
+        if (tableResultsBody) tableResultsBody.innerHTML = '';
         return;
     }
 
+    // Case 2: Query active -> show results section
     if (historySection) historySection.style.display = 'none';
     if (resultsSection) resultsSection.style.display = 'block';
 
-    const filtered = songs.filter(song =>
-        song.title.toLowerCase().includes(query) ||
-        song.artist.toLowerCase().includes(query) ||
-        song.album.toLowerCase().includes(query)
-    );
-
-    if (filtered.length === 0) {
-        if (topResultCard) topResultCard.innerHTML = `<div style="padding: 24px; color: var(--text-muted); font-size: 14px;">No top result found</div>`;
-        if (topSongsList) topSongsList.innerHTML = `<div style="padding: 16px; color: var(--text-muted); font-size: 14px;">No matching songs</div>`;
-        if (tableResultsBody) {
-            tableResultsBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 32px;">No tracks found matching "${escapeHTML(query)}"</td></tr>`;
+    // Compute scores for each valid song
+    const scoredSongs = [];
+    if (Array.isArray(songs)) {
+        for (let i = 0; i < songs.length; i++) {
+            const song = songs[i];
+            if (!song || typeof song !== 'object') continue;
+            const score = calculateSongMatchScore(song, query, normQuery, tokens);
+            if (score > 0) {
+                scoredSongs.push({ song, score });
+            }
         }
-        if (searchHeaderTitle) searchHeaderTitle.textContent = `All Songs matching "${escapeHTML(query)}"`;
+    }
+
+    // Sort by score descending (highest score = best match)
+    scoredSongs.sort((a, b) => b.score - a.score);
+    const filtered = scoredSongs.map(item => item.song);
+
+    // Case 2A: No items match the query -> render user-friendly empty state
+    if (filtered.length === 0) {
+        if (topResultCard) {
+            topResultCard.onclick = null;
+            topResultCard.oncontextmenu = null;
+            topResultCard.innerHTML = `
+                <div style="padding: 28px 16px; color: var(--text-muted); font-size: 14px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box;">
+                    <i data-lucide="search" style="width: 36px; height: 36px; margin-bottom: 12px; opacity: 0.5;"></i>
+                    <div style="font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 4px;">No top result found</div>
+                    <div style="font-size: 13px; color: var(--text-muted);">No direct match for "${escapeHTML(trimmed)}"</div>
+                </div>
+            `;
+        }
+        if (topSongsList) {
+            topSongsList.innerHTML = `
+                <div style="padding: 24px 16px; color: var(--text-muted); font-size: 13px; text-align: center;">
+                    No matching songs found
+                </div>
+            `;
+        }
+        if (tableResultsBody) {
+            tableResultsBody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 44px 16px;">
+                        <div style="max-width: 440px; margin: 0 auto;">
+                            <i data-lucide="search" style="width: 40px; height: 40px; margin: 0 auto 12px; opacity: 0.5; display: block;"></i>
+                            <p style="font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 6px;">No results found for "${escapeHTML(trimmed)}"</p>
+                            <p style="font-size: 13px; line-height: 1.5; color: var(--text-muted);">Please check your spelling or try searching with different keywords, artist names, or album titles.</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+        if (searchHeaderTitle) {
+            searchHeaderTitle.textContent = `All Songs matching "${escapeHTML(trimmed)}" (0)`;
+        }
+        refreshIcons(miniLikeBtn);
         return;
     }
 
-    // 1. Top Result (#1 Best Match)
+    // Case 2B: Results found -> 1. Top Result (#1 Best Match)
     const topMatch = filtered[0];
-    const topMatchIdx = songs.findIndex(s => s.id === topMatch.id);
 
     if (topResultCard) {
         topResultCard.innerHTML = `
-            <img src="${topMatch.cover}" alt="${escapeHTML(topMatch.title)}" class="top-result-art">
-            <button class="top-result-menu-btn" data-song-id="${topMatch.id}" title="More options for ${escapeHTML(topMatch.title)}">
+            <img src="${topMatch.cover || 'assets/default-cover.png'}" alt="${escapeHTML(topMatch.title || 'Track')}" class="top-result-art">
+            <button class="top-result-menu-btn" data-song-id="${escapeHTML(topMatch.id)}" title="More options for ${escapeHTML(topMatch.title || '')}">
                 <i data-lucide="more-horizontal" class="small-icon"></i>
             </button>
-            <div class="top-result-title">${escapeHTML(topMatch.title)}</div>
+            <div class="top-result-title">${escapeHTML(topMatch.title || 'Unknown Title')}</div>
             <div class="top-result-meta">
                 <span class="top-result-badge">Song</span>
-                <span>${escapeHTML(topMatch.artist)}</span>
+                <span>${escapeHTML(topMatch.artist || 'Unknown Artist')}</span>
+                ${topMatch.album ? `<span>•</span><span>${escapeHTML(topMatch.album)}</span>` : ''}
             </div>
-            <button class="play-card-btn hover-reveal" title="Play ${escapeHTML(topMatch.title)}">
+            <button class="play-card-btn hover-reveal" title="Play ${escapeHTML(topMatch.title || '')}">
                 <i data-lucide="play" class="play-card-icon"></i>
             </button>
         `;
@@ -4405,7 +4741,7 @@ function handleSearch() {
                 showSongContextMenu(topMatch.id, e.clientX, e.clientY);
                 return;
             }
-            if (topMatchIdx !== -1) playSongFromContext(topMatchIdx, songs);
+            playSongFromContext(0, filtered);
         };
         topResultCard.oncontextmenu = (e) => {
             e.preventDefault();
@@ -4413,30 +4749,29 @@ function handleSearch() {
         };
     }
 
-    // 2. Top Songs List (First 4 matches in compact Spotify row format)
+    // 2. Top Songs List (First 4 matches)
     if (topSongsList) {
         topSongsList.innerHTML = '';
         const top4 = filtered.slice(0, 4);
 
-        top4.forEach((song) => {
-            const songIdx = songs.findIndex(s => s.id === song.id);
-            const isLiked = likedSongIds.includes(song.id);
+        top4.forEach((song, matchIdx) => {
+            const isLiked = Array.isArray(likedSongIds) && likedSongIds.includes(song.id);
             const row = document.createElement('div');
             row.className = 'search-song-row';
             row.innerHTML = `
                 <div class="search-song-left">
-                    <img src="${song.cover}" alt="${escapeHTML(song.title)}" class="search-song-art">
+                    <img src="${song.cover || 'assets/default-cover.png'}" alt="${escapeHTML(song.title || '')}" class="search-song-art">
                     <div class="search-song-info">
-                        <span class="search-song-title">${escapeHTML(song.title)}</span>
-                        <span class="search-song-artist">${escapeHTML(song.artist)}</span>
+                        <span class="search-song-title">${escapeHTML(song.title || 'Unknown Title')}</span>
+                        <span class="search-song-artist">${escapeHTML(song.artist || 'Unknown Artist')}</span>
                     </div>
                 </div>
                 <div class="search-song-right">
-                    <button class="row-action-btn ${isLiked ? 'liked' : ''}" data-song-id="${song.id}" title="${isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}">
+                    <button class="row-action-btn ${isLiked ? 'liked' : ''}" data-song-id="${escapeHTML(song.id)}" title="${isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}">
                         <i data-lucide="heart" ${isLiked ? 'fill="var(--primary-green)" color="var(--primary-green)"' : ''} class="small-icon"></i>
                     </button>
-                    <span>${song.duration}</span>
-                    <button class="row-menu-btn" data-song-id="${song.id}" title="More options">
+                    <span>${escapeHTML(song.duration || '0:00')}</span>
+                    <button class="row-menu-btn" data-song-id="${escapeHTML(song.id)}" title="More options">
                         <i data-lucide="more-horizontal" class="small-icon"></i>
                     </button>
                 </div>
@@ -4451,8 +4786,8 @@ function handleSearch() {
                 } else if (menuBtn) {
                     e.stopPropagation();
                     showSongContextMenu(song.id, e.clientX, e.clientY);
-                } else if (songIdx !== -1) {
-                    playSongFromContext(songIdx, songs);
+                } else {
+                    playSongFromContext(matchIdx, filtered);
                 }
             });
 
@@ -4467,7 +4802,7 @@ function handleSearch() {
 
     // 3. Full Matching Tracks Table
     if (searchHeaderTitle) {
-        searchHeaderTitle.textContent = `All Songs matching "${query}"`;
+        searchHeaderTitle.textContent = `All Songs matching "${escapeHTML(trimmed)}" (${filtered.length})`;
     }
 
     if (tableResultsBody) {
@@ -4476,7 +4811,7 @@ function handleSearch() {
         filtered.forEach((song, idx) => {
             const row = document.createElement('tr');
             row.setAttribute('data-song-id', song.id);
-            const isLiked = likedSongIds.includes(song.id);
+            const isLiked = Array.isArray(likedSongIds) && likedSongIds.includes(song.id);
 
             row.innerHTML = `
                 <td class="col-index">
@@ -4484,19 +4819,19 @@ function handleSearch() {
                     <button class="table-row-play-btn"><i data-lucide="play" fill="#fff" color="#fff" class="small-icon"></i></button>
                 </td>
                 <td class="col-title">
-                    <img src="${song.cover}" alt="${escapeHTML(song.title)}">
+                    <img src="${song.cover || 'assets/default-cover.png'}" alt="${escapeHTML(song.title || '')}">
                     <div class="title-info">
-                        <span class="song-name-cell">${escapeHTML(song.title)}</span>
-                        <span class="song-artist-cell">${escapeHTML(song.artist)}</span>
+                        <span class="song-name-cell">${escapeHTML(song.title || 'Unknown Title')}</span>
+                        <span class="song-artist-cell">${escapeHTML(song.artist || 'Unknown Artist')}</span>
                     </div>
                 </td>
-                <td class="col-album">${escapeHTML(song.album)}</td>
-                <td class="col-duration">${song.duration}</td>
+                <td class="col-album">${escapeHTML(song.album || '')}</td>
+                <td class="col-duration">${escapeHTML(song.duration || '0:00')}</td>
                 <td class="col-actions" style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
-                    <button class="row-action-btn ${isLiked ? 'liked' : ''}" data-song-id="${song.id}" title="${isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}">
+                    <button class="row-action-btn ${isLiked ? 'liked' : ''}" data-song-id="${escapeHTML(song.id)}" title="${isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}">
                         <i data-lucide="heart" ${isLiked ? 'fill="var(--primary-green)" color="var(--primary-green)"' : ''} class="small-icon"></i>
                     </button>
-                    <button class="row-menu-btn" data-song-id="${song.id}" title="More options" style="color: var(--text-muted); padding: 4px; transition: var(--transition-fast); opacity: 0;"><i data-lucide="more-horizontal" class="small-icon"></i></button>
+                    <button class="row-menu-btn" data-song-id="${escapeHTML(song.id)}" title="More options" style="color: var(--text-muted); padding: 4px; transition: var(--transition-fast); opacity: 0;"><i data-lucide="more-horizontal" class="small-icon"></i></button>
                 </td>
             `;
 
@@ -4527,6 +4862,786 @@ function handleSearch() {
     updateActiveRowHighlight();
 }
 
+// --- 11B. Spotify-Style Floating Mini Player Logic ---
+let isMiniPlayerOpen = false;
+let isMiniScrubbing = false;
+let miniPlayerMode = localStorage.getItem('mucify_mini_player_mode') || 'artwork';
+
+function initMiniPlayer() {
+    const btnMini = document.getElementById('btn-mini-player');
+    const mobileBtnMini = document.getElementById('mobile-player-mini-btn');
+    const miniPlayer = getMiniEl('floating-mini-player');
+    if (!miniPlayer) return;
+    miniPlayerNode = miniPlayer;
+
+    const miniBtnPlay = getMiniEl('mini-btn-play');
+    const miniBtnPrev = getMiniEl('mini-btn-prev');
+    const miniBtnNext = getMiniEl('mini-btn-next');
+    const miniBtnShuffle = getMiniEl('mini-btn-shuffle');
+    const miniBtnRepeat = getMiniEl('mini-btn-repeat');
+    const miniBtnLike = getMiniEl('mini-btn-like');
+    const miniBtnClose = getMiniEl('mini-btn-close');
+    const miniBtnExpand = getMiniEl('mini-btn-expand');
+    const miniBtnLayout = getMiniEl('mini-btn-layout-mode');
+    const miniBtnPip = getMiniEl('mini-btn-pip');
+    const miniBtnContext = getMiniEl('mini-btn-context');
+    const miniPlayerTitle = getMiniEl('mini-player-title');
+    const miniArtContainer = getMiniEl('mini-art-container');
+    const miniDragHandle = getMiniEl('mini-player-drag-handle');
+
+    // Document Picture-in-Picture check
+    if ('documentPictureInPicture' in window && miniBtnPip) {
+        miniBtnPip.style.display = 'flex';
+        miniBtnPip.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDocumentPip();
+        });
+    }
+
+    if (btnMini) {
+        btnMini.addEventListener('click', () => toggleMiniPlayer());
+    }
+
+    if (mobileBtnMini) {
+        mobileBtnMini.addEventListener('click', () => {
+            closeMobilePlayer();
+            toggleMiniPlayer(true);
+        });
+    }
+
+    if (miniBtnClose) {
+        miniBtnClose.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (pipWindow) {
+                pipWindow.close();
+                return;
+            }
+            toggleMiniPlayer(false);
+        });
+    }
+
+    if (miniBtnExpand) {
+        miniBtnExpand.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (pipWindow) {
+                pipWindow.close();
+                try { window.focus(); } catch (_) { }
+            }
+            toggleMiniPlayer(false);
+            if (window.innerWidth <= 768) {
+                openMobilePlayer();
+            } else {
+                const nowPlayingBtn = document.getElementById('btn-now-playing');
+                if (nowPlayingBtn) toggleNowPlayingPanel();
+            }
+        });
+    }
+
+    if (miniBtnLayout) {
+        miniBtnLayout.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMiniPlayerMode();
+        });
+    }
+
+    if (miniDragHandle) {
+        miniDragHandle.addEventListener('dblclick', () => {
+            toggleMiniPlayerMode();
+        });
+    }
+
+    if (miniBtnPlay) {
+        miniBtnPlay.addEventListener('click', (e) => {
+            e.stopPropagation();
+            togglePlay();
+        });
+    }
+
+    if (miniBtnPrev) {
+        miniBtnPrev.addEventListener('click', (e) => {
+            e.stopPropagation();
+            prevSong();
+        });
+    }
+
+    if (miniBtnNext) {
+        miniBtnNext.addEventListener('click', (e) => {
+            e.stopPropagation();
+            nextSong();
+        });
+    }
+
+    if (miniBtnShuffle) {
+        miniBtnShuffle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleShuffle();
+        });
+    }
+
+    if (miniBtnRepeat) {
+        miniBtnRepeat.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleRepeat();
+        });
+    }
+
+    if (miniBtnLike) {
+        miniBtnLike.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentQueue[currentSongIndex]) {
+                toggleLikeSong(currentQueue[currentSongIndex].id);
+            }
+        });
+    }
+
+    if (miniPlayerTitle) {
+        miniPlayerTitle.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                openMobilePlayer();
+            } else {
+                toggleNowPlayingPanel();
+            }
+        });
+    }
+
+    if (miniBtnContext) {
+        miniBtnContext.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMiniContextMenu(e);
+        });
+    }
+
+    if (miniArtContainer) {
+        miniArtContainer.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            toggleMiniContextMenu(e);
+        });
+    }
+
+    // Interactive Scrubber Seeking
+    setupMiniProgressScrub();
+
+    // Interactive Volume Slider
+    setupMiniVolumeControl();
+
+    // Draggable Mini Player
+    setupMiniPlayerDrag();
+
+    // Initial Layout Mode
+    setMiniPlayerMode(miniPlayerMode, false);
+
+    // Check if user previously opened mini player
+    const savedState = localStorage.getItem('mucify_mini_player_open');
+    if (savedState === 'true') {
+        toggleMiniPlayer(true);
+    }
+}
+
+function setMiniPlayerMode(mode, save = true) {
+    miniPlayerMode = mode === 'compact' ? 'compact' : 'artwork';
+    if (save) localStorage.setItem('mucify_mini_player_mode', miniPlayerMode);
+
+    const miniPlayer = getMiniEl('floating-mini-player');
+    const layoutIcon = getMiniEl('mini-layout-icon');
+    const layoutBtn = getMiniEl('mini-btn-layout-mode');
+    if (!miniPlayer) return;
+
+    if (miniPlayerMode === 'compact') {
+        miniPlayer.classList.remove('mode-artwork');
+        miniPlayer.classList.add('mode-compact');
+        if (layoutIcon) layoutIcon.setAttribute('data-lucide', 'disc');
+        if (layoutBtn) layoutBtn.setAttribute('title', 'Switch to Artwork View');
+    } else {
+        miniPlayer.classList.remove('mode-compact');
+        miniPlayer.classList.add('mode-artwork');
+        if (layoutIcon) layoutIcon.setAttribute('data-lucide', 'minimize-2');
+        if (layoutBtn) layoutBtn.setAttribute('title', 'Switch to Compact Bar View');
+    }
+
+    if (pipWindow) {
+        try {
+            if (pipWindow.resizeTo) {
+                pipWindow.resizeTo(320, miniPlayerMode === 'compact' ? 134 : 436);
+            }
+        } catch (_) { }
+    } else {
+        ensureMiniPlayerInBounds();
+    }
+    refreshIcons();
+}
+
+function toggleMiniPlayerMode() {
+    setMiniPlayerMode(miniPlayerMode === 'artwork' ? 'compact' : 'artwork');
+}
+
+function toggleMiniPlayer(forceState = null) {
+    const miniPlayer = getMiniEl('floating-mini-player');
+    const btnMini = document.getElementById('btn-mini-player');
+    if (!miniPlayer) return;
+
+    if (forceState !== null) {
+        isMiniPlayerOpen = forceState;
+    } else {
+        isMiniPlayerOpen = !isMiniPlayerOpen;
+    }
+
+    if (!isMiniPlayerOpen && pipWindow) {
+        pipWindow.close();
+        return;
+    }
+
+    miniPlayer.style.display = isMiniPlayerOpen ? 'flex' : 'none';
+    if (btnMini) btnMini.classList.toggle('active', isMiniPlayerOpen);
+
+    localStorage.setItem('mucify_mini_player_open', isMiniPlayerOpen ? 'true' : 'false');
+
+    if (isMiniPlayerOpen) {
+        restoreMiniPlayerPosition();
+        syncMiniPlayerCurrentTrack();
+        syncVolumeUI();
+        refreshIcons();
+    }
+}
+
+async function toggleDocumentPip() {
+    const miniPlayer = getMiniEl('floating-mini-player');
+    if (!miniPlayer) return;
+
+    if (!('documentPictureInPicture' in window)) {
+        toggleMiniPlayer(true);
+        if (typeof showToast === 'function') {
+            showToast('Floating window not supported by this browser. Opened miniplayer instead.');
+        }
+        return;
+    }
+
+    if (pipWindow) {
+        pipWindow.close();
+        pipWindow = null;
+        return;
+    }
+
+    try {
+        const isCompact = miniPlayerMode === 'compact';
+        pipWindow = await window.documentPictureInPicture.requestWindow({
+            width: 320,
+            height: isCompact ? 134 : 436
+        });
+
+        // Copy font links and parent stylesheets into PiP window
+        document.querySelectorAll('link[rel="stylesheet"], link[rel="preconnect"]').forEach(link => {
+            const clone = link.cloneNode(true);
+            pipWindow.document.head.appendChild(clone);
+        });
+
+        [...document.styleSheets].forEach((styleSheet) => {
+            try {
+                if (styleSheet.href && styleSheet.href.startsWith(window.location.origin)) {
+                    const cssRules = [...styleSheet.cssRules].map((rule) => rule.cssText).join('\n');
+                    const style = document.createElement('style');
+                    style.textContent = cssRules;
+                    pipWindow.document.head.appendChild(style);
+                }
+            } catch (e) { }
+        });
+
+        // Inject PiP specific styles for high aesthetics & dark glowing look
+        const pipStyle = document.createElement('style');
+        pipStyle.textContent = `
+            :root {
+                --primary-green: #1db954;
+                --primary-green-hover: #1ed760;
+                --text-muted: #b3b3b3;
+                --font-primary: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                -webkit-font-smoothing: antialiased;
+                user-select: none;
+            }
+            html, body {
+                width: 100vw;
+                height: 100vh;
+                margin: 0;
+                padding: 0;
+                background: #0d0d0f;
+                background: radial-gradient(circle at 50% 12%, rgba(29, 185, 84, 0.16) 0%, rgba(13, 13, 15, 0.99) 70%);
+                color: #ffffff;
+                font-family: var(--font-primary);
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+            .floating-mini-player {
+                position: static !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                height: 100% !important;
+                border-radius: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 10px 14px 10px 14px !important;
+                background: transparent !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                animation: none !important;
+            }
+            .floating-mini-player.mode-compact {
+                padding: 8px 12px 8px 12px !important;
+            }
+            .floating-mini-player .mini-player-header-bar {
+                cursor: default !important;
+                padding-bottom: 4px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            }
+        `;
+        pipWindow.document.head.appendChild(pipStyle);
+
+        pipWindow.document.title = 'Mucify Miniplayer';
+
+        // Add class to miniPlayer for PiP mode
+        miniPlayer.classList.add('pip-mode');
+
+        // Move the mini player DOM into the PiP window
+        pipWindow.document.body.appendChild(miniPlayer);
+        miniPlayer.style.display = 'flex';
+
+        // Mark PiP button as active
+        const pipBtn = getMiniEl('mini-btn-pip');
+        if (pipBtn) {
+            pipBtn.classList.add('active');
+            pipBtn.setAttribute('title', 'Return to Main Window');
+        }
+
+        // Return element back to main window on PiP close
+        pipWindow.addEventListener('pagehide', () => {
+            const player = getMiniEl('floating-mini-player');
+            if (player) {
+                player.classList.remove('pip-mode');
+                player.style.position = 'fixed';
+                player.style.width = '';
+                player.style.maxWidth = '';
+                player.style.height = '';
+                player.style.boxShadow = '';
+                document.body.appendChild(player);
+                restoreMiniPlayerPosition();
+                player.style.display = isMiniPlayerOpen ? 'flex' : 'none';
+            }
+
+            const pBtn = document.getElementById('mini-btn-pip');
+            if (pBtn) {
+                pBtn.classList.remove('active');
+                pBtn.setAttribute('title', 'Open in Floating Window (Picture-in-Picture)');
+            }
+
+            pipWindow = null;
+            syncMiniPlayerCurrentTrack();
+            syncVolumeUI();
+            updatePlayPauseUI();
+            refreshIcons();
+        });
+
+        syncMiniPlayerCurrentTrack();
+        syncVolumeUI();
+        updatePlayPauseUI();
+        refreshIcons();
+    } catch (err) {
+        console.warn('[Mucify] Failed to launch Document PiP:', err);
+    }
+}
+
+function syncMiniPlayerCurrentTrack() {
+    const song = currentQueue[currentSongIndex];
+    if (!song) return;
+
+    const miniArt = getMiniEl('mini-player-art');
+    const miniCompactArt = getMiniEl('mini-compact-art');
+    const miniArtGlow = getMiniEl('mini-art-glow');
+    const miniTitle = getMiniEl('mini-player-title');
+    const miniArtist = getMiniEl('mini-player-artist');
+    const miniLike = getMiniEl('mini-btn-like');
+    const miniBtnShuffle = getMiniEl('mini-btn-shuffle');
+    const miniBtnRepeat = getMiniEl('mini-btn-repeat');
+
+    const coverSrc = song.cover || 'assets/default-cover.png';
+    if (miniArt) miniArt.src = coverSrc;
+    if (miniCompactArt) miniCompactArt.src = coverSrc;
+    if (miniArtGlow) miniArtGlow.style.backgroundImage = `url("${coverSrc}")`;
+    if (miniTitle) miniTitle.textContent = song.title || 'Unknown Title';
+    if (miniArtist) miniArtist.textContent = song.artist || 'Unknown Artist';
+
+    if (miniLike) {
+        const isLiked = Array.isArray(likedSongIds) && likedSongIds.includes(song.id);
+        miniLike.classList.toggle('liked', isLiked);
+        miniLike.innerHTML = `<i data-lucide="heart" ${isLiked ? 'fill="var(--primary-green)" color="var(--primary-green)"' : ''} class="small-icon"></i>`;
+    }
+
+    if (miniBtnShuffle) {
+        miniBtnShuffle.classList.toggle('active', Boolean(isShuffle));
+    }
+
+    if (miniBtnRepeat) {
+        miniBtnRepeat.classList.toggle('active', repeatMode !== 'off');
+        miniBtnRepeat.classList.toggle('repeat-one', repeatMode === 'one');
+    }
+
+    updateMiniPlayerProgress();
+    updatePlayPauseUI();
+    refreshIcons();
+}
+
+function updateMiniPlayerProgress() {
+    if ((!isMiniPlayerOpen && !pipWindow) || isMiniScrubbing) return;
+    const current = audio.currentTime || 0;
+    const dur = audio.duration || (currentQueue[currentSongIndex] && currentQueue[currentSongIndex].durationSec) || 0;
+
+    const curElem = getMiniEl('mini-time-current');
+    const totElem = getMiniEl('mini-time-total');
+    const fillElem = getMiniEl('mini-progress-fill');
+    const thumbElem = getMiniEl('mini-progress-thumb');
+
+    if (curElem) curElem.textContent = formatTime(current);
+    if (totElem && dur) totElem.textContent = formatTime(dur);
+
+    if (dur > 0) {
+        const pct = Math.max(0, Math.min(100, (current / dur) * 100));
+        if (fillElem) fillElem.style.width = `${pct}%`;
+        if (thumbElem) thumbElem.style.left = `${pct}%`;
+    }
+}
+
+function setupMiniProgressScrub() {
+    const track = getMiniEl('mini-progress-track');
+    if (!track) return;
+
+    function getTrackFrac(e) {
+        const rect = track.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    }
+
+    function applyScrubVisual(frac) {
+        const fillElem = getMiniEl('mini-progress-fill');
+        const thumbElem = getMiniEl('mini-progress-thumb');
+        const curElem = getMiniEl('mini-time-current');
+        const dur = audio.duration || (currentQueue[currentSongIndex] && currentQueue[currentSongIndex].durationSec) || 0;
+
+        if (fillElem) fillElem.style.width = `${frac * 100}%`;
+        if (thumbElem) thumbElem.style.left = `${frac * 100}%`;
+        if (curElem && dur > 0) curElem.textContent = formatTime(frac * dur);
+    }
+
+    function startScrub(e) {
+        isMiniScrubbing = true;
+        track.classList.add('is-scrubbing');
+        const ownerDoc = track.ownerDocument || document;
+        let currentFrac = getTrackFrac(e);
+        applyScrubVisual(currentFrac);
+
+        function onPointerMove(moveEvent) {
+            if (!isMiniScrubbing) return;
+            currentFrac = getTrackFrac(moveEvent);
+            applyScrubVisual(currentFrac);
+        }
+
+        function onPointerUp(upEvent) {
+            if (!isMiniScrubbing) return;
+            isMiniScrubbing = false;
+            track.classList.remove('is-scrubbing');
+            if (upEvent) {
+                currentFrac = getTrackFrac(upEvent);
+                applyScrubVisual(currentFrac);
+            }
+            if (audio.duration && !isNaN(audio.duration)) {
+                audio.currentTime = currentFrac * audio.duration;
+            }
+            ownerDoc.removeEventListener('mousemove', onPointerMove);
+            ownerDoc.removeEventListener('mouseup', onPointerUp);
+            ownerDoc.removeEventListener('touchmove', onPointerMove);
+            ownerDoc.removeEventListener('touchend', onPointerUp);
+        }
+
+        ownerDoc.addEventListener('mousemove', onPointerMove);
+        ownerDoc.addEventListener('mouseup', onPointerUp);
+        ownerDoc.addEventListener('touchmove', onPointerMove, { passive: true });
+        ownerDoc.addEventListener('touchend', onPointerUp);
+    }
+
+    track.addEventListener('mousedown', startScrub);
+    track.addEventListener('touchstart', startScrub, { passive: true });
+}
+
+function setupMiniVolumeControl() {
+    const miniBtnVol = getMiniEl('mini-btn-volume');
+    const miniVolTrack = getMiniEl('mini-volume-track');
+
+    if (miniBtnVol) {
+        miniBtnVol.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMute();
+        });
+    }
+
+    if (miniVolTrack) {
+        let isVolDragging = false;
+
+        function setVolFromEvent(e) {
+            const rect = miniVolTrack.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const frac = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+            volume = frac;
+            isMuted = frac === 0;
+            if (audio) {
+                audio.muted = isMuted;
+                audio.volume = isMuted ? 0 : volume;
+            }
+            localStorage.setItem('mucify_volume', volume.toString());
+            syncVolumeUI();
+        }
+
+        function startVolDrag(e) {
+            isVolDragging = true;
+            const ownerDoc = miniVolTrack.ownerDocument || document;
+            setVolFromEvent(e);
+
+            function onMove(ev) {
+                if (isVolDragging) setVolFromEvent(ev);
+            }
+
+            function onUp() {
+                isVolDragging = false;
+                ownerDoc.removeEventListener('mousemove', onMove);
+                ownerDoc.removeEventListener('mouseup', onUp);
+                ownerDoc.removeEventListener('touchmove', onMove);
+                ownerDoc.removeEventListener('touchend', onUp);
+            }
+
+            ownerDoc.addEventListener('mousemove', onMove);
+            ownerDoc.addEventListener('mouseup', onUp);
+            ownerDoc.addEventListener('touchmove', onMove, { passive: true });
+            ownerDoc.addEventListener('touchend', onUp);
+        }
+
+        miniVolTrack.addEventListener('mousedown', startVolDrag);
+        miniVolTrack.addEventListener('touchstart', startVolDrag, { passive: true });
+    }
+}
+
+function setupMiniPlayerDrag() {
+    const handle = getMiniEl('mini-player-drag-handle');
+    const player = getMiniEl('floating-mini-player');
+    if (!handle || !player) return;
+
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let initialLeft = 0, initialTop = 0;
+
+    function onPointerDown(e) {
+        if (pipWindow) return; // Do not drag inside native PiP window
+        if (e.target.closest('button') || e.target.closest('.mini-top-actions')) return;
+        isDragging = true;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        const rect = player.getBoundingClientRect();
+        startX = clientX;
+        startY = clientY;
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        player.style.right = 'auto';
+        player.style.bottom = 'auto';
+        player.style.left = `${initialLeft}px`;
+        player.style.top = `${initialTop}px`;
+
+        document.addEventListener('mousemove', onPointerMove);
+        document.addEventListener('mouseup', onPointerUp);
+        document.addEventListener('touchmove', onPointerMove, { passive: false });
+        document.addEventListener('touchend', onPointerUp);
+    }
+
+    function onPointerMove(e) {
+        if (!isDragging) return;
+        if (e.cancelable) e.preventDefault();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        const deltaX = clientX - startX;
+        const deltaY = clientY - startY;
+
+        let newX = initialLeft + deltaX;
+        let newY = initialTop + deltaY;
+
+        const maxX = window.innerWidth - player.offsetWidth - 8;
+        const maxY = window.innerHeight - player.offsetHeight - 8;
+
+        newX = Math.max(8, Math.min(newX, maxX));
+        newY = Math.max(8, Math.min(newY, maxY));
+
+        player.style.left = `${newX}px`;
+        player.style.top = `${newY}px`;
+    }
+
+    function onPointerUp() {
+        if (!isDragging) return;
+        isDragging = false;
+        document.removeEventListener('mousemove', onPointerMove);
+        document.removeEventListener('mouseup', onPointerUp);
+        document.removeEventListener('touchmove', onPointerMove);
+        document.removeEventListener('touchend', onPointerUp);
+
+        saveMiniPlayerPosition();
+    }
+
+    handle.addEventListener('mousedown', onPointerDown);
+    handle.addEventListener('touchstart', onPointerDown, { passive: true });
+}
+
+function saveMiniPlayerPosition() {
+    const player = getMiniEl('floating-mini-player');
+    if (!player || pipWindow) return;
+    const computedPos = window.getComputedStyle(player).position;
+    if (computedPos !== 'fixed') return;
+    const rect = player.getBoundingClientRect();
+    const pos = { left: Math.round(rect.left), top: Math.round(rect.top) };
+    try {
+        localStorage.setItem('mucify_mini_player_pos', JSON.stringify(pos));
+    } catch (e) { }
+}
+
+function restoreMiniPlayerPosition() {
+    const player = getMiniEl('floating-mini-player');
+    if (!player || pipWindow) return;
+
+    const saved = localStorage.getItem('mucify_mini_player_pos');
+    if (saved) {
+        try {
+            const pos = JSON.parse(saved);
+            if (typeof pos.left === 'number' && typeof pos.top === 'number') {
+                const maxX = window.innerWidth - player.offsetWidth - 8;
+                const maxY = window.innerHeight - player.offsetHeight - 8;
+                const safeX = Math.max(8, Math.min(pos.left, maxX));
+                const safeY = Math.max(8, Math.min(pos.top, maxY));
+                player.style.right = 'auto';
+                player.style.bottom = 'auto';
+                player.style.left = `${safeX}px`;
+                player.style.top = `${safeY}px`;
+                return;
+            }
+        } catch (e) { }
+    }
+
+    // Default: bottom right corner
+    player.style.right = '24px';
+    player.style.bottom = '104px';
+    player.style.left = 'auto';
+    player.style.top = 'auto';
+}
+
+function ensureMiniPlayerInBounds() {
+    const player = getMiniEl('floating-mini-player');
+    if (!player || pipWindow || player.style.left === 'auto' || !player.style.left) return;
+    const computedPos = window.getComputedStyle(player).position;
+    if (computedPos !== 'fixed') return;
+    const rect = player.getBoundingClientRect();
+    const maxX = window.innerWidth - player.offsetWidth - 8;
+    const maxY = window.innerHeight - player.offsetHeight - 8;
+    if (rect.left > maxX || rect.top > maxY) {
+        player.style.left = `${Math.max(8, Math.min(rect.left, maxX))}px`;
+        player.style.top = `${Math.max(8, Math.min(rect.top, maxY))}px`;
+        saveMiniPlayerPosition();
+    }
+}
+
+function toggleMiniContextMenu(e) {
+    if (e) e.stopPropagation();
+    let menu = getMiniEl('mini-context-dropdown');
+    if (menu) {
+        menu.remove();
+        return;
+    }
+    const miniPlayer = getMiniEl('floating-mini-player');
+    if (!miniPlayer) return;
+
+    const song = currentQueue[currentSongIndex];
+    if (!song) return;
+
+    const isLiked = Array.isArray(likedSongIds) && likedSongIds.includes(song.id);
+
+    menu = (miniPlayer.ownerDocument || document).createElement('div');
+    menu.id = 'mini-context-dropdown';
+    menu.className = 'mini-context-dropdown';
+    menu.innerHTML = `
+        <div class="mini-menu-item" id="mini-menu-like">
+            <i data-lucide="heart" ${isLiked ? 'fill="var(--primary-green)" color="var(--primary-green)"' : ''} style="width:14px;height:14px;"></i>
+            <span>${isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}</span>
+        </div>
+        <div class="mini-menu-item" id="mini-menu-view">
+            <i data-lucide="${miniPlayerMode === 'compact' ? 'disc' : 'minimize-2'}" style="width:14px;height:14px;"></i>
+            <span>${miniPlayerMode === 'compact' ? 'Artwork View' : 'Compact View'}</span>
+        </div>
+        <div class="mini-menu-item" id="mini-menu-expand">
+            <i data-lucide="maximize-2" style="width:14px;height:14px;"></i>
+            <span>Open in Tab</span>
+        </div>
+        <div class="mini-menu-item mini-menu-danger" id="mini-menu-close">
+            <i data-lucide="x" style="width:14px;height:14px;"></i>
+            <span>Close Miniplayer</span>
+        </div>
+    `;
+
+    miniPlayer.appendChild(menu);
+    refreshIcons(menu);
+
+    menu.querySelector('#mini-menu-like').addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        toggleLikeSong(song.id);
+        menu.remove();
+    });
+
+    menu.querySelector('#mini-menu-view').addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        toggleMiniPlayerMode();
+        menu.remove();
+    });
+
+    menu.querySelector('#mini-menu-expand').addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        if (pipWindow) {
+            pipWindow.close();
+            try { window.focus(); } catch (_) { }
+        }
+        toggleMiniPlayer(false);
+        if (window.innerWidth <= 768) {
+            openMobilePlayer();
+        } else {
+            toggleNowPlayingPanel();
+        }
+        menu.remove();
+    });
+
+    menu.querySelector('#mini-menu-close').addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        if (pipWindow) {
+            pipWindow.close();
+        } else {
+            toggleMiniPlayer(false);
+        }
+        menu.remove();
+    });
+
+    const closeDropdown = (ev) => {
+        if (!menu.contains(ev.target) && ev.target.id !== 'mini-btn-context') {
+            menu.remove();
+            (miniPlayer.ownerDocument || document).removeEventListener('click', closeDropdown);
+        }
+    };
+    setTimeout(() => {
+        (miniPlayer.ownerDocument || document).addEventListener('click', closeDropdown);
+    }, 50);
+}
 // --- SPOTIFY-STYLE MOBILE ACTION SHEET (OPTIONS BOTTOM SHEET) ---
 let activeSheetDismissTimeout = null;
 
@@ -4583,14 +5698,14 @@ function openMobileActionSheetForSong(songId, context = null) {
             likeBtn.innerHTML = nowLiked ?
                 '<i data-lucide="heart" fill="var(--primary-green)" color="var(--primary-green)"></i>' :
                 '<i data-lucide="heart"></i>';
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            refreshIcons(miniLikeBtn);
             const likeItem = actionsList.querySelector('.sheet-action-item.like-toggle');
             if (likeItem) {
                 likeItem.innerHTML = nowLiked ?
                     `<i data-lucide="heart" fill="var(--primary-green)" color="var(--primary-green)"></i> <span>Remove from Liked Songs</span>` :
                     `<i data-lucide="heart"></i> <span>Save to Liked Songs</span>`;
                 likeItem.classList.toggle('active-item', nowLiked);
-                if (typeof lucide !== 'undefined') lucide.createIcons();
+                refreshIcons(miniLikeBtn);
             }
         };
     }
@@ -5299,32 +6414,87 @@ function initEventListeners() {
     if (elNavBack) elNavBack.addEventListener('click', navBack);
     if (elNavForward) elNavForward.addEventListener('click', navForward);
 
+    const searchViewInput = document.getElementById('search-view-input');
+    const searchViewClear = document.getElementById('search-view-clear');
+
+    // Debounced search on input typing (300ms) with immediate UI sync & clear button toggling
     if (elSearchInput) {
-        elSearchInput.addEventListener('input', handleSearch);
+        elSearchInput.addEventListener('input', () => {
+            const val = elSearchInput.value;
+            if (searchViewInput && searchViewInput.value !== val) searchViewInput.value = val;
+            const hasText = val.trim().length > 0;
+            if (elClearSearchBtn) elClearSearchBtn.style.display = hasText ? 'block' : 'none';
+            if (searchViewClear) searchViewClear.style.display = hasText ? 'flex' : 'none';
+            handleSearch('header', false);
+        });
     }
-    if (elClearSearchBtn) {
-        elClearSearchBtn.addEventListener('click', () => {
-            if (elSearchInput) {
-                elSearchInput.value = '';
-                handleSearch();
-                elSearchInput.focus();
-            }
+    if (searchViewInput) {
+        searchViewInput.addEventListener('input', () => {
+            const val = searchViewInput.value;
+            if (elSearchInput && elSearchInput.value !== val) elSearchInput.value = val;
+            const hasText = val.trim().length > 0;
+            if (elClearSearchBtn) elClearSearchBtn.style.display = hasText ? 'block' : 'none';
+            if (searchViewClear) searchViewClear.style.display = hasText ? 'flex' : 'none';
+            handleSearch('inview', false);
         });
     }
 
-    // Search Keyboard Shortcuts (/ or Ctrl+K to focus, Escape to clear)
+    // Prevent default form submission or reload on Enter, and trigger immediate flush
+    [elSearchInput, searchViewInput].forEach((inputEl, idx) => {
+        if (!inputEl) return;
+        const src = idx === 0 ? 'header' : 'inview';
+
+        inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                debouncedSearch.flush();
+                inputEl.blur();
+            }
+        });
+
+        const parentForm = inputEl.closest('form');
+        if (parentForm) {
+            parentForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                debouncedSearch.flush();
+            });
+        }
+    });
+
+    // Clear search buttons (Instant execution, bypass debounce)
+    if (elClearSearchBtn) {
+        elClearSearchBtn.addEventListener('click', () => {
+            if (elSearchInput) elSearchInput.value = '';
+            if (searchViewInput) searchViewInput.value = '';
+            handleSearch(null, true);
+            if (elSearchInput) elSearchInput.focus();
+        });
+    }
+
+    if (searchViewClear) {
+        searchViewClear.addEventListener('click', () => {
+            if (elSearchInput) elSearchInput.value = '';
+            if (searchViewInput) searchViewInput.value = '';
+            handleSearch(null, true);
+            if (searchViewInput) searchViewInput.focus();
+        });
+    }
+
+    // Search Keyboard Shortcuts (/ or Ctrl+K to focus, Escape to clear immediately)
     document.addEventListener('keydown', (e) => {
         const isInput = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
         if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) && !isInput) {
             e.preventDefault();
             navigate('search');
-            if (elSearchInput) elSearchInput.focus();
-        } else if (e.key === 'Escape' && document.activeElement === elSearchInput) {
-            if (elSearchInput.value) {
-                elSearchInput.value = '';
-                handleSearch();
+            const inView = document.getElementById('search-view-input');
+            if (inView) inView.focus();
+        } else if (e.key === 'Escape' && (document.activeElement === elSearchInput || document.activeElement === searchViewInput)) {
+            if ((elSearchInput && elSearchInput.value) || (searchViewInput && searchViewInput.value)) {
+                if (elSearchInput) elSearchInput.value = '';
+                if (searchViewInput) searchViewInput.value = '';
+                handleSearch(null, true);
             } else {
-                elSearchInput.blur();
+                if (document.activeElement) document.activeElement.blur();
             }
         }
     });
@@ -5947,9 +7117,28 @@ function initEventListeners() {
 
     const queueSearchInput = document.getElementById('queue-add-search-input');
     if (queueSearchInput) {
+        const debouncedQueueSearch = debounce((val) => {
+            renderQueueAddModalList(val);
+        }, 250);
+
         queueSearchInput.addEventListener('input', (e) => {
-            renderQueueAddModalList(e.target.value);
+            debouncedQueueSearch(e.target.value);
         });
+
+        queueSearchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                debouncedQueueSearch.flush();
+            }
+        });
+
+        const queueForm = queueSearchInput.closest('form');
+        if (queueForm) {
+            queueForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                debouncedQueueSearch.flush();
+            });
+        }
     }
 
     // Fullscreen Logic
@@ -6264,6 +7453,25 @@ function syncVolumeUI() {
             mMuteBtn.innerHTML = VOLUME_LOW_SVG;
         } else {
             mMuteBtn.innerHTML = VOLUME_HIGH_SVG;
+        }
+    }
+
+    const miniVolFill = getMiniEl('mini-volume-fill');
+    if (miniVolFill) miniVolFill.style.width = `${pct}%`;
+    const miniVolThumb = getMiniEl('mini-volume-thumb');
+    if (miniVolThumb) miniVolThumb.style.left = `${pct}%`;
+
+    const miniMuteBtn = getMiniEl('mini-btn-volume');
+    if (miniMuteBtn) {
+        if (isMuted || activeVol === 0) {
+            miniMuteBtn.innerHTML = VOLUME_MUTED_SVG;
+            miniMuteBtn.setAttribute('title', 'Unmute');
+        } else if (activeVol < 0.5) {
+            miniMuteBtn.innerHTML = VOLUME_LOW_SVG;
+            miniMuteBtn.setAttribute('title', 'Mute');
+        } else {
+            miniMuteBtn.innerHTML = VOLUME_HIGH_SVG;
+            miniMuteBtn.setAttribute('title', 'Mute');
         }
     }
 }

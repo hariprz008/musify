@@ -206,14 +206,6 @@
                         <button class="arrow-btn" id="nav-back"><i data-lucide="chevron-left"></i></button>
                         <button class="arrow-btn" id="nav-forward"><i data-lucide="chevron-right"></i></button>
                     </div>
-                    <!-- Search Input (Only shown on search page) -->
-                    <div class="search-bar-container" id="header-search-bar" style="display: none;">
-                        <i data-lucide="search" class="search-input-icon"></i>
-                        <input type="text" id="search-input" placeholder="What do you want to listen to?"
-                            autocomplete="off">
-                        <button id="clear-search-btn" style="display: none;"><i data-lucide="x"
-                                class="small-icon"></i></button>
-                    </div>
                 </div>
 
                 <div class="header-right">
@@ -415,6 +407,20 @@
                 <!-- 2. Search View (Spotify Style) -->
                 <section id="search-view" class="content-view" style="display: none;">
                     <div class="view-content-wrapper">
+                        <!-- In-View Search Input Bar -->
+                        <div class="search-view-bar-wrapper">
+                            <div class="search-view-bar">
+                                <i data-lucide="search" class="search-view-icon"></i>
+                                <input type="text" id="search-view-input"
+                                    placeholder="What do you want to listen to? (Songs, artists, albums...)"
+                                    autocomplete="off">
+                                <button id="search-view-clear" class="search-view-clear-btn" style="display: none;"
+                                    title="Clear search">
+                                    <i data-lucide="x"></i>
+                                </button>
+                            </div>
+                        </div>
+
                         <!-- Dynamic Search Results (Shown when user types a query) -->
                         <div id="search-results-section" style="display: none; margin-bottom: 2.5rem;">
                             <!-- Top Result + Songs Side-by-Side Container -->
@@ -1003,6 +1009,8 @@
                         <div class="volume-thumb" id="elVolumeThumb" style="left: 70%;"></div>
                     </div>
                 </div>
+                <button class="extra-btn" id="btn-mini-player" title="Mini Player mode"><i
+                        data-lucide="picture-in-picture-2"></i></button>
                 <button class="extra-btn" id="btn-fullscreen" title="Fullscreen"><i
                         data-lucide="maximize-2"></i></button>
                 <button class="extra-btn mobile-expand-hint-btn" id="mobile-expand-hint-btn"
@@ -1116,9 +1124,15 @@
                 <span class="sub-label">PLAYING FROM</span>
                 <span class="main-label" id="mobile-player-context">Mucify Library</span>
             </div>
-            <button class="mobile-player-more-btn" id="mobile-player-more-btn" aria-label="Song options">
-                <i data-lucide="more-vertical"></i>
-            </button>
+            <div style="display: flex; align-items: center; gap: 4px;">
+                <button class="mobile-player-more-btn" id="mobile-player-mini-btn" aria-label="Mini player"
+                    title="Mini Player">
+                    <i data-lucide="picture-in-picture-2"></i>
+                </button>
+                <button class="mobile-player-more-btn" id="mobile-player-more-btn" aria-label="Song options">
+                    <i data-lucide="more-vertical"></i>
+                </button>
+            </div>
         </div>
 
         <div class="mobile-player-art-section">
@@ -1231,6 +1245,96 @@
         </div>
 
         <button class="sheet-cancel-btn" id="mobile-sheet-cancel-btn">Close</button>
+    </div>
+
+    <!-- Floating Mini Player (Spotify Miniplayer Style) -->
+    <div id="floating-mini-player" class="floating-mini-player mode-artwork" style="display: none;">
+        <!-- Top Bar / Drag Handle -->
+        <div class="mini-player-header-bar" id="mini-player-drag-handle" title="Drag to reposition">
+            <div class="mini-header-left">
+                <i data-lucide="music-2" class="mini-logo-icon"></i>
+                <span class="mini-header-label">Miniplayer</span>
+                <span class="mini-pip-badge" id="mini-pip-badge">PIP</span>
+            </div>
+            <div class="mini-top-actions">
+                <button class="mini-top-btn" id="mini-btn-layout-mode" title="Toggle Compact / Artwork View">
+                    <i data-lucide="minimize-2" id="mini-layout-icon"></i>
+                </button>
+                <button class="mini-top-btn" id="mini-btn-pip" title="Open in Floating Window (Picture-in-Picture)"
+                    style="display: none;">
+                    <i data-lucide="picture-in-picture-2"></i>
+                </button>
+                <button class="mini-top-btn" id="mini-btn-expand" title="Restore Full View">
+                    <i data-lucide="maximize-2"></i>
+                </button>
+                <button class="mini-top-btn mini-close-btn" id="mini-btn-close" title="Close Mini Player">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Large Artwork View -->
+        <div class="mini-player-artwork-section" id="mini-player-artwork-section">
+            <div class="mini-art-container" id="mini-art-container">
+                <img src="assets/icons/icon-192.png" alt="Cover" id="mini-player-art" class="mini-player-art">
+                <div class="mini-art-glow" id="mini-art-glow"></div>
+            </div>
+        </div>
+
+        <!-- Track Info -->
+        <div class="mini-player-info-row">
+            <div class="mini-compact-thumb" id="mini-compact-thumb">
+                <img src="assets/icons/icon-192.png" alt="Thumbnail" id="mini-compact-art" class="mini-compact-art">
+            </div>
+            <div class="mini-player-details">
+                <div class="mini-title-wrap">
+                    <span id="mini-player-title" class="mini-player-title">Song Title</span>
+                </div>
+                <span id="mini-player-artist" class="mini-player-artist">Artist</span>
+            </div>
+            <button class="mini-like-btn" id="mini-btn-like" title="Save to Liked Songs">
+                <i data-lucide="heart" class="small-icon"></i>
+            </button>
+        </div>
+
+        <!-- Progress Bar with Interactive Scrubber -->
+        <div class="mini-player-progress-container">
+            <span id="mini-time-current" class="mini-timestamp">0:00</span>
+            <div class="mini-progress-track" id="mini-progress-track" title="Click or drag to seek">
+                <div class="mini-progress-fill" id="mini-progress-fill" style="width: 0%;"></div>
+                <div class="mini-progress-thumb" id="mini-progress-thumb"></div>
+            </div>
+            <span id="mini-time-total" class="mini-timestamp">0:00</span>
+        </div>
+
+        <!-- Playback Controls -->
+        <div class="mini-player-controls-row">
+            <button class="mini-ctrl-btn" id="mini-btn-shuffle" title="Shuffle"><i data-lucide="shuffle"></i></button>
+            <button class="mini-ctrl-btn" id="mini-btn-prev" title="Previous"><i data-lucide="skip-back"></i></button>
+            <button class="mini-play-main-btn" id="mini-btn-play" title="Play/Pause">
+                <i data-lucide="play" fill="#000" color="#000" id="mini-play-icon"></i>
+            </button>
+            <button class="mini-ctrl-btn" id="mini-btn-next" title="Next"><i data-lucide="skip-forward"></i></button>
+            <button class="mini-ctrl-btn" id="mini-btn-repeat" title="Repeat"><i data-lucide="repeat"></i></button>
+        </div>
+
+        <!-- Bottom Row: Volume Slider & Options -->
+        <div class="mini-player-bottom-bar" id="mini-player-bottom-bar">
+            <div class="mini-volume-group">
+                <button class="mini-util-btn" id="mini-btn-volume" title="Mute/Unmute">
+                    <i data-lucide="volume-2" id="mini-volume-icon"></i>
+                </button>
+                <div class="mini-volume-slider-wrap" id="mini-volume-wrap">
+                    <div class="mini-volume-track" id="mini-volume-track" title="Adjust Volume">
+                        <div class="mini-volume-fill" id="mini-volume-fill" style="width: 70%;"></div>
+                        <div class="mini-volume-thumb" id="mini-volume-thumb" style="left: 70%;"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="mini-util-btn" id="mini-btn-context" title="More options">
+                <i data-lucide="more-horizontal"></i>
+            </button>
+        </div>
     </div>
 
     <script src="app2.js?v=4.1"></script>
