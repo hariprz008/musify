@@ -1545,33 +1545,20 @@ const defaultPlaylists = {
         desc: "Your collection of favorite tracks.",
         art: "liked",
         songs: likedSongIds
-    },
-    "playlist-1": {
-        name: "Chill Vibes",
-        desc: "Lo-Fi tunes for a relaxed mood and late night coding.",
-        art: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=300&q=80",
-        songs: ["song-1", "song-3", "song-5", "song-11"]
-    },
-    "playlist-2": {
-        name: "Focus Flow",
-        desc: "Upbeat instrumentals to keep your concentration sharp.",
-        art: "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?auto=format&fit=crop&w=300&q=80",
-        songs: ["song-2", "song-1", "song-8", "song-10"]
-    },
-    "playlist-3": {
-        name: "Gaming Session",
-        desc: "Fast-paced synth beats and cybernetic melodies.",
-        art: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=300&q=80",
-        songs: ["song-2", "song-3", "song-9", "song-15"]
     }
 };
 
 let playlists = JSON.parse(localStorage.getItem('mucify_playlists'));
 if (!playlists) {
-    playlists = defaultPlaylists;
+    playlists = { ...defaultPlaylists };
 } else {
     playlists["liked"] = defaultPlaylists["liked"];
+    // Remove any legacy default dummy mock playlists from existing storage
+    delete playlists["playlist-1"];
+    delete playlists["playlist-2"];
+    delete playlists["playlist-3"];
 }
+localStorage.setItem('mucify_playlists', JSON.stringify(playlists));
 
 function savePlaylists() {
     localStorage.setItem('mucify_playlists', JSON.stringify(playlists));
@@ -1605,6 +1592,7 @@ window.setMucifyData = function (cloudLikedSongIds, cloudPlaylists) {
     if (typeof renderSidebarPlaylists === 'function') renderSidebarPlaylists();
     if (typeof renderLikedSongsView === 'function' && currentView === 'liked') renderLikedSongsView();
     if (typeof renderLibraryView === 'function' && currentView === 'library') renderLibraryView();
+    if (typeof renderHomeView === 'function') renderHomeView();
     if (typeof syncLikeButtons === 'function' && songs && songs[currentSongIndex]) {
         syncLikeButtons(songs[currentSongIndex].id);
     }
@@ -1627,6 +1615,7 @@ window.resetMucifyDataOnLogout = function () {
     localStorage.setItem('mucify_playlists', JSON.stringify(playlists));
     if (typeof renderSidebarPlaylists === 'function') renderSidebarPlaylists();
     if (typeof renderLikedSongsView === 'function') renderLikedSongsView();
+    if (typeof renderHomeView === 'function') renderHomeView();
     if (typeof syncLikeButtons === 'function' && songs && songs[currentSongIndex]) {
         syncLikeButtons(songs[currentSongIndex].id);
     }
@@ -2916,45 +2905,51 @@ function renderHomeView() {
     // 1. Render Top Tracks shelf cards dynamically (most heard songs, up to 5)
     renderTopTracks();
 
-    // 2. Render Mood Boosters shelf cards dynamically
+    // 2. Render User Playlists shelf cards dynamically (only user-created playlists)
     const moodGrid = document.getElementById('home-mood-boosters-grid');
+    const playlistsShelf = document.getElementById('home-playlists-shelf');
     if (moodGrid) {
         moodGrid.innerHTML = '';
-        Object.keys(playlists).forEach(key => {
-            if (key === 'liked') return;
-            const pl = playlists[key];
-            const card = document.createElement('div');
-            card.className = 'music-card playlist-card';
-            card.setAttribute('data-playlist-id', key);
+        const userPlaylistKeys = Object.keys(playlists).filter(key => key !== 'liked');
+        if (userPlaylistKeys.length === 0) {
+            if (playlistsShelf) playlistsShelf.style.display = 'none';
+        } else {
+            if (playlistsShelf) playlistsShelf.style.display = 'block';
+            userPlaylistKeys.forEach(key => {
+                const pl = playlists[key];
+                const card = document.createElement('div');
+                card.className = 'music-card playlist-card';
+                card.setAttribute('data-playlist-id', key);
 
-            card.innerHTML = `
-                <div class="card-art-wrapper">
-                    <img src="${escapeHTML(pl.art)}" alt="${escapeHTML(pl.name)}" class="card-img">
-                    <button class="play-card-btn hover-reveal"><i data-lucide="play" class="play-card-icon"></i></button>
-                </div>
-                <div class="card-metadata">
-                    <h3>${escapeHTML(pl.name)}</h3>
-                    <p>${escapeHTML(pl.desc || `${pl.songs.length} ${pl.songs.length === 1 ? 'song' : 'songs'}`)}</p>
-                </div>
-            `;
+                card.innerHTML = `
+                    <div class="card-art-wrapper">
+                        <img src="${escapeHTML(pl.art || 'assets/icons/icon-192.png')}" alt="${escapeHTML(pl.name)}" class="card-img">
+                        <button class="play-card-btn hover-reveal"><i data-lucide="play" class="play-card-icon"></i></button>
+                    </div>
+                    <div class="card-metadata">
+                        <h3>${escapeHTML(pl.name)}</h3>
+                        <p>${escapeHTML(pl.desc || `${pl.songs.length} ${pl.songs.length === 1 ? 'song' : 'songs'}`)}</p>
+                    </div>
+                `;
 
-            card.addEventListener('click', (e) => {
-                const playBtn = e.target.closest('.play-card-btn');
-                if (playBtn) {
-                    e.stopPropagation();
-                    playPlaylist(key);
-                } else {
-                    navigate('playlist', true, key);
-                }
+                card.addEventListener('click', (e) => {
+                    const playBtn = e.target.closest('.play-card-btn');
+                    if (playBtn) {
+                        e.stopPropagation();
+                        playPlaylist(key);
+                    } else {
+                        navigate('playlist', true, key);
+                    }
+                });
+
+                card.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    showPlaylistContextMenu(key, e.clientX, e.clientY);
+                });
+
+                moodGrid.appendChild(card);
             });
-
-            card.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                showPlaylistContextMenu(key, e.clientX, e.clientY);
-            });
-
-            moodGrid.appendChild(card);
-        });
+        }
     }
 
     // 2. Sync Quick Grid playlist cards

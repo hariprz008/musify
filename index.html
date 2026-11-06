@@ -99,6 +99,12 @@
                     <span class="auth-btn-label">Sign in with Microsoft</span>
                     <span class="auth-spinner" style="display: none;"></span>
                 </button>
+
+                <!-- Continue as Guest Option -->
+                <button type="button" id="btn-login-guest" class="auth-btn-guest">
+                    <span>Continue without signing in</span>
+                    <i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>
+                </button>
             </div>
 
             <!-- Footer / Privacy -->
@@ -119,7 +125,7 @@
     <div class="ios-install-modal" id="ios-install-modal" role="dialog" aria-modal="true" style="display: none;">
         <div class="ios-modal-header">
             <div class="ios-modal-brand">
-                <img src="assets/icons/icon-192.png" alt="Mucify" class="ios-modal-icon">
+                <img src="./assets/icons/icon-192.png" alt="Mucify" class="ios-modal-icon">
                 <div>
                     <h3 class="ios-modal-title">Download Mucify</h3>
                     <p class="ios-modal-sub">Direct App Package Download</p>
@@ -133,7 +139,7 @@
             <p style="color: var(--text-muted); font-size: 13.5px; line-height: 1.5; margin-bottom: 18px;">
                 Download the Mucify mobile app directly to your device for instant offline music playback.
             </p>
-            <a href="mucify.apk" download="mucify.apk" class="ios-modal-gotit-btn" id="modal-direct-download-btn"
+            <a href="./mucify.apk" download="mucify.apk" class="ios-modal-gotit-btn" id="modal-direct-download-btn"
                 style="display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;">
                 <i data-lucide="download"></i>
                 <span>Download Now (APK)</span>
@@ -208,7 +214,7 @@
 
             <div class="sidebar-divider"></div>
 
-            <!-- Mobile Drawer User Profile & Logout -->
+            <!-- Mobile Drawer User Profile & Auth -->
             <div class="drawer-user-card" id="drawer-user-card">
                 <div class="drawer-user-meta">
                     <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80"
@@ -221,6 +227,12 @@
                 <button class="drawer-logout-btn" id="mobile-drawer-logout-btn" title="Log out">
                     <i data-lucide="log-out"></i>
                     <span>Log out</span>
+                </button>
+                <button class="drawer-logout-btn drawer-login-btn" id="mobile-drawer-login-btn"
+                    style="display: none; color: var(--primary-green); background: rgba(29, 185, 84, 0.1); border-color: rgba(29, 185, 84, 0.3);"
+                    title="Sign In">
+                    <i data-lucide="log-in"></i>
+                    <span>Sign In</span>
                 </button>
             </div>
         </div>
@@ -278,9 +290,7 @@
 
             <!-- Dynamic Playlists List in Sidebar -->
             <div class="playlists-list" id="sidebar-playlists">
-                <button class="playlist-nav-item" data-playlist-id="playlist-1">Chill Vibes</button>
-                <button class="playlist-nav-item" data-playlist-id="playlist-2">Focus Flow</button>
-                <button class="playlist-nav-item" data-playlist-id="playlist-3">Gaming Session</button>
+                <!-- Dynamically populated with user playlists -->
             </div>
         </aside>
 
@@ -307,12 +317,14 @@
 
                         <!-- Dropdown Menu -->
                         <div class="profile-dropdown" id="profile-dropdown-menu">
-                            <a href="mucify.apk" download="mucify.apk" id="profile-install-btn"><i
+                            <a href="./mucify.apk" download="mucify.apk" id="profile-install-btn"><i
                                     data-lucide="download" class="dropdown-icon"></i>
                                 Download App</a>
                             <a href="#"><i data-lucide="user" class="dropdown-icon"></i> Account</a>
                             <a href="#"><i data-lucide="settings" class="dropdown-icon"></i> Settings</a>
                             <div class="dropdown-divider"></div>
+                            <a href="#" id="login-nav-btn" style="display: none;"><i data-lucide="log-in"
+                                    class="dropdown-icon"></i> Sign In</a>
                             <a href="#" id="logout-btn"><i data-lucide="log-out" class="dropdown-icon"></i> Log out</a>
                         </div>
                     </div>
@@ -355,19 +367,19 @@
                                 </div>
                                 <button class="play-card-btn"><i data-lucide="play" class="play-card-icon"></i></button>
                             </div>
-                            <div class="quick-card" data-playlist-id="playlist-1">
-                                <img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=150&q=80"
-                                    alt="Chill Vibes">
+                            <div class="quick-card" data-song-index="0">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7iLO5aPkU5OPzoPXnA8VACRtVtxqg3jnDrcgWMr5cwOibCBQeHBkkkNqaY_sBG-OREjeTxw&s=10"
+                                    alt="Ambikapathy">
                                 <div class="quick-card-info">
-                                    <span>Chill Vibes</span>
+                                    <span>Ambikapathy</span>
                                 </div>
                                 <button class="play-card-btn"><i data-lucide="play" class="play-card-icon"></i></button>
                             </div>
-                            <div class="quick-card" data-playlist-id="playlist-2">
-                                <img src="https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?auto=format&fit=crop&w=150&q=80"
-                                    alt="Focus Flow">
+                            <div class="quick-card" data-song-index="1">
+                                <img src="https://m.media-amazon.com/images/M/MV5BM2M2NjRjNGUtN2IwYy00MThmLTgxZTgtMzNhZDY0MDhhZTM0XkEyXkFqcGc@._V1_.jpg"
+                                    alt="Aura 10-10">
                                 <div class="quick-card-info">
-                                    <span>Focus Flow</span>
+                                    <span>Aura 10-10</span>
                                 </div>
                                 <button class="play-card-btn"><i data-lucide="play" class="play-card-icon"></i></button>
                             </div>
@@ -445,49 +457,12 @@
                         </div>
 
                         <!-- Shelf: Mood Playlists -->
-                        <div class="shelf">
+                        <div class="shelf" id="home-playlists-shelf" style="display: none;">
                             <div class="shelf-header">
-                                <h2>Mood Boosters</h2>
+                                <h2>Your Playlists</h2>
                             </div>
                             <div class="card-grid" id="home-mood-boosters-grid">
-                                <div class="music-card playlist-card" data-playlist-id="playlist-1">
-                                    <div class="card-art-wrapper">
-                                        <img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=300&q=80"
-                                            alt="Chill Vibes" class="card-img">
-                                        <button class="play-card-btn hover-reveal"><i data-lucide="play"
-                                                class="play-card-icon"></i></button>
-                                    </div>
-                                    <div class="card-metadata">
-                                        <h3>Chill Vibes</h3>
-                                        <p>Lo-Fi tunes for a relaxed mood</p>
-                                    </div>
-                                </div>
-
-                                <div class="music-card playlist-card" data-playlist-id="playlist-2">
-                                    <div class="card-art-wrapper">
-                                        <img src="https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?auto=format&fit=crop&w=300&q=80"
-                                            alt="Focus Flow" class="card-img">
-                                        <button class="play-card-btn hover-reveal"><i data-lucide="play"
-                                                class="play-card-icon"></i></button>
-                                    </div>
-                                    <div class="card-metadata">
-                                        <h3>Focus Flow</h3>
-                                        <p>Keep your concentration sharp</p>
-                                    </div>
-                                </div>
-
-                                <div class="music-card playlist-card" data-playlist-id="playlist-3">
-                                    <div class="card-art-wrapper">
-                                        <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=300&q=80"
-                                            alt="Gaming Session" class="card-img">
-                                        <button class="play-card-btn hover-reveal"><i data-lucide="play"
-                                                class="play-card-icon"></i></button>
-                                    </div>
-                                    <div class="card-metadata">
-                                        <h3>Gaming Session</h3>
-                                        <p>Upbeat electronic beats</p>
-                                    </div>
-                                </div>
+                                <!-- Populated only when user creates playlists -->
                             </div>
                         </div>
 
@@ -877,8 +852,8 @@
                         </div>
                         <div class="playlist-header-details">
                             <span class="playlist-type">PLAYLIST</span>
-                            <h1 id="playlist-header-title">Chill Vibes</h1>
-                            <p id="playlist-header-desc">Relaxing sounds</p>
+                            <h1 id="playlist-header-title">Playlist</h1>
+                            <p id="playlist-header-desc">Custom playlist</p>
                             <div class="playlist-owner-info">
                                 <span class="owner-name">Mucify Player</span>
                                 <span class="playlist-stats-bullet">•</span>
@@ -1026,7 +1001,7 @@
             </div>
             <div class="panel-content">
                 <div class="panel-art-wrapper">
-                    <img src="assets/aura.png" alt="Aura 10-10" id="panel-song-art">
+                    <img src="./assets/aura.png" alt="Aura 10-10" id="panel-song-art">
                 </div>
                 <div class="panel-meta">
                     <h2 id="panel-song-title">Aura 10-10</h2>
@@ -1049,7 +1024,7 @@
             <!-- Left: Track Details -->
             <div class="player-track-info" id="player-track-info">
                 <div class="current-track-art">
-                    <img src="assets/icons/icon-192.png" alt="Album artwork" id="player-art">
+                    <img src="./assets/icons/icon-192.png" alt="Album artwork" id="player-art">
                 </div>
                 <div class="current-track-meta">
                     <div class="track-title-container">
@@ -1227,7 +1202,7 @@
 
         <div class="mobile-player-art-section">
             <div class="mobile-player-art-wrapper">
-                <img src="assets/icons/icon-192.png" alt="Album artwork" id="mobile-player-art">
+                <img src="./assets/icons/icon-192.png" alt="Album artwork" id="mobile-player-art">
             </div>
         </div>
 
@@ -1366,7 +1341,7 @@
         <!-- Large Artwork View -->
         <div class="mini-player-artwork-section" id="mini-player-artwork-section">
             <div class="mini-art-container" id="mini-art-container">
-                <img src="assets/icons/icon-192.png" alt="Cover" id="mini-player-art" class="mini-player-art">
+                <img src="./assets/icons/icon-192.png" alt="Cover" id="mini-player-art" class="mini-player-art">
                 <div class="mini-art-glow" id="mini-art-glow"></div>
             </div>
         </div>
@@ -1374,7 +1349,7 @@
         <!-- Track Info -->
         <div class="mini-player-info-row">
             <div class="mini-compact-thumb" id="mini-compact-thumb">
-                <img src="assets/icons/icon-192.png" alt="Thumbnail" id="mini-compact-art" class="mini-compact-art">
+                <img src="./assets/icons/icon-192.png" alt="Thumbnail" id="mini-compact-art" class="mini-compact-art">
             </div>
             <div class="mini-player-details">
                 <div class="mini-title-wrap">
@@ -1430,7 +1405,7 @@
     <script src="./app2.js?v=4.1"></script>
     <script src="./state-sync.js?v=1.1"></script>
     <!-- Firebase Authentication Logic -->
-    <script type="module" src="./firebase-auth.js?v=1.0"></script>
+    <script type="module" src="./firebase-auth.js?v=2.0"></script>
     <script>
         // Initialize Lucide Icons
         lucide.createIcons();
