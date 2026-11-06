@@ -18,10 +18,10 @@
     <meta name="format-detection" content="telephone=no">
 
     <!-- Web App Manifest & App Icons -->
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
 
     <!-- Google Fonts for premium typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,10 +31,82 @@
         rel="stylesheet">
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="styles.css?v=11.0">
+    <link rel="stylesheet" href="./styles.css?v=11.0">
 </head>
 
-<body>
+<body class="not-authenticated">
+
+    <!-- Firebase Authentication Gateway Screen -->
+    <div id="auth-screen" class="auth-screen" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <div class="auth-card">
+            <!-- Brand Icon & Title -->
+            <div class="auth-brand">
+                <div class="auth-logo-wrap">
+                    <i data-lucide="music-4" class="auth-logo-icon"></i>
+                </div>
+                <span class="auth-brand-name">Mucify</span>
+            </div>
+
+            <!-- Welcome Header -->
+            <div class="auth-header">
+                <h2 class="auth-title" id="auth-modal-title">Welcome to Mucify</h2>
+                <p class="auth-subtitle">Sign in to sync your favorite music, discover fresh releases, and access your
+                    custom playlists.</p>
+            </div>
+
+            <!-- Error Banner -->
+            <div id="auth-error-banner" class="auth-error-banner" style="display: none;">
+                <i data-lucide="alert-circle" class="auth-error-icon"></i>
+                <span id="auth-error-text">An error occurred during sign-in.</span>
+            </div>
+
+            <!-- Initial Loading State -->
+            <div id="auth-loading-state" class="auth-loading-state">
+                <div class="auth-pulse-spinner"></div>
+                <span>Checking your login session...</span>
+            </div>
+
+            <!-- Login Provider Action Buttons -->
+            <div class="auth-buttons" style="display: none;">
+                <!-- 1. Google Sign-In -->
+                <button type="button" id="btn-login-google" class="auth-btn auth-btn-google">
+                    <span class="auth-btn-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill="#4285F4"
+                                d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.04h3.88c2.28-2.09 3.66-5.17 3.66-9.14z" />
+                            <path fill="#34A853"
+                                d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.04c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.13C3.26 21.36 7.33 24 12 24z" />
+                            <path fill="#FBBC05"
+                                d="M5.28 14.28c-.25-.72-.38-1.49-.38-2.28s.13-1.56.38-2.28V6.59H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.41l4.03-3.13z" />
+                            <path fill="#EA4335"
+                                d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.59l4.03 3.13c.95-2.83 3.6-4.97 6.72-4.97z" />
+                        </svg>
+                    </span>
+                    <span class="auth-btn-label">Sign in with Google</span>
+                    <span class="auth-spinner" style="display: none;"></span>
+                </button>
+
+                <!-- 2. Microsoft Sign-In -->
+                <button type="button" id="btn-login-microsoft" class="auth-btn auth-btn-microsoft">
+                    <span class="auth-btn-icon">
+                        <svg viewBox="0 0 23 23" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill="#f35325" d="M1 1h10v10H1z" />
+                            <path fill="#81bc06" d="M12 1h10v10H12z" />
+                            <path fill="#05a6f0" d="M1 12h10v10H1z" />
+                            <path fill="#ffba08" d="M12 12h10v10H12z" />
+                        </svg>
+                    </span>
+                    <span class="auth-btn-label">Sign in with Microsoft</span>
+                    <span class="auth-spinner" style="display: none;"></span>
+                </button>
+            </div>
+
+            <!-- Footer / Privacy -->
+            <div class="auth-footer">
+                <p>Protected by Firebase Authentication &bull; SSL Encrypted</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Network Offline Status Banner -->
     <div class="network-status-indicator" id="network-status-indicator" style="display: none;">
@@ -1337,8 +1409,10 @@
         </div>
     </div>
 
-    <script src="app2.js?v=4.1"></script>
-    <script src="state-sync.js?v=1.1"></script>
+    <script src="./app2.js?v=4.1"></script>
+    <script src="./state-sync.js?v=1.1"></script>
+    <!-- Firebase Authentication Logic -->
+    <script type="module" src="./firebase-auth.js?v=1.0"></script>
     <script>
         // Initialize Lucide Icons
         lucide.createIcons();

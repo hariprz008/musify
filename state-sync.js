@@ -76,7 +76,8 @@
                 x: window.scrollX || window.pageXOffset || 0,
                 y: window.scrollY || window.pageYOffset || 0
             },
-            inputs: inputsData
+            inputs: inputsData,
+            userQueue: Array.isArray(window.userQueue) ? window.userQueue.map(s => s.id) : []
         };
     }
 
@@ -171,6 +172,14 @@
                         }
                     }, 100);
                 }
+            }
+
+            // 3b. Restore user-queued tracks
+            if (Array.isArray(state.userQueue) && Array.isArray(window.songs)) {
+                const restoredUserQueue = state.userQueue
+                    .map(id => window.songs.find(s => s.id === id))
+                    .filter(Boolean);
+                window.userQueue = restoredUserQueue;
             }
 
             // 4. Restore active item highlight

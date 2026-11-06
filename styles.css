@@ -5860,3 +5860,290 @@ body.pwa-standalone .mobile-full-player {
         width: calc(100vw - 24px);
     }
 }
+
+/* ==========================================================================
+   Firebase Authentication Screen & Modal Styles
+   ========================================================================== */
+.auth-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    z-index: 100000;
+    background: radial-gradient(circle at 50% 25%, rgba(29, 185, 84, 0.16) 0%, rgba(18, 18, 18, 0.96) 65%, #080808 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+body.not-authenticated .app-container,
+body.not-authenticated .mobile-bottom-nav,
+body.not-authenticated .floating-mini-player,
+body.not-authenticated .mobile-drawer {
+    display: none !important;
+}
+
+.auth-card {
+    background: rgba(24, 24, 24, 0.88);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 40px 32px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.85), 0 0 50px rgba(29, 185, 84, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: authCardEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes authCardEnter {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.auth-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.auth-logo-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1db954 0%, #15883e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4);
+}
+
+.auth-logo-icon {
+    width: 24px;
+    height: 24px;
+    color: #ffffff;
+}
+
+.auth-brand-name {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    font-family: var(--font-secondary);
+}
+
+.auth-header {
+    margin-bottom: 22px;
+}
+
+.auth-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+}
+
+.auth-subtitle {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.auth-error-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: left;
+    margin-bottom: 18px;
+    animation: authShake 0.3s ease-in-out;
+}
+
+@keyframes authShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-4px);
+    }
+
+    75% {
+        transform: translateX(4px);
+    }
+}
+
+.auth-error-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: #ef4444;
+}
+
+.auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    margin-bottom: 22px;
+}
+
+.auth-btn {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 14.5px;
+    font-weight: 600;
+    font-family: var(--font-primary);
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+    user-select: none;
+}
+
+.auth-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.auth-btn:active:not(:disabled) {
+    transform: translateY(0.5px) scale(0.99);
+}
+
+.auth-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.auth-btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+/* Google Branded Button */
+.auth-btn-google {
+    background: #ffffff;
+    color: #1f1f1f;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+}
+
+.auth-btn-google:hover:not(:disabled) {
+    background: #f5f5f5;
+    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.18);
+}
+
+/* Microsoft Branded Button */
+.auth-btn-microsoft {
+    background: #242424;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+}
+
+.auth-btn-microsoft:hover:not(:disabled) {
+    background: #2c2c2c;
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Auth Spinner */
+.auth-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: authSpin 0.75s linear infinite;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+@keyframes authSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.auth-loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 24px 0;
+    color: var(--text-muted);
+    font-size: 13.5px;
+}
+
+.auth-pulse-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(29, 185, 84, 0.2);
+    border-top-color: var(--primary-green);
+    border-radius: 50%;
+    animation: authSpin 0.8s linear infinite;
+}
+
+.auth-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 16px;
+    width: 100%;
+}
+
+.auth-footer p {
+    font-size: 12px;
+    color: var(--text-subtle);
+    margin: 0;
+}
+
+/* User Email in Profile Dropdown */
+.profile-dropdown-user-email {
+    padding: 10px 16px 8px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    word-break: break-all;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 4px;
+    font-family: monospace;
+}
