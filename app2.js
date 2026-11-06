@@ -1575,7 +1575,62 @@ if (!playlists) {
 
 function savePlaylists() {
     localStorage.setItem('mucify_playlists', JSON.stringify(playlists));
+    if (window.MucifyDB && typeof window.MucifyDB.savePlaylists === 'function') {
+        window.MucifyDB.savePlaylists(playlists);
+    }
 }
+
+// Data Bridge for Firebase Firestore Cloud Synchronization
+window.setMucifyData = function (cloudLikedSongIds, cloudPlaylists) {
+    if (Array.isArray(cloudLikedSongIds)) {
+        likedSongIds = cloudLikedSongIds;
+        localStorage.setItem('mucify_liked_songs', JSON.stringify(likedSongIds));
+    }
+    if (cloudPlaylists && typeof cloudPlaylists === 'object') {
+        playlists = cloudPlaylists;
+        if (!playlists["liked"]) {
+            playlists["liked"] = {
+                name: "Liked Songs",
+                desc: "Your collection of favorite tracks.",
+                art: "liked",
+                songs: likedSongIds
+            };
+        } else {
+            playlists["liked"].songs = likedSongIds;
+        }
+        localStorage.setItem('mucify_playlists', JSON.stringify(playlists));
+    }
+
+    // Refresh UI views with the loaded cloud data
+    if (typeof renderSidebarPlaylists === 'function') renderSidebarPlaylists();
+    if (typeof renderLikedSongsView === 'function' && currentView === 'liked') renderLikedSongsView();
+    if (typeof renderLibraryView === 'function' && currentView === 'library') renderLibraryView();
+    if (typeof syncLikeButtons === 'function' && songs && songs[currentSongIndex]) {
+        syncLikeButtons(songs[currentSongIndex].id);
+    }
+};
+
+window.getMucifyData = function () {
+    return {
+        likedSongIds: likedSongIds || [],
+        playlists: playlists || defaultPlaylists
+    };
+};
+
+window.resetMucifyDataOnLogout = function () {
+    likedSongIds = [];
+    localStorage.setItem('mucify_liked_songs', JSON.stringify([]));
+    playlists = {
+        ...defaultPlaylists,
+        "liked": { ...defaultPlaylists["liked"], songs: [] }
+    };
+    localStorage.setItem('mucify_playlists', JSON.stringify(playlists));
+    if (typeof renderSidebarPlaylists === 'function') renderSidebarPlaylists();
+    if (typeof renderLikedSongsView === 'function') renderLikedSongsView();
+    if (typeof syncLikeButtons === 'function' && songs && songs[currentSongIndex]) {
+        syncLikeButtons(songs[currentSongIndex].id);
+    }
+};
 
 // --- 3. Audio & Player Variables ---
 const audio = document.getElementById('audio-player');
@@ -2440,6 +2495,10 @@ function toggleLikeSong(songId) {
     localStorage.setItem('mucify_liked_songs', JSON.stringify(likedSongIds));
     playlists["liked"].songs = likedSongIds;
     savePlaylists();
+
+    if (window.MucifyDB && typeof window.MucifyDB.saveLikedSongs === 'function') {
+        window.MucifyDB.saveLikedSongs(likedSongIds);
+    }
 
     syncLikeButtons(songId);
 
