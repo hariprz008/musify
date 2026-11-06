@@ -3,7 +3,7 @@
  * Provides offline caching, instant app launching, and Background Sync API support.
  */
 
-const CACHE_NAME = 'mucify-cache-v1.3.0';
+const CACHE_NAME = 'mucify-cache-v2.0.0';
 
 const PRECACHE_ASSETS = [
     './',
@@ -11,6 +11,7 @@ const PRECACHE_ASSETS = [
     './styles.css',
     './app2.js',
     './state-sync.js',
+    './firebase-auth.js',
     './manifest.webmanifest',
     './manifest.json',
     './assets/icons/icon-192.png',
