@@ -5888,7 +5888,14 @@ body.pwa-standalone .mobile-full-player {
     pointer-events: none;
 }
 
-body.not-authenticated .app-container,
+/* Keep app mounted so data renders in background, while auth screen locks user interaction */
+body.not-authenticated .app-container {
+    filter: blur(8px);
+    pointer-events: none;
+    user-select: none;
+    transition: filter 0.4s ease;
+}
+
 body.not-authenticated .mobile-bottom-nav,
 body.not-authenticated .floating-mini-player,
 body.not-authenticated .mobile-drawer {
@@ -6036,8 +6043,35 @@ body.not-authenticated .mobile-drawer {
     border-radius: 14px;
     border: none;
     cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
     transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s ease;
     user-select: none;
+}
+
+.auth-btn-guest {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: var(--font-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 8px 12px;
+    margin-top: 2px;
+    transition: color 0.2s ease;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.auth-btn-guest:hover {
+    color: var(--text-primary);
 }
 
 .auth-btn:hover:not(:disabled) {

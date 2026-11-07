@@ -1623,10 +1623,12 @@ window.resetMucifyDataOnLogout = function () {
 
 // --- 3. Audio & Player Variables ---
 const audio = document.getElementById('audio-player');
+let originalQueue = [...songs];
 let currentQueue = [...songs];
 let userQueue = []; // Explicitly queued songs ("Play Next", "Add to Queue")
 let currentSongIndex = 0;
 let isPlaying = false;
+let isChangingTrack = false;
 let isShuffle = false;
 let repeatMode = 'off'; // 'off' | 'all' | 'one'
 let volume = parseFloat(localStorage.getItem('mucify_volume')) || 0.7;
@@ -1634,6 +1636,26 @@ let isMuted = false;
 let previousVolume = volume;
 let isDraggingProgress = false;
 let playbackHistory = [];
+
+/**
+ * Fisher-Yates (Knuth) Shuffle Algorithm
+ * Produces an unbiased random permutation of the given array without mutating the original.
+ * @template T
+ * @param {T[]} array
+ * @returns {T[]} Shuffled shallow copy
+ */
+function fisherYatesShuffle(array) {
+    if (!Array.isArray(array)) return [];
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    return arr;
+}
+window.fisherYatesShuffle = fisherYatesShuffle;
 
 // Screen Wake Lock helper for uninterrupted playback in background & mobile
 let screenWakeLock = null;
@@ -1682,7 +1704,9 @@ window.ENABLE_RANDOM_START = ENABLE_RANDOM_START;
 window.songs = songs;
 window.currentSongIndex = currentSongIndex;
 window.currentQueue = currentQueue;
+window.originalQueue = originalQueue;
 window.userQueue = userQueue;
+window.isShuffle = isShuffle;
 
 /**
  * Programmatic toggle helper for Random Start on startup.
@@ -2016,7 +2040,8 @@ function resetUIAnimations() {
 }
 
 function initAudio() {
-    if (!audio) return;
+    if (!audio || audio._isInitialized) return;
+    audio._isInitialized = true;
     audio.volume = isMuted ? 0 : volume;
     audio.muted = isMuted;
 
@@ -2025,8 +2050,11 @@ function initAudio() {
         startUIAnimations();
     });
 
-    // 2. Pause Event: Stop / pause all UI animations
+    // 2. Pause Event: Stop / pause all UI animations (unless transitioning tracks)
     audio.addEventListener('pause', () => {
+        // If transient pause occurred during track switching (audio.load()), ignore it
+        // so background MediaSession playbackState remains active ('playing')
+        if (isChangingTrack) return;
         stopUIAnimations();
     });
 
@@ -2191,6 +2219,7 @@ function resolveAudioUrl(url) {
 function loadSong(song, shouldPlay = true) {
     if (!song || !audio) return;
 
+    isChangingTrack = true;
     audio._hasTriedLocalFallback = false;
     window.currentSong = song;
 
@@ -2205,10 +2234,14 @@ function loadSong(song, shouldPlay = true) {
             // Song is not in currentQueue (e.g. played via context menu, search, etc.)
             // Insert it at current position so currentQueue remains coherent
             currentQueue.splice(currentSongIndex, 0, song);
+            if (originalQueue && !originalQueue.some(s => s && s.id === song.id)) {
+                originalQueue.splice(currentSongIndex, 0, song);
+            }
         }
     }
     window.currentSongIndex = currentSongIndex;
     window.currentQueue = currentQueue;
+    window.originalQueue = originalQueue;
     window.userQueue = userQueue;
 
     // 2. Persist current song index and ID to localStorage
@@ -2223,6 +2256,18 @@ function loadSong(song, shouldPlay = true) {
         console.warn('[Mucify] Failed to save current song to localStorage:', e);
     }
 
+    // 3. Audio Instance Limit Fix:
+    // Strictly reuse the single <audio> element.
+    // Pause, clear previous src, and invoke load() to flush previous media pipeline,
+    // open network sockets, and release the OS hardware media decoder
+    // so we never exhaust browser decoder or socket limits (e.g. at song 5).
+    try {
+        audio.pause();
+        audio.removeAttribute('src');
+        audio.load();
+    } catch (e) { }
+
+    // 4. Assign next song URL on the single shared audio instance
     audio.src = resolveAudioUrl(song.url);
     audio.load();
 
@@ -2256,7 +2301,15 @@ function loadSong(song, shouldPlay = true) {
     syncMobileFullPlayer(song);
     updateNowPlayingPanel(song);
     updateActiveRowHighlight();
+
+    // 5. Background Throttling Prevention:
+    // Update MediaSession metadata and maintain 'playing' state continuously
+    // so operating systems (Android, Windows, iOS) do not suspend background execution
     syncMediaSession(song);
+    if (shouldPlay && 'mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'playing';
+    }
+
     if (typeof syncMiniPlayerCurrentTrack === 'function') {
         syncMiniPlayerCurrentTrack();
     }
@@ -2280,6 +2333,7 @@ function loadSong(song, shouldPlay = true) {
     } else {
         pauseAudio();
     }
+    isChangingTrack = false;
 }
 window.loadSong = loadSong;
 
@@ -2294,6 +2348,7 @@ function playAudio() {
     // Acquire WakeLock to keep audio processing continuous on mobile & desktop
     requestScreenWakeLock();
 
+    // Maintain OS MediaSession playing state to prevent background throttling
     if ('mediaSession' in navigator) {
         navigator.mediaSession.playbackState = 'playing';
     }
@@ -2302,15 +2357,22 @@ function playAudio() {
     if (playPromise !== undefined) {
         playPromise.catch(err => {
             console.warn("[Audio] Play promise warning (handled for background/autoplay):", err);
-            // On mobile / background tabs, retry when audio canplay fires
-            const onCanPlay = () => {
-                audio.removeEventListener('canplay', onCanPlay);
+            // If the audio element has already loaded data, retry immediately
+            if (audio.readyState >= 2) {
                 audio.play().catch(e => {
-                    console.log("[Audio] Canplay retry prevented:", e);
-                    stopUIAnimations();
+                    console.log("[Audio] Immediate play retry prevented:", e);
                 });
-            };
-            audio.addEventListener('canplay', onCanPlay, { once: true });
+            } else {
+                // On mobile / background tabs, retry when audio canplay fires
+                const onCanPlay = () => {
+                    audio.removeEventListener('canplay', onCanPlay);
+                    audio.play().catch(e => {
+                        console.log("[Audio] Canplay retry prevented:", e);
+                        if (!isChangingTrack) stopUIAnimations();
+                    });
+                };
+                audio.addEventListener('canplay', onCanPlay, { once: true });
+            }
         });
     }
 }
@@ -2333,6 +2395,7 @@ function togglePlay() {
             loadSong(currentQueue[currentSongIndex || 0], true);
             return;
         } else if (songs && songs.length > 0) {
+            originalQueue = [...songs];
             currentQueue = [...songs];
             currentSongIndex = 0;
             loadSong(currentQueue[0], true);
@@ -2353,6 +2416,26 @@ function togglePlayPause() {
 window.togglePlay = togglePlay;
 window.togglePlayPause = togglePlayPause;
 
+function updateShuffleUI() {
+    const targets = [
+        elShuffleBtn,
+        document.getElementById('mobile-btn-shuffle'),
+        typeof getMiniEl === 'function' ? getMiniEl('mini-btn-shuffle') : document.getElementById('mini-btn-shuffle')
+    ];
+
+    targets.forEach(btn => {
+        if (!btn) return;
+        btn.classList.toggle('active', Boolean(isShuffle));
+        const icon = btn.querySelector('svg, i');
+        if (icon) {
+            icon.style.color = isShuffle ? 'var(--primary-green)' : '';
+        }
+    });
+
+    const mShuffle = document.getElementById('mobile-btn-shuffle');
+    if (mShuffle) mShuffle.classList.toggle('active', Boolean(isShuffle));
+}
+
 function prevSong() {
     if (!audio) return;
     if (audio.currentTime > 3) {
@@ -2360,78 +2443,127 @@ function prevSong() {
         return;
     }
 
-    if (isShuffle && playbackHistory.length > 1) {
-        playbackHistory.pop();
-        const prevId = playbackHistory[playbackHistory.length - 1];
-        const prevIndex = currentQueue.findIndex(s => s.id === prevId);
-        if (prevIndex !== -1) {
-            currentSongIndex = prevIndex;
-        } else {
-            currentSongIndex = (currentSongIndex - 1 + currentQueue.length) % currentQueue.length;
-        }
+    if (currentQueue.length === 0) return;
+
+    if (currentSongIndex > 0) {
+        currentSongIndex--;
     } else {
-        currentSongIndex = (currentSongIndex - 1 + currentQueue.length) % currentQueue.length;
+        currentSongIndex = Math.max(0, currentQueue.length - 1);
     }
 
+    window.currentSongIndex = currentSongIndex;
     loadSong(currentQueue[currentSongIndex], true);
+    if (typeof currentView !== 'undefined' && currentView === 'queue' && typeof renderQueueView === 'function') {
+        renderQueueView();
+    }
 }
 
 function nextSong(isAutoAdvance = false) {
-    // 1. High Priority: Play explicitly user-queued songs first
+    // 1. High Priority: Play explicitly user-queued songs first ("Play Next", "Add to Queue")
     if (userQueue.length > 0) {
         const nextTrack = userQueue.shift();
         window.userQueue = userQueue;
         loadSong(nextTrack, true);
-        if (currentView === 'queue') renderQueueView();
+        if (typeof currentView !== 'undefined' && currentView === 'queue' && typeof renderQueueView === 'function') {
+            renderQueueView();
+        }
         return;
     }
 
     if (currentQueue.length === 0) {
-        currentQueue = [...songs];
+        currentQueue = [...(originalQueue && originalQueue.length > 0 ? originalQueue : songs)];
         currentSongIndex = 0;
         loadSong(currentQueue[0], true);
         return;
     }
 
-    // 2. Play next track from current playback context (playlist, album, search, library)
-    if (isShuffle) {
-        let randomIndex = currentSongIndex;
-        if (currentQueue.length > 1) {
-            let attempts = 0;
-            while (randomIndex === currentSongIndex && attempts < 15) {
-                randomIndex = Math.floor(Math.random() * currentQueue.length);
-                attempts++;
-            }
-        }
-        currentSongIndex = randomIndex;
-        playbackHistory.push(currentQueue[currentSongIndex].id);
-    } else {
-        if (currentSongIndex >= currentQueue.length - 1) {
-            // Reached the end of the current queue/playlist
-            // Loop back to track 0 so music never abruptly dies
+    // 2. Play next track from current queue without repeats
+    if (currentSongIndex >= currentQueue.length - 1) {
+        // Reached the end of the current randomized queue / playlist
+        if (isShuffle) {
+            // True Shuffle cycle complete: All songs have played through without repetition.
+            // Generate a fresh randomized cycle using Fisher-Yates for continuous playback
+            currentQueue = fisherYatesShuffle([...(originalQueue && originalQueue.length > 0 ? originalQueue : songs)]);
             currentSongIndex = 0;
         } else {
-            currentSongIndex++;
+            // Loop back to track 0 in chronological order so music never abruptly dies
+            currentSongIndex = 0;
         }
+    } else {
+        currentSongIndex++;
     }
 
+    window.currentQueue = currentQueue;
+    window.currentSongIndex = currentSongIndex;
     loadSong(currentQueue[currentSongIndex], true);
+    if (typeof currentView !== 'undefined' && currentView === 'queue' && typeof renderQueueView === 'function') {
+        renderQueueView();
+    }
 }
 
 function toggleShuffle() {
     isShuffle = !isShuffle;
-    [elShuffleBtn, document.getElementById('mobile-btn-shuffle'), getMiniEl('mini-btn-shuffle')].forEach(btn => {
-        if (!btn) return;
-        btn.classList.toggle('active', isShuffle);
-        const icon = btn.querySelector('svg, i');
-        if (icon) icon.style.color = isShuffle ? 'var(--primary-green)' : '';
-    });
+    window.isShuffle = isShuffle;
+    updateShuffleUI();
 
-    playbackHistory = [];
-    if (isShuffle && currentQueue[currentSongIndex]) {
-        playbackHistory.push(currentQueue[currentSongIndex].id);
+    if (!originalQueue || originalQueue.length === 0) {
+        originalQueue = [...songs];
+    }
+
+    const currentTrack = currentQueue[currentSongIndex] || originalQueue[0];
+
+    if (isShuffle) {
+        // --- Spotify-Style True Shuffle ON ---
+        // 1. Preserve Current Track: The currently playing song remains active at index 0.
+        // 2. Fisher-Yates Algorithm: Randomize all other remaining songs in originalQueue.
+        // 3. No Repeats: Shuffled remaining songs are queued after currentTrack.
+        if (currentTrack) {
+            const curOriginalIdx = originalQueue.findIndex(s => s && s.id === currentTrack.id);
+            let remainingSongs = [];
+            if (curOriginalIdx !== -1) {
+                remainingSongs = originalQueue.filter((_, idx) => idx !== curOriginalIdx);
+            } else {
+                remainingSongs = originalQueue.filter(s => s && s.id !== currentTrack.id);
+            }
+
+            const shuffledRemaining = fisherYatesShuffle(remainingSongs);
+            currentQueue = [currentTrack, ...shuffledRemaining];
+            currentSongIndex = 0;
+        } else {
+            currentQueue = fisherYatesShuffle([...originalQueue]);
+            currentSongIndex = 0;
+        }
+
+        playbackHistory = currentTrack ? [currentTrack.id] : [];
+        showToast("Shuffle turned on");
+    } else {
+        // --- Spotify-Style Shuffle OFF ---
+        // Seamlessly revert back to original chronological order,
+        // continuing from the current track's original index.
+        currentQueue = [...originalQueue];
+        if (currentTrack) {
+            const originalIdx = originalQueue.findIndex(s => s && s.id === currentTrack.id);
+            currentSongIndex = originalIdx !== -1 ? originalIdx : 0;
+        } else {
+            currentSongIndex = 0;
+        }
+
+        playbackHistory = [];
+        showToast("Shuffle turned off");
+    }
+
+    window.originalQueue = originalQueue;
+    window.currentQueue = currentQueue;
+    window.currentSongIndex = currentSongIndex;
+
+    // Refresh queue view if currently open to reflect updated ordering immediately
+    if (typeof currentView !== 'undefined' && currentView === 'queue' && typeof renderQueueView === 'function') {
+        renderQueueView();
     }
 }
+window.toggleShuffle = toggleShuffle;
+window.nextSong = nextSong;
+window.prevSong = prevSong;
 
 function toggleRepeat() {
     if (repeatMode === 'off') {
@@ -2593,15 +2725,36 @@ function syncLikeButtons(songId) {
 }
 
 function playSongFromContext(index, customQueue = null) {
-    if (customQueue) {
-        currentQueue = [...customQueue];
+    if (customQueue && Array.isArray(customQueue) && customQueue.length > 0) {
+        originalQueue = [...customQueue];
+    } else if (!originalQueue || originalQueue.length === 0) {
+        originalQueue = [...songs];
     }
     userQueue = []; // Reset explicit user queue on new album/playlist selection
-    currentSongIndex = Math.max(0, Math.min(index, currentQueue.length - 1));
+
+    const safeIndex = Math.max(0, Math.min(index, originalQueue.length - 1));
+    const selectedSong = originalQueue[safeIndex] || songs[0];
+
+    if (isShuffle) {
+        // True Shuffle (Spotify-style):
+        // Active track is the clicked song, remaining songs are randomized with Fisher-Yates
+        const remaining = originalQueue.filter((_, idx) => idx !== safeIndex);
+        const shuffled = fisherYatesShuffle(remaining);
+        currentQueue = [selectedSong, ...shuffled];
+        currentSongIndex = 0;
+    } else {
+        currentQueue = [...originalQueue];
+        currentSongIndex = safeIndex;
+    }
+
+    window.originalQueue = originalQueue;
     window.currentQueue = currentQueue;
     window.userQueue = userQueue;
     window.currentSongIndex = currentSongIndex;
     loadSong(currentQueue[currentSongIndex], true);
+    if (typeof currentView !== 'undefined' && currentView === 'queue' && typeof renderQueueView === 'function') {
+        renderQueueView();
+    }
 }
 
 function playPlaylist(playlistId) {
@@ -3310,11 +3463,7 @@ function shuffleUpcomingQueue() {
         return;
     }
     const songsInOrder = upcoming.map(item => item.song);
-    for (let i = songsInOrder.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [songsInOrder[i], songsInOrder[j]] = [songsInOrder[j], songsInOrder[i]];
-    }
-    userQueue = songsInOrder;
+    userQueue = fisherYatesShuffle(songsInOrder);
     currentQueue = currentQueue.slice(0, currentSongIndex + 1);
     window.userQueue = userQueue;
     window.currentQueue = currentQueue;
@@ -4126,8 +4275,13 @@ function renderAlbumDetailView(group) {
         shuffleBtn.replaceWith(newShuffleBtn);
         newShuffleBtn.addEventListener('click', () => {
             if (sortedTracks.length > 0) {
-                const shuffled = [...sortedTracks].sort(() => Math.random() - 0.5);
-                playSongFromContext(0, shuffled);
+                if (!isShuffle) {
+                    isShuffle = true;
+                    window.isShuffle = isShuffle;
+                    updateShuffleUI();
+                }
+                const randomStartIndex = Math.floor(Math.random() * sortedTracks.length);
+                playSongFromContext(randomStartIndex, sortedTracks);
             }
         });
     }
@@ -6107,7 +6261,17 @@ function showSongContextMenu(songId, x, y, context = null) {
         itemPlay.className = 'context-menu-item';
         itemPlay.innerHTML = `<i data-lucide="play" style="width: 14px; height: 14px;"></i> <span>Play Now</span>`;
         itemPlay.addEventListener('click', () => {
-            playSongFromContext(context.actualIndex, currentQueue);
+            if (context.isUserQueued && typeof context.userIdx === 'number') {
+                userQueue.splice(0, context.userIdx + 1);
+                window.userQueue = userQueue;
+                loadSong(song, true);
+            } else if (typeof context.contextIdx === 'number') {
+                currentSongIndex = context.contextIdx;
+                window.currentSongIndex = currentSongIndex;
+                loadSong(currentQueue[currentSongIndex], true);
+            } else {
+                loadSong(song, true);
+            }
             renderQueueView();
             menu.style.display = 'none';
         });
@@ -7239,6 +7403,9 @@ function initEventListeners() {
         } else if (e.code === 'KeyM') {
             e.preventDefault();
             if (elVolumeBtn) elVolumeBtn.click();
+        } else if (e.code === 'KeyS') {
+            e.preventDefault();
+            toggleShuffle();
         }
     });
 
@@ -7577,7 +7744,7 @@ function syncMediaSession(song) {
             ]
         });
 
-        navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+        navigator.mediaSession.playbackState = (isPlaying || isChangingTrack) ? 'playing' : 'paused';
 
         if (!window._mediaSessionHandlersSet) {
             window._mediaSessionHandlersSet = true;
